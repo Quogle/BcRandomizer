@@ -5,31 +5,33 @@ import java.util.ArrayList;
 
 public class Trait {
     //Included Trait Flags
-    private boolean red;
-    private boolean floating;
-    private boolean black;
-    private boolean angel;
-    private boolean metal;
-    private boolean alien;
-    private boolean zombie;
-    private boolean relic;
-    private boolean aku;
-    private boolean white;
+    private static boolean red = true;
+    private static boolean floating = true;
+    private static boolean black = true;
+    private static boolean angel = true;
+    private static boolean metal = false;
+    private static boolean alien = true;
+    private static boolean zombie = true;
+    private static boolean relic = true;
+    private static boolean aku = true;
+    private static boolean white = true;
 
-    public ArrayList<Integer> selectedTraits = new ArrayList<Integer>();
+    public static ArrayList<Integer> selectedTraits = new ArrayList<Integer>();
 
-    public void selectedTraits() {
+    public static void selectedTraits() {
+        selectedTraits.clear();
+        selectedTraits.trimToSize();
 
-        if (red) selectedTraits.add(eVars.red);
-        if (floating) selectedTraits.add(eVars.floating);
-        if (black) selectedTraits.add(eVars.black);
-        if (angel) selectedTraits.add(eVars.angel);
-        if (metal) selectedTraits.add(eVars.metal);
-        if (alien) selectedTraits.add(eVars.alien);
-        if (zombie) selectedTraits.add(eVars.zombie);
-        if (relic) selectedTraits.add(eVars.relic);
-        if (aku) selectedTraits.add(eVars.aku);
-        if (white) selectedTraits.add(eVars.white);
+        if(red) selectedTraits.add(eVars.red);
+        if(floating) selectedTraits.add(eVars.floating);
+        if(black) selectedTraits.add(eVars.black);
+        if(angel) selectedTraits.add(eVars.angel);
+        if(metal) selectedTraits.add(eVars.metal);
+        if(alien) selectedTraits.add(eVars.alien);
+        if(zombie) selectedTraits.add(eVars.zombie);
+        if(relic) selectedTraits.add(eVars.relic);
+        if(aku) selectedTraits.add(eVars.aku);
+        if(white) selectedTraits.add(eVars.white);
     }
 
 
@@ -38,83 +40,83 @@ public class Trait {
         return red;
     }
 
-    public void setRed(boolean red) {
-        this.red = red;
+    public static void setRed(boolean red) {
+        Trait.red = red;
     }
 
     public boolean getFloating() {
         return floating;
     }
 
-    public void setFloating(boolean floating) {
-        this.floating = floating;
+    public static void setFloating(boolean floating) {
+        Trait.floating = floating;
     }
 
     public boolean getBlack() {
         return black;
     }
 
-    public void setBlack(boolean black) {
-        this.black = black;
+    public static void setBlack(boolean black) {
+        Trait.black = black;
     }
 
     public boolean getAngel() {
         return angel;
     }
 
-    public void setAngel(boolean angel) {
-        this.angel = angel;
+    public static void setAngel(boolean angel) {
+        Trait.angel = angel;
     }
 
     public boolean getMetal() {
         return metal;
     }
 
-    public void setMetal(boolean metal) {
-        this.metal = metal;
+    public static void setMetal(boolean metal) {
+        Trait.metal = metal;
     }
 
     public boolean getAlien() {
         return alien;
     }
 
-    public void setAlien(boolean alien) {
-        this.alien = alien;
+    public static void setAlien(boolean alien) {
+        Trait.alien = alien;
     }
 
     public boolean getZombie() {
         return zombie;
     }
 
-    public void setZombie(boolean zombie) {
-        this.zombie = zombie;
+    public static void setZombie(boolean zombie) {
+        Trait.zombie = zombie;
     }
 
     public boolean getRelic() {
         return relic;
     }
 
-    public void setRelic(boolean relic) {
-        this.relic = relic;
+    public static void setRelic(boolean relic) {
+        Trait.relic = relic;
     }
 
     public boolean getAku() {
         return aku;
     }
 
-    public void setAku(boolean aku) {
-        this.aku = aku;
+    public static void setAku(boolean aku) {
+        Trait.aku = aku;
     }
 
     public boolean getTraitless() {
         return white;
     }
 
-    public void setTraitless(boolean traitless) {
-        this.white = traitless;
+    public static void setTraitless(boolean traitless) {
+        Trait.white = traitless;
     }
 
-    public ArrayList<Integer> getSelectedTraits() {
+    public static ArrayList<Integer> getSelectedTraits() {
         return selectedTraits;
     }
 }

@@ -1,7 +1,7 @@
 package org.example;
 
 public class eVars {
-    int health = 0;
+    static int health = 0;
     int knockbacks = 1;
     int speed = 2;
     int attack = 3;

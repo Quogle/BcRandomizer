@@ -97,7 +97,6 @@ public class EnemyStatsGUI extends JFrame {
     String[][] eStatsArray = baseArray.getEnemyArray();
 
     //trait
-    Trait trait = new Trait();
     Randomize randomizeTrait = new Randomize();
 
     public EnemyStatsGUI() {
@@ -121,34 +120,34 @@ public class EnemyStatsGUI extends JFrame {
 
         //Trait Checkboxes
         redCheckBox.addActionListener(e -> {
-            trait.setRed(redCheckBox.isSelected());
+            Trait.setRed(redCheckBox.isSelected());
         });
         floatingCheckBox.addActionListener(e -> {
-            trait.setFloating(floatingCheckBox.isSelected());
+            Trait.setFloating(floatingCheckBox.isSelected());
         });
         blackCheckBox.addActionListener(e -> {
-            trait.setBlack(blackCheckBox.isSelected());
+            Trait.setBlack(blackCheckBox.isSelected());
         });
         angelCheckBox.addActionListener(e -> {
-            trait.setAngel(angelCheckBox.isSelected());
+            Trait.setAngel(angelCheckBox.isSelected());
         });
         metalCheckBox.addActionListener(e -> {
-            trait.setMetal(metalCheckBox.isSelected());
+            Trait.setMetal(metalCheckBox.isSelected());
         });
         alienCheckBox.addActionListener(e -> {
-            trait.setAlien(alienCheckBox.isSelected());
+            Trait.setAlien(alienCheckBox.isSelected());
         });
         zombieCheckBox.addActionListener(e -> {
-            trait.setZombie(zombieCheckBox.isSelected());
+            Trait.setZombie(zombieCheckBox.isSelected());
         });
         relicCheckBox.addActionListener(e -> {
-            trait.setRelic(relicCheckBox.isSelected());
+            Trait.setRelic(relicCheckBox.isSelected());
         });
         akuCheckBox.addActionListener(e -> {
-            trait.setAku(akuCheckBox.isSelected());
+            Trait.setAku(akuCheckBox.isSelected());
         });
         traitlessCheckBox.addActionListener(e -> {
-            trait.setTraitless(traitlessCheckBox.isSelected());
+            Trait.setTraitless(traitlessCheckBox.isSelected());
         });
 
         //Trait Option Buttons
