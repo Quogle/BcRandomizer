@@ -326,7 +326,7 @@
                               <tabbedpane id="40d09" binding="tabbedPane3" default-binding="true">
                                 <constraints>
                                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                                    <preferred-size width="200" height="200"/>
+                                    <preferred-size width="200" height="214"/>
                                   </grid>
                                 </constraints>
                                 <properties>
@@ -334,258 +334,50 @@
                                 </properties>
                                 <border type="none"/>
                                 <children>
-                                  <grid id="448cc" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                                  <grid id="448cc" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                                     <margin top="0" left="0" bottom="0" right="0"/>
                                     <constraints>
                                       <tabbedpane title="Red"/>
                                     </constraints>
                                     <properties/>
                                     <border type="none"/>
-                                    <children>
-                                      <component id="db83" class="javax.swing.JCheckBox" binding="speedDecreaseCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Speed Decrease"/>
-                                        </properties>
-                                      </component>
-                                      <component id="b4867" class="javax.swing.JTextField" binding="textField2" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="13f7e" class="javax.swing.JTextField" binding="textField17" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="e1fba" class="javax.swing.JCheckBox" binding="knockbackDecreaseCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Knockback Decrease"/>
-                                        </properties>
-                                      </component>
-                                    </children>
+                                    <children/>
                                   </grid>
-                                  <grid id="2012" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                                  <grid id="2012" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                                     <margin top="0" left="0" bottom="0" right="0"/>
                                     <constraints>
                                       <tabbedpane title="Floating"/>
                                     </constraints>
                                     <properties/>
                                     <border type="none"/>
-                                    <children>
-                                      <component id="f7713" class="javax.swing.JCheckBox" binding="waveImmuneCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Wave Immune"/>
-                                        </properties>
-                                      </component>
-                                      <component id="e60fc" class="javax.swing.JTextField" binding="textField1" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="89d88" class="javax.swing.JTextField" binding="textField3" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="ce9c1" class="javax.swing.JCheckBox" binding="waveBlockCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Wave Block"/>
-                                        </properties>
-                                      </component>
-                                      <component id="a000" class="javax.swing.JTextField" binding="textField4" default-binding="true">
-                                        <constraints>
-                                          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="d336e" class="javax.swing.JCheckBox" binding="surgeImmuneCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Surge Immune"/>
-                                        </properties>
-                                      </component>
-                                      <component id="57529" class="javax.swing.JTextField" binding="textField5" default-binding="true">
-                                        <constraints>
-                                          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="860b1" class="javax.swing.JCheckBox" binding="surgeReflectCheckBox1" default-binding="true">
-                                        <constraints>
-                                          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Surge Reflect"/>
-                                        </properties>
-                                      </component>
-                                    </children>
+                                    <children/>
                                   </grid>
-                                  <grid id="808cc" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                                  <grid id="808cc" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                                     <margin top="0" left="0" bottom="0" right="0"/>
                                     <constraints>
                                       <tabbedpane title="Black"/>
                                     </constraints>
                                     <properties/>
                                     <border type="none"/>
-                                    <children>
-                                      <component id="625a6" class="javax.swing.JCheckBox" binding="speedIncreaseCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Speed Increase"/>
-                                        </properties>
-                                      </component>
-                                      <component id="b1508" class="javax.swing.JTextField" binding="textField6" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="93c83" class="javax.swing.JTextField" binding="textField7" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="6742a" class="javax.swing.JCheckBox" binding="knockbackIncreaseCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Knockback Increase"/>
-                                        </properties>
-                                      </component>
-                                    </children>
+                                    <children/>
                                   </grid>
-                                  <grid id="c4b03" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                                  <grid id="c4b03" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                                     <margin top="0" left="0" bottom="0" right="0"/>
                                     <constraints>
                                       <tabbedpane title="Angel"/>
                                     </constraints>
                                     <properties/>
                                     <border type="none"/>
-                                    <children>
-                                      <component id="72720" class="javax.swing.JCheckBox" binding="savageBlowCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Savage Blow"/>
-                                        </properties>
-                                      </component>
-                                      <component id="2180a" class="javax.swing.JTextField" binding="textField10" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="b88bc" class="javax.swing.JCheckBox" binding="explosionCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Explosion"/>
-                                        </properties>
-                                      </component>
-                                      <component id="de3ee" class="javax.swing.JTextField" binding="textField11" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="daa67" class="javax.swing.JTextField" binding="textField12" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                      <component id="2bad0" class="javax.swing.JTextField" binding="textField13" default-binding="true">
-                                        <constraints>
-                                          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                    </children>
+                                    <children/>
                                   </grid>
-                                  <grid id="c4e19" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                                  <grid id="c4e19" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                                     <margin top="0" left="0" bottom="0" right="0"/>
                                     <constraints>
                                       <tabbedpane title="Metal"/>
                                     </constraints>
                                     <properties/>
                                     <border type="none"/>
-                                    <children>
-                                      <component id="c76e3" class="javax.swing.JCheckBox" binding="healthNerfCheckBox" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                                        </constraints>
-                                        <properties>
-                                          <selected value="true"/>
-                                          <text value="Health Nerf"/>
-                                        </properties>
-                                      </component>
-                                      <component id="73be6" class="javax.swing.JTextField" binding="textField18" default-binding="true">
-                                        <constraints>
-                                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                                            <preferred-size width="150" height="-1"/>
-                                          </grid>
-                                        </constraints>
-                                        <properties/>
-                                      </component>
-                                    </children>
+                                    <children/>
                                   </grid>
                                   <grid id="9066f" layout-manager="GridLayoutManager" row-count="4" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                                     <margin top="0" left="0" bottom="0" right="0"/>
