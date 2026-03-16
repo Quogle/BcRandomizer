@@ -1,0 +1,246 @@
+# Randomizer configuration for Battle Cats
+# Only lines after ':' are interpreted by the program
+
+[general]
+# ENTER RANDOMIZATION SEED BELOW (if not, a random one will be chosen)
+seed = ""
+
+################# ENEMY RANDOMIZATION #################
+
+[enemy]
+id_swap = false                                         # swaps enemy id (ie those guys become doge)
+swap_to_similar_enemy = true                            # limits swap to only similar "strength" enemies
+swap_ranges = [[1,10],[11,20],[21,30]]                  # feel free to add more groupings
+
+randomize_abilities = false                             # swap abilities enemies have with new random ones
+randomize_only_base_abilities = false                   # only randomize abilities enemies normally have
+
+randomize_god = true                                    # literally just makes 3 random enemies gods
+
+################# ENEMY TRAIT RANDOMIZATION #################
+
+[enemy.traits]
+swap_traits = false                                     # swaps the entire trait
+specified_swaps = [["red","black"]]                     # control over swap [from,to]
+
+randomize_traits = true                                 # each enemy gets a completely random trait
+keep_trait_amount = true                                # dual trait enemy will stay dual
+always_new_trait = true                                 # enemies will never randomize into their base trait
+
+################# TRAIT SPECIALTIES #################
+
+[enemy.traits.gimmicks]
+enabled = true                                          # allows giving abilities/stat changes
+
+[enemy.traits.gimmicks.black]
+enabled = true
+speed_boost = [[3,3],["x1.8",15],["x1.5",1000]]         # [z1,y1], x prefix for multiplier
+kb_mult = 1.5
+rounds_down = false
+
+[enemy.traits.gimmicks.red]
+enabled = true
+speed_mult = 0.8
+kb_mult = 0.5
+rounds_down = true
+
+[enemy.traits.gimmicks.white]
+enabled = true
+whites_are_sage = true
+sage_rework = true
+
+[enemy.traits.gimmicks.floating]
+enabled = true
+wave_immune_weight = 5
+surge_immune_weight = 5
+counter_surge_weight = 5
+wave_block_weight = 3
+dual_ability_chance = 20  # 1-100
+
+[enemy.traits.gimmicks.relic]
+enabled = true
+get_curse = true
+get_weak_pierce = true
+pierce_atk_percent = 10
+pierce_range_percent = 5
+
+[enemy.traits.gimmicks.zombie]
+enabled = true
+balanced = true
+grant_revive = true
+revive_ratio = 10
+revive_types = [
+    [-1, 100, 30, 5],
+    [-1, 10, 60, 5],
+    [3, 50, 70, 10],
+    [1, 100, 120, 10],
+    [1, 50, 120, 10],
+    [1, 100, 480, 5],
+    [2, 10, 30, 5],
+    [1, 10, 90, 10],
+]
+grant_burrow = true
+burrow_ratio = 7
+burrow_types = [
+    [-1,1600,3],
+    [3,2400,3],
+    [1,6000,6],
+    [1,4000,10],
+    [1,3000,10],
+    [1,2000,10],
+    [1,1000,5]
+    ]
+
+[enemy.traits.gimmicks.alien]
+enabled = true
+freeze_weight = 5
+slow_weight = 5
+kb_weight = 5
+weak_weight = 5
+wave_weight = 2
+surge_weight = 2
+explode_weight = 0
+crit_weight = 5
+savage_weight = 5
+lethal_weight = 4
+base_des_weight = 5
+multihit_weight = 3
+warp_ratio = 6
+barrier_ratio = 5
+
+[enemy.traits.gimmicks.angel]
+enabled = true
+balanced = true
+speed_mult = 1.3
+attack_mult = 0.8
+health_mult = 1.3
+
+[enemy.traits.gimmicks.aku]
+enabled = true
+shield_ratio = 5
+death_surge_ratio = 5
+ds_ability_ratio = 2
+ds_ability_is_mini = true
+
+[enemy.traits.gimmicks.metal]
+enabled = false
+
+################# ENEMY EXCEPTIONS #################
+
+[enemy.exceptions]
+doge = true
+johnny = true
+brollow = true
+squirrel = true
+poultrio = false
+
+################# FORCE TRAITS #################
+
+[enemy.force_traits]
+tad_type_apk = false
+dab_type_apk = false
+amph_type_apk = false
+ryelo_type_apk = false
+
+################# CAT UNIT RANDOMIZATION #################
+
+[cat]
+id_swap = false
+randomize_abilities = false
+
+[cat.traits]
+swap = false
+specified_swap = [["red","black"]]
+randomize_traits = true
+randomize_per_unit = true
+
+[cat.talents]
+randomize = true
+change_hp_attack = true
+hp_attack_weighted = true
+change_trait_talents = true
+trait_swap = false
+change_ability_talents = true
+trait_based = true
+chaos = false
+
+################# GAME CHANGES #################
+
+[gameplay]
+remove_metals = true
+give_metals_new_trait = true
+use_metal_rework = true
+remove_behemoths = true
+use_behemoth_rebalance = true
+preserve_old_zombies = true
+preserve_alien_magnifications = true
+remove_itf_crystals = true
+remove_cotc_crystals = true
+
+[gameplay.cat_reworks]
+rework_units = true
+courier_nerf = true
+jurassic_rework = true
+space_rework = true
+jumprope_rework = true
+hurricat_rework = true
+waitress_rework = true
+aku_researcher_rework = true
+backhoe_rework = true
+mint_rework = true
+punt_rework = true
+merc_rework = true
+capsule_rework = true
+racism_cow_rework = true
+reaper_rework = true
+million_dollar_rework = true
+paladin_rework = true
+cat_clan_rework = true
+verbena_rework = true
+hayabusa_rework = true
+moneko_rework = true
+neneko_rework = true
+summer_neneko_rework = true
+new_year_neneko_rework = true
+valentine_neneko_rework = true
+easter_neneko_rework = true
+cmoneko_rework = true
+
+[stages]
+seasonals_in_sol = true
+collabs_as_advents = true
+youcan_warning = true
+catfruit_changes = true
+buff_normal_catfruit = true
+jubilee_always_epic = true
+gstrange_buff = true
+growing_aku_buff = true
+growing_epic_buff = true
+xp_buffs = true
+sol_xp_buff = true
+megablitz_buff = true
+colloseum_buff = true
+material_stage_buff = true
+proving_ground_buff = true
+ticket_buff = true
+hate_metal_hippoe_buff = true
+siege_buff = true
+facing_danger_buff = true
+behemoth_cube_buff = true
+isle_of_treasure_buff = true
+enigma_buff = true
+orb_stage_buff_strong_massive_resist = true
+orb_stage_buff_ability_orb = true
+orb_enigmas_are_relic_aku = true
+weekday_specials = true
+xp_stage_is_item_farming = true
+weekend_lils = true
+special_surprise = true
+shop_buff = true
+cheaper_items = true
+leadership_in_shop = true
+ototo_helper_in_shop = true
+cheap_catamin = true
+units_3x_sell = true
+free_orb_removal = true
+mission_collab_special_tf_drop = false
