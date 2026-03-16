@@ -6,7 +6,6 @@ from func.replace_icon import replace_icon
 import tomllib
 from pathlib import Path
 
-
 CONFIG_PATH = Path("config.toml")
 
 apk = find_apk()

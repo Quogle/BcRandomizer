@@ -1,6 +1,7 @@
 from pathlib import Path
 import subprocess
 import shutil
+from config.config import GAME_VERSION, MOD_VERSION
 
 BASE = Path(__file__).resolve().parents[1]
 
@@ -13,12 +14,11 @@ ZIPALIGN = BUILD_TOOLS / "zipalign.exe"
 APKSIGNER = BUILD_TOOLS / "apksigner.bat"
 KEYSTORE = BASE / "dependencies" / "keystore.jks"
 
-GAME_VERSION = "15.2.0"
 PACKAGE = "jp.co.bcrando.battlecatsen"
 
 OUTPUT = WORKSPACE / "output.apk"
 ALIGNED_TEMP = WORKSPACE / f"BCR_aligned.apk"
-MOD = MODDED_APKS / f"BCR_{GAME_VERSION}.apk"
+MOD = MODDED_APKS / f"BCR_{MOD_VERSION}_{GAME_VERSION}.apk"
 IDSIG = WORKSPACE / f"BCR_aligned.apk.idsig"
 
 DECOMPILED = WORKSPACE / "decompiled"
