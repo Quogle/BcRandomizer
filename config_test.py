@@ -1,13 +1,13 @@
 from pathlib import Path
 import tomllib  # built-in TOML parser in Python 3.11+
 
-CONFIG_FILE = Path("config.toml")
+CONFIG_FILE = Path("config") / "config.toml"
 
 # Load TOML
 with open(CONFIG_FILE, "rb") as f:
     config = tomllib.load(f)
 
-# Example: access general seed
+#access general seed
 seed = config["general"]["seed"]
 if not seed:
     import random
