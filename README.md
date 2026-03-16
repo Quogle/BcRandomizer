@@ -2,16 +2,6 @@
 
 Battle Cats Randomizer is a tool that generates a randomized mod of The Battle Cats, altering enemy traits, abilities, and other gameplay elements to create chaotic or unique playthroughs.
 
-## Credits
-
-### Code
-• Quogle
- 
-• TadPole1bc
-
-### APK Art
-• JustAnAmpharos
-
 ## Features
 
 Enemy trait randomization
@@ -29,3 +19,13 @@ Python 3.11+
 Java (for APK building tools)
 
 An APK file for The Battle Cats
+
+## Credits
+
+### Code
+• Quogle
+ 
+• TadPole1bc
+
+### APK Art
+• JustAnAmpharos
