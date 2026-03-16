@@ -16,8 +16,6 @@ And more to come!
 
 Python 3.11+
 
-Java (for APK building tools)
-
 An APK file for The Battle Cats
 
 ## Credits
