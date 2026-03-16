@@ -23,7 +23,7 @@ An APK file for The Battle Cats
 ### Code
 • Quogle
  
-• TadPole1bc
+• tadPole1bc
 
 ### APK Art
 • JustAnAmpharos
