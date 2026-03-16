@@ -13,6 +13,10 @@ decompile(apk)
 edit_manifest()
 replace_icon()
 
+#extract pack files here
+#randomizer code
+#encrypt dl here
+
 input("Press Enter to continue...")
 
 compile()
