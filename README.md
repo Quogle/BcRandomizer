@@ -1,6 +1,6 @@
 # Battle Cats Randomizer (BCR)
 
-Battle Cats Randomizer is a tool that generates a randomized mod of The Battle Cats, altering enemy and unit traits, abilities, and other gameplay elements to create chaotic or unique playthroughs.
+Battle Cats Randomizer is a tool that generates a randomized mod of The Battle Cats, altering enemy and unit traits, abilities, and other gameplay elements to create chaotic or unique playthroughs. More randomization options to come in the future!
 
 ## Features
 
