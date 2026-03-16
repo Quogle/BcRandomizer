@@ -1,5 +1,4 @@
-# Randomizer configuration for Battle Cats
-# Only lines after ':' are interpreted by the program
+# Randomizer config for The Battle Cats
 
 [general]
 # ENTER RANDOMIZATION SEED BELOW (if not, a random one will be chosen)
@@ -27,7 +26,7 @@ randomize_traits = true                                 # each enemy gets a comp
 keep_trait_amount = true                                # dual trait enemy will stay dual
 always_new_trait = true                                 # enemies will never randomize into their base trait
 
-################# TRAIT SPECIALTIES #################
+################# TRAIT GIMMICKS #################
 
 [enemy.traits.gimmicks]
 enabled = true                                          # allows giving abilities/stat changes
@@ -144,17 +143,17 @@ ryelo_type_apk = false
 
 ################# CAT UNIT RANDOMIZATION #################
 
-[cat]
+[unit]
 id_swap = false
 randomize_abilities = false
 
-[cat.traits]
+[unit.traits]
 swap = false
 specified_swap = [["red","black"]]
 randomize_traits = true
 randomize_per_unit = true
 
-[cat.talents]
+[unit.talents]
 randomize = true
 change_hp_attack = true
 hp_attack_weighted = true
@@ -164,7 +163,7 @@ change_ability_talents = true
 trait_based = true
 chaos = false
 
-################# GAME CHANGES #################
+################# GAMEPLAY CHANGES #################
 
 [gameplay]
 remove_metals = true
@@ -177,7 +176,7 @@ preserve_alien_magnifications = true
 remove_itf_crystals = true
 remove_cotc_crystals = true
 
-[gameplay.cat_reworks]
+[gameplay.unit_reworks]
 rework_units = true
 courier_nerf = true
 jurassic_rework = true
@@ -206,17 +205,33 @@ valentine_neneko_rework = true
 easter_neneko_rework = true
 cmoneko_rework = true
 
-[stages]
-seasonals_in_sol = true
-collabs_as_advents = true
-youcan_warning = true
+################# QUALITY OF LIFE CHANGES #################
+
+[qol]
 catfruit_changes = true
 buff_normal_catfruit = true
+xp_buffs = true
+behemoth_cube_buff = true
+enigma_buff = true
+orb_enigmas_are_relic_aku = true
+weekday_specials = true
+weekend_lils = true
+shop_buff = true
+cheaper_items = true
+leadership_in_shop = true
+ototo_helper_in_shop = true
+cheap_catamin = true
+units_3x_sell = true
+free_orb_removal = true
+mission_collab_special_tf_drop = false
+
+[qol.stage_changes]
+seasonals_in_sol = true
+collabs_as_advents = true
 jubilee_always_epic = true
 gstrange_buff = true
 growing_aku_buff = true
 growing_epic_buff = true
-xp_buffs = true
 sol_xp_buff = true
 megablitz_buff = true
 colloseum_buff = true
@@ -226,21 +241,13 @@ ticket_buff = true
 hate_metal_hippoe_buff = true
 siege_buff = true
 facing_danger_buff = true
-behemoth_cube_buff = true
 isle_of_treasure_buff = true
-enigma_buff = true
 orb_stage_buff_strong_massive_resist = true
 orb_stage_buff_ability_orb = true
-orb_enigmas_are_relic_aku = true
-weekday_specials = true
 xp_stage_is_item_farming = true
-weekend_lils = true
+
+################# MISC CHANGES #################
+
+[funny]
+youcan_warning = true
 special_surprise = true
-shop_buff = true
-cheaper_items = true
-leadership_in_shop = true
-ototo_helper_in_shop = true
-cheap_catamin = true
-units_3x_sell = true
-free_orb_removal = true
-mission_collab_special_tf_drop = false
