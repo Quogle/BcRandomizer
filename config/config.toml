@@ -7,33 +7,47 @@ seed = ""
 ################# ENEMY RANDOMIZATION #################
 
 [enemy]
-id_swap = false                                         # swaps enemy id (ie those guys become doge)
-swap_to_similar_enemy = true                            # limits swap to only similar "strength" enemies
-swap_ranges = [[1,10],[11,20],[21,30]]                  # feel free to add more groupings
+id_swap = false                             # swaps enemy id (ie those guys become doge)
+swap_to_similar_enemy = true                # limits swap to only similar "strength" enemies
+swap_ranges = [
+    [1,10],
+    [11,20],                                # feel free to add more groupings
+    [21,30],
+    ]                  
 
-randomize_abilities = false                             # swap abilities enemies have with new random ones
-randomize_only_base_abilities = false                   # only randomize abilities enemies normally have
+randomize_abilities = false                 # swap abilities enemies have with new random ones
+randomize_only_base_abilities = false       # only randomize abilities enemies normally have
 
-randomize_god = true                                    # literally just makes 3 random enemies gods
+randomize_god = true                        # literally just makes 3 random enemies gods
 
 ################# ENEMY TRAIT RANDOMIZATION #################
 
 [enemy.traits]
-swap_traits = false                                     # swaps the entire trait
-specified_swaps = [["red","black"]]                     # control over swap [from,to]
 
-randomize_traits = true                                 # each enemy gets a completely random trait
-keep_trait_amount = true                                # dual trait enemy will stay dual
-always_new_trait = true                                 # enemies will never randomize into their base trait
+# Trait randomization mode
+# "none"      : traits are unchanged
+# "swap"      : traits are globally swapped (ex: red -> black)
+# "randomize" : each enemy gets a completely random trait
+mode = "randomize"
+
+specified_swaps = [                         # control trait swap if swap mode is selected, otherwise ignored
+    ["",""],                                # trait swaps in the format ["from_trait", "to_trait"], ie ["red", "black"] (red enemies all become black)
+    ]                    
+keep_trait_amount = true                    # enemies keep their original number of traits (if false, they only get 1 trait)
+always_new_trait = true                     # enemies will never randomize into their base trait
 
 ################# TRAIT GIMMICKS #################
 
 [enemy.traits.gimmicks]
-enabled = true                                          # allows giving abilities/stat changes
+enabled = true                              # allows giving abilities/stat changes
 
 [enemy.traits.gimmicks.black]
 enabled = true
-speed_boost = [[3,3],["x1.8",15],["x1.5",1000]]         # [z1,y1], x prefix for multiplier
+speed_boost = [
+    [3,3],
+    ["x1.8",15],                            # [z1,y1], x prefix for multiplier
+    ["x1.5",1000],
+    ]         
 kb_mult = 1.5
 rounds_down = false
 
@@ -87,7 +101,7 @@ burrow_types = [
     [1,4000,10],
     [1,3000,10],
     [1,2000,10],
-    [1,1000,5]
+    [1,1000,5],
     ]
 
 [enemy.traits.gimmicks.alien]
@@ -148,9 +162,16 @@ id_swap = false
 randomize_abilities = false
 
 [unit.traits]
-swap = false
-specified_swap = [["red","black"]]
-randomize_traits = true
+# Trait randomization mode
+# "none"      : traits are unchanged
+# "swap"      : traits are globally swapped (ex: red -> black)
+# "randomize" : each unit gets a completely random trait
+mode = "randomize"
+
+specified_swap = [
+    ["red","black"],
+    ]
+
 randomize_per_unit = true
 
 [unit.talents]
