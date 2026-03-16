@@ -1,15 +1,12 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from config.internal_config import APP_NAME, MOD_ID, PACKAGE
 
 BASE = Path(__file__).resolve().parents[1]
 WORKSPACE = BASE / "workspace"
 DECOMPILED = WORKSPACE / "decompiled"
 
 MANIFEST = DECOMPILED / "AndroidManifest.xml"
-
-APP_NAME = "BCR"
-MOD_ID = "bcrando"
-PACKAGE = f"jp.co.{MOD_ID}.battlecatsen"
 
 ANDROID_NS = "http://schemas.android.com/apk/res/android"
 
