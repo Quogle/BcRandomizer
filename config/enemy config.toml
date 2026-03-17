@@ -2,23 +2,10 @@
 #lines marked with # are comments, editing them does nothing
 ################# ENEMY RANDOMIZATION #################
 
-[enemy]
-id_swap = false                             # swaps enemy id (ie those guys become doge)
-swap_to_similar_enemy = true                # limits swap to only similar "strength" enemies
-swap_ranges = [
-    [1,10],                                 # feel free to add more groupings, numbers range from 1-30
-    [11,20],                                # the smaller the groupings the more balanced itll be
-    [21,30],
-    ]                  
-
-randomize_abilities = false                 # randomizes each enemies abilities (keeps number the same)
-randomize_only_base_abilities = false       # only randomize abilities enemies normally have
-
-randomize_god = true                        # literally just makes 3 random enemies god instead of normal gods
 
 ################# ENEMY TRAIT RANDOMIZATION #################
 
-[enemy.traits]
+[traits]
 
 # Trait change mode
 # "none"      : traits are unchanged
@@ -37,11 +24,11 @@ always_new_trait = true                     # enemies will never randomize into 
 
 ################# TRAIT GIMMICKS #################
 
-[enemy.traits.gimmicks]
+[traits.gimmicks]
 enabled = true                              # allows giving abilities/stat changes
                                             # disable this to make it just trait changes
 
-[enemy.traits.gimmicks.black]
+[traits.gimmicks.black]
 enabled = true
 speed_boost = [
     [3,3],
@@ -51,18 +38,18 @@ speed_boost = [
 kb_mult = 1.5                               # amount kb are mult by
 rounds_down = false
 
-[enemy.traits.gimmicks.red]
+[traits.gimmicks.red]
 enabled = true
 speed_mult = 0.8
 kb_mult = 0.5
 rounds_down = true
 
-[enemy.traits.gimmicks.white]
+[traits.gimmicks.white]
 enabled = true
 whites_are_sage = true                      # sages all get white
 sage_rework = true                          # nerfs sages effects and gives weird kb interactions
 
-[enemy.traits.gimmicks.floating]
+[traits.gimmicks.floating]
 enabled = true
 wave_immune_weight = 5                      # chooses 1 ability from a pool at weights given
 surge_immune_weight = 5
@@ -70,14 +57,14 @@ counter_surge_weight = 5
 wave_block_weight = 3
 dual_ability_chance = 20  # 1-100
 
-[enemy.traits.gimmicks.relic]
+[traits.gimmicks.relic]
 enabled = true
 get_curse = true
 get_weak_pierce = true                      # non ld 1 hit units get a portion of their damage as piercing damage
 pierce_atk_percent = 10
 pierce_range_percent = 5
 
-[enemy.traits.gimmicks.zombie]
+[traits.gimmicks.zombie]
 enabled = true
 balanced = true                             # reworks weights so strong zombies get stronger revive/burrow while weak zombies get weak burrow/revive (entries earlier in the lists are considered stronger)
 grant_revive = true
@@ -104,7 +91,7 @@ burrow_types = [
     [1,1000,5],
     ]
 
-[enemy.traits.gimmicks.alien]
+[traits.gimmicks.alien]
 enabled = true                              # aliens get a random ability
 freeze_weight = 5
 slow_weight = 5
@@ -123,26 +110,26 @@ starred_frequency = 30                      # base 30% of aliens are starred (ca
 warp_frequency = 60
 barrier_frequency = 50
 
-[enemy.traits.gimmicks.angel]
+[traits.gimmicks.angel]
 enabled = true
 balanced = true                             # balanced makes hp/speed buffs half as effective on >2 mill hp enemies
 speed_mult = 1.3
 attack_mult = 0.8
 health_mult = 1.3
 
-[enemy.traits.gimmicks.aku]
+[traits.gimmicks.aku]
 enabled = true
 shield_frequency = 50
 death_frequency = 50
 ds_ability_frequency = 20                   # some enemies will get an ability that only activates on death surge
 ds_ability_is_mini = true
 
-[enemy.traits.gimmicks.metal]
+[traits.gimmicks.metal]
 enabled = false                             # metals arent meant to exist so this does nothing
 
 ################# ENEMY EXCEPTIONS #################
 
-[enemy.exceptions]  # these exceptions will change specific enemies
+[exceptions]  # these exceptions will change specific enemies
 doge = true         # stops alien doge from making korea impossible
 johnny = true       # makes johnny our mascot (sprite will be incorrect if false)
 brollow = true      # makes brollow always fucked
@@ -151,13 +138,27 @@ poultrio = false    # could make it like johnny but poul isnt out mascot
 
 ################# FORCE TRAITS #################
 
-[enemy.force_traits]    # these exist to force certain enemies to be certain traits
+[force_traits]    # these exist to force certain enemies to be certain traits
 tad_type_apk = false
 dab_type_apk = false
 amph_type_apk = false
 ryelo_type_apk = false
 
 
+
+[extras]
+id_swap = false                             # swaps enemy id (ie those guys become doge)
+swap_to_similar_enemy = true                # limits swap to only similar "strength" enemies
+swap_ranges = [
+    [1,10],                                 # feel free to add more groupings, numbers range from 1-30
+    [11,20],                                # the smaller the groupings the more balanced itll be
+    [21,30],
+    ]                  
+
+randomize_abilities = false                 # randomizes each enemies abilities (keeps number the same)
+randomize_only_base_abilities = false       # only randomize abilities enemies normally have
+
+randomize_god = true                        # literally just makes 3 random enemies god instead of normal gods
 
 
 

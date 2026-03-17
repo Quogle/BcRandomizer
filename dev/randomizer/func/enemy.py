@@ -1,7 +1,9 @@
 
-import enums.enemy as e
-import enums.cats as c
-from enums.files import *
+import dev.randomizer.enums.enemy as e
+import dev.randomizer.enums.cats as c
+from dev.randomizer.enums.files import *
+from dev.randomizer.func.core import randinst
+from dev.randomizer.parse_config import settings
 
 
 ABILITIES = {
@@ -26,7 +28,7 @@ CHANCE_ABILITIES = ["crit","freeze","slow","weaken","kb","warp","curse","dodge",
 BOOL_ABILITIES = ["lethal","base destroyer"]
 
 
-
+#Ill finish this later I dont feel like working on it
 def randomize_abilities(estat):
     for unit in estat:
         #gather how many abilities current unit has
