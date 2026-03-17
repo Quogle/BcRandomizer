@@ -20,7 +20,7 @@ An APK file for The Battle Cats
 
 ## Credits
 
-This project uses [TBCML]([https://github.com/fieryhenry/tbcml](https://codeberg.org/fieryhenry/tbcml)) by fieryhenry, licensed under the GNU General Public License v3.0 (GPL-3.0).
+This project uses [TBCML](https://codeberg.org/fieryhenry/tbcml) by fieryhenry, licensed under the GNU General Public License v3.0 (GPL-3.0).
 
 ### Code
 • Quogle
