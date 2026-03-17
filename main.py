@@ -1,7 +1,8 @@
-from func.edit_xml import edit_manifest
-from func.compile_apk import compile, zipalign, sign
-from func.decompile_apk import find_apk, decompile
-from func.replace_icon import replace_icon
+from dev.func.edit_xml import edit_manifest
+from dev.func.compile_apk import compile, zipalign, sign
+from dev.func.decompile_apk import find_apk, decompile
+from dev.func.replace_icon import replace_icon
+from dev.func.create_download_local import create_download_local
 from pathlib import Path
 
 CONFIG_PATH = Path("config.toml")
@@ -17,6 +18,7 @@ replace_icon()
 
 input("Press Enter to continue...")
 
+create_download_local()
 compile()
 zipalign()
 sign()
