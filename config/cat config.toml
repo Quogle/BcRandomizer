@@ -1,0 +1,35 @@
+################# CAT UNIT RANDOMIZATION #################
+
+[unit]
+id_swap = false                     # swaps cat ids with devastating consequences
+randomize_abilities = false
+gift_trait_specific_abilities = true # gives anti relics curse immune and the like
+zkiller_frequency = 80
+curse_imm_frequency = 100
+shield_pierce_frequency = 20
+
+[unit.traits]
+# Trait randomization mode
+# "none"      : traits are unchanged
+# "swap"      : traits are globally swapped (ex: red -> black)
+# "randomize" : each unit gets a completely random trait
+mode = "randomize"
+
+#swap setting
+specified_swap = [
+    ["red","black"],
+    ]
+
+#randomize setting
+trait_per_whole_unit = true         # floating goes to black for all of a units forms
+
+
+[unit.talents]
+randomize = true
+change_hp_attack = true
+hp_attack_weighted = true
+change_trait_talents = true
+trait_swap = false
+change_ability_talents = true
+trait_based = true
+chaos = false
