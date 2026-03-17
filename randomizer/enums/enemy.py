@@ -33,8 +33,8 @@ class s(IntEnum):
     weakenChance = 29
     weakenTime = 30
     weakenPercent = 31
-    strengthenTrigger = 32
-    strengthenPercent = 33
+    strengthenAt = 32
+    strengthenBy = 33
     lethal = 34
     ldMinRange = 35
     ldWidth = 36
@@ -77,7 +77,7 @@ class s(IntEnum):
     curseChance = 73
     curseDuration = 74
     savageChance = 75
-    savageMultiplier = 76
+    savageBoost = 76
     dodgeChance = 77
     dodgeDuration = 78
     toxicChance = 79

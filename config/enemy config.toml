@@ -11,7 +11,7 @@ swap_ranges = [
     [21,30],
     ]                  
 
-randomize_abilities = false                 # swap abilities enemies have with new random ones
+randomize_abilities = false                 # randomizes each enemies abilities (keeps number the same)
 randomize_only_base_abilities = false       # only randomize abilities enemies normally have
 
 randomize_god = true                        # literally just makes 3 random enemies god instead of normal gods
