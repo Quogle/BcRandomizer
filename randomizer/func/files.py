@@ -192,48 +192,57 @@ File Readers
 
 #reads 2d array from path, cut and pastes first line if file is in first_line_csv
 def csv_reader(path):
-    global first_line_csv
-    split_path = path.split("\\")
-    if split_path[-1] in first_line_csv:
-        return first_line_csv_reader(path)
+    file = open(path,"r",encoding="utf-8")
+    
+
+    #check if first line integerable
+    first_line = file.readline()
+    first_line_array = first_line.split(",")
+    first_line_unreadable = False
+    try:
+        int(first_line_array[0])
+    except:
+        first_line_unreadable = True
+    
+    #shove first line in dict
+    if first_line_unreadable:
+        split_path = path.split("\\")
+        file_name = split_path[-1]
+        global first_line_csv
+        first_line_csv[file_name] = first_line
     else:
-        return normal_csv_reader(path)
+        file.seek(0)
+    
+    #read csv
+    output = []
+    csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-"]
+    while True:
+        next_line = file.readline()
+        if next_line == "":
+            break
+        line_string = ""
+        for x in next_line:
+            if x in csv_characters:
+                line_string += x
+        line_array = line_string.split(",")
+        for x in range(0,len(line_array)):
+            try:
+                line_array[x] = int(line_array[x])
+            except:
+                line_array[x] = 0
+        output.append(line_array)
+    file.close()
+    return output
 
 #writes 2d array info to path, attatches first line before if file is in first_line_csv
 def csv_writer(path,info):
+    # make initial file string first line if in csv dict
     global first_line_csv
     split_path = path.split("\\")
-    if split_path[-1] in first_line_csv:
-        first_line_csv_writer(path,info)
-    else:
-        normal_csv_writer(path,info)
-    
-#returns a 2d array of the values in a csv
-def normal_csv_reader(path):
-    output = []
-    file = open(path,"r",encoding = "utf-8")
-    csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-"]
-    while True:
-        next_line = file.readline()
-        if next_line == "":
-            break
-        line_string = ""
-        for x in next_line:
-            if x in csv_characters:
-                line_string += x
-        line_array = line_string.split(",")
-        for x in range(0,len(line_array)):
-            try:
-                line_array[x] = int(line_array[x])
-            except:
-                line_array[x] = 0
-        output.append(line_array)
-    file.close()
-    return output
-
-#turns the 2d array into a string and writes it to path
-def normal_csv_writer(path,info):
     file_string = ""
+    if split_path[-1] in first_line_csv:
+        file_string = first_line_csv[split_path[-1]]
+
     for line in info:
         line_string = ""
         for x in line:
@@ -244,55 +253,8 @@ def normal_csv_writer(path,info):
     file = open(path,"w",encoding="utf-8")
     file.write(file_string)
     file.close()
-
-#stores the first line in first_line_csv and returns a 2d array of the rest of the file
-def first_line_csv_reader(path):
-    global first_line_csv
-    split_path = path.split("\\")
-
-    #sets the value of the file name to the first line
-    file = open(path,"r",encoding = "utf-8")
-    first_line_csv[split_path[-1]] = file.readline()
-
-    #normally reads the rest of the csv
-    output = []
-    csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-"]
-    while True:
-        next_line = file.readline()
-        if next_line == "":
-            break
-        line_string = ""
-        for x in next_line:
-            if x in csv_characters:
-                line_string += x
-        line_array = line_string.split(",")
-        for x in range(0,len(line_array)):
-            try:
-                line_array[x] = int(line_array[x])
-            except:
-                line_array[x] = 0
-        output.append(line_array)
-    file.close()
-    return output
-
-#gets the first line from first_line_csv and attatches the csv to it and writes to path
-def first_line_csv_writer(path,info):
-    #sets the base of the string to the first line of the csv
-    global first_line_csv
-    split_paths = path.split("\\")
-    file_string = first_line_csv[split_paths[-1]]
     
-    #adds the rest of the array to the string in csv fasion
-    for line in info:
-        line_string = ""
-        for x in line:
-            line_string += str(x)
-            line_string += ","
-        line_string = line_string[:-1] + "\n"
-        file_string += line_string
-    file = open(path,"w",encoding="utf-8")
-    file.write(file_string)
-    file.close()
+
 
 #gets the maanim as an array first line is first entry, tries making all entries integers
 def maanim_reader(path):
