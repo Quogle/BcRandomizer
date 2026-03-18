@@ -4,7 +4,7 @@ CAT_CONFIG = "cat config.toml"
 ENEMY_CONFIG = "enemy config.toml"
 GAME_CONFIG = "game config.toml"
 VALID_WORDS = ["none","swap","randomize"]
-
+SPELLCHECK = [["white","traitless"]]
 
 #I dont like this one
 def deprecated_get_settings_dict():
@@ -94,18 +94,18 @@ def parse_number(number):
 #turns a config value into a real value
 def usefulize_result(result):
     output = ""
+    result = spellcheck_value(result)
     if "[" in result:
         output = turn_string_array_to_array(result)
-    elif "true" in result.lower():
+    elif "true" in result:
         output = True
-    elif "false" in result.lower():
+    elif "false" in result:
         output = False
     else:
         try:
             output = parse_number(result)
         except:
             result = result.replace("\"","")
-            result = result.lower()
             for each in VALID_WORDS:
                 if each == result:
                     output = result
@@ -143,6 +143,7 @@ def turn_string_array_to_array(string):
 
         if check_number and number != "":
             #figure what is being put in output
+            number = spellcheck_value(number)
             try:
                 entry = parse_number(number)
             except:
@@ -225,6 +226,15 @@ def get_config(path):
     path_list = overwrite_default_path_list(default,new)
     this_config = turn_path_list_into_dict(path_list)
     return this_config
+
+def spellcheck_value(value):
+    entry = value.lower()
+    #goes through spellcheck and sets any matches past first index to the first index
+    for zeach in SPELLCHECK:
+        for x in range(1,len(zeach)):
+            if zeach[x] == entry:
+                entry = zeach[0]
+    return entry
 
 settings = get_settings_dict()
 
