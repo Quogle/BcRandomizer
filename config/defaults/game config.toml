@@ -1,0 +1,96 @@
+# Randomizer config for The Battle Cats
+
+[general]
+# ENTER RANDOMIZATION SEED BELOW (if not, a random one will be chosen)
+seed = 0
+
+
+################# GAMEPLAY CHANGES #################
+
+[gameplay]
+remove_metals = true                    # literally removes metals from the game, recommended
+give_metals_new_trait = true            # gives ex metals a trait
+use_metal_rework = true                 # uses my ex metal rebalance
+remove_behemoths = true
+use_behemoth_rebalance = true           # uses my ex behemoth rebalance
+preserve_old_zombies = true             # swaps zkiller and witch so old zombies can still burrow (makes sorting cats weird)
+preserve_alien_magnifications = true    # buffs old aliens in itf and cotc to make them not piss easy
+remove_itf_crystals = false             # removes itf crystals from the game (if false no new aliens can be in itf to make it not stupid)
+remove_cotc_crystals = true             # removes cotc crystals from the game, recommended who likes these
+
+[gameplay.unit_reworks]
+rework_units = true                     # reworks ex metals and certain favoured units, theyre fun
+courier = true                     # removes massive to stop it from killing an entire trait
+jurassic = true
+space = true
+jumprope = true
+hurricat = true
+waitress = true
+aku_researcher = true
+backhoe = true
+mint = true
+punt = true
+merc = true
+capsule = true
+racism_cow = true
+reaper = true
+million_dollar = true
+paladin = true
+cat_clan = true
+verbena = true
+hayabusa = true
+moneko = true
+neneko = true
+summer_neneko = true
+new_year_neneko = true
+valentine_neneko = true
+easter_neneko = true
+cmoneko = true
+
+################# QUALITY OF LIFE CHANGES #################
+
+[qol]
+catfruit_changes = true
+buff_normal_catfruit = true
+xp_buffs = true
+behemoth_cube_buff = true
+enigma_buff = true
+orb_enigmas_are_relic_aku = true
+weekday_specials = true                         # replaces weekday stages with special tf stages
+weekend_lils = true                             # replaces weekend stage with lil ticket farming stages
+xp_stage_item_farming = true
+shop_buff = true
+cheaper_items = true
+leadership_in_shop = true
+ototo_helper_in_shop = true
+cheap_catamin = true
+units_3x_sell = true
+free_orb_removal = true
+mission_collab_special_tf_drop = false          #current doesnt work
+
+[qol.stage_changes]
+seasonals_in_sol = true                         # adds monthly and certain collab units to sol
+collabs_as_advents = true                       # adds ^ true forms to advents
+jubilee_always_epic = true
+gstrange_buff = true
+growing_aku_buff = true
+growing_epic_buff = true
+sol_xp_buff = true
+megablitz_buff = true
+colloseum_buff = true
+material_stage_buff = true
+proving_grounds_buff = true
+hate_metal_hippoe_buff = true
+siege_buff = true
+facing_danger_buff = true
+isle_of_treasure_buff = true
+orb_stage_has_strong_massive_resist = true
+orb_stage_has_ability_orb = true
+
+
+
+################# MISC CHANGES #################
+
+[funny]
+youcan_warning = true
+special_surprise = true

@@ -1,11 +1,13 @@
 import tomllib
 
-CAT_CONFIG = "config\\cat config.toml"
-ENEMY_CONFIG = "config\\enemy config.toml"
-GAME_CONFIG = "config\\game config.toml"
+CAT_CONFIG = "cat config.toml"
+ENEMY_CONFIG = "enemy config.toml"
+GAME_CONFIG = "game config.toml"
+VALID_WORDS = ["none","swap","randomize"]
 
 
-def get_settings_dict():
+#I dont like this one
+def deprecated_get_settings_dict():
     # Load TOML
     with open(CAT_CONFIG, "rb") as f:
         cat_config = tomllib.load(f)
@@ -26,93 +28,205 @@ def get_settings_dict():
     }
     return settings
 
-settings = get_settings_dict()
-
+#gets path list [[enemy.traits.gimmicks.black.boost,1.5],] from config files
 def parse_file(path):
     config = {
 
     }
     predict_list = []
-
-
+    group_name = ""
+    value_string = ""
 
     config_file = open(path,"r")
+    #adds all variables to preict list in the form [traits.gimmicks.black.speed,boost]
     while True:
         line = config_file.readline()
-
+        if line == "":
+            break
         #remove comments from being read
         cutoff = line.find("#")
-        line = line[:cutoff]
+        if cutoff != -1:
+            line = line[:cutoff]
 
-        #remove spaces dont do that actually it would fuck zombies n other lists
-        #line.replace(" ","")
-
-        #grab group name
-        if line[0] == "[":
-            end_group_name = line.find("]")+1
+        
+        #line = line + " " #here to make it so lines starting with # arent empty and break the group name check
+        #get group name
+        if len(line) > 0 and line[0] == "[":
+            end_group_name = line.find("]")
             group_name = line[1:end_group_name]
-            if end_group_name == 0:
-                group_name = "fail"
         else:
-            #now remove spaces
-            line.replace(" ","")
-            if "=" in line:
-                split_line = line.split("=")
-                path_name = group_name + "." + split_line[0]
-                current_list_string = ""
-                if "[" not in split_line[1]:
-                    read = False
-                    try:
-                        value = int(split_line[1])
-                        read = True
-                    except:
-                        if "true" in split_line[1].lower():
-                            value = True
-                            read = True
-                        elif "false" in split_line[1].lower():
-                            value = False
-                            read = True
-                    if read:
-                        predict_list.append([path_name,value])
+            line = line.replace(" ","") #remove all spaces to make lines with no info blank
+            line = line.replace("\n","")
+            if len(line) > 0:
+                if "=" in line:
+                    line_split = line.split("=")
+                    variable_name = line_split[0]
+                    value_string += line_split[1]
                 else:
-                    current_list_string += split_line[1]
-            elif "[" in line or "]" in line:
-                current_list_string += line
-            
-            if len(current_list_string)>0:
-                if current_list_string.count("[") == current_list_string.count("]"):
-                    pass
-
-
-#takes a string array and turns it into an actual array
-def turn_string_array_to_array(string_array):
-    output = []
-    current_depth = 0
-    breakage = []
-    max_depth = 0
-    while True:
-        breakage.append([])
-        deepness = 0
-        for x in range(0,len(string_array)):
-            if string_array[x] == "[":
-                deepness += 1
-                if max_depth < deepness:
-                    max_depth = deepness
-            elif string_array[x] == "]":
-                deepness -= 1
-            elif string_array[x] == ",":
-                if deepness == current_depth:
-                    breakage[current_depth].append(x)
-        current_depth += 1
-        if current_depth > max_depth:
-            break
+                    value_string += line
+                if value_string.count("[") == value_string.count("]"):
+                    path_name = group_name + "." + variable_name
+                    predict_list.append([str(path_name),usefulize_result(value_string)])
+                    value_string = ""
     
+    #as proccessed as needed
+    return predict_list
+  
+#gets the {cats,enemy,game} settings dict
+def get_settings_dict():
+    config = {
+        "cat":get_config(CAT_CONFIG),
+        "enemy":get_config(ENEMY_CONFIG),
+        "game":get_config(GAME_CONFIG)
+    }
+    return config
 
-    current_depth = 0
-    while current_depth < max_depth:
-        pass
+#returns integer if is integer and float otherwise
+def parse_number(number):
+    floa = float(number)
+    inte = int(floa)
+    if inte == floa:
+        output = inte
+    else:
+        output = floa
+    return output
+
+#turns a config value into a real value
+def usefulize_result(result):
+    output = ""
+    if "[" in result:
+        output = turn_string_array_to_array(result)
+    elif "true" in result.lower():
+        output = True
+    elif "false" in result.lower():
+        output = False
+    else:
+        try:
+            output = parse_number(result)
+        except:
+            result = result.replace("\"","")
+            result = result.lower()
+            for each in VALID_WORDS:
+                if each == result:
+                    output = result
+    return output
+
+# turns a string array into an actual array
+def turn_string_array_to_array(string):
+    output = []
+    depth = -1
+    posit = []
+    check_number = False
+    number = ""
+    decrease_depth = False
+    pop_posit = False
+    increment_posit = False
+    for x in range(0,len(string)):
+        st = string[x]
 
 
+        #if st is [ ] or ,
+        if st == "[":
+            posit.append(0)
+            depth += 1  #shift pos 1 deeper
+            check_number = False
+        elif st == "]":
+            pop_posit = True
+            decrease_depth = True
+            check_number = True
+        elif st == ",":
+            increment_posit = True
+            check_number = True
+        elif st != "\"":
+            number += st
+        
+
+        if check_number and number != "":
+            #figure what is being put in output
+            try:
+                entry = parse_number(number)
+            except:
+                entry = number
+            
+            #add the arrays to output and get lookin
+            look_in = output
+            for y in range(0,len(posit)-1):
+                if len(look_in) <= posit[y]:
+                    look_in.append([]) #add array if there will be no array to set as new lookin
+                look_in = look_in[posit[y]]
+            
+            #add entry to lookin
+            look_in.append(entry)
+
+            #reset number
+            number = ""
+            check_number = False
+
+        #all these are moved to the end to stop the check number part from breaking
+        if decrease_depth:
+            depth -= 1
+            decrease_depth = False
+        if pop_posit:
+            posit.pop()
+            pop_posit = False
+        if increment_posit:
+            posit[-1] += 1
+            increment_posit = False
+    return output
+
+# turns [[enemy.traits.gimmicks.black.boost,1.5]]
+def turn_path_list_into_dict(path_list):
+    #split them up
+    config = {}
+    total_list = []
+    for each in path_list:
+        names = each[0].split(".")
+        temp = []
+        for zeach in names:
+            temp.append(str(zeach))
+        temp.append(str(each[1]))
+        total_list.append(temp)
+    #[enemy,traits,gimmicks,black,boost,1.5]
+    for x in range(0,len(total_list)):
+        lookin = config
+        for y in range(0,len(total_list[x])-2):
+            if total_list[x][y] not in lookin:
+                lookin[total_list[x][y]] = {}
+            lookin = lookin[total_list[x][y]]
+        lookin[total_list[x][-2]] = total_list[x][-1]
+    
+    return config
+
+# overwrites values that are valid in new onto default, returns a pathlist
+def overwrite_default_path_list(default,new):
+    output = []
+    for each in default:
+        name = each[0]
+        value = each[1]
+        found = False
+        for zeach in new:
+            if zeach[0] == name:
+                #print(zeach[0] + "      " + str(zeach[1]))
+                if zeach[1] != "":
+                    value = zeach[1]
+                    found = True
+        # this is where you should name if found == false
+        if not found:
+            print("failed to find " + name)
+        output.append([name,value])
+    return output
+
+# gets the fully prepared config from a path
+def get_config(path):
+    config = "config\\"
+    defaults = "defaults\\"
+    default = parse_file(config+defaults+path)
+    new = parse_file(config+path)
+    path_list = overwrite_default_path_list(default,new)
+    this_config = turn_path_list_into_dict(path_list)
+    return this_config
+
+settings = get_settings_dict()
 
 
 
