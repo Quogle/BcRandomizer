@@ -1,4 +1,5 @@
 import tomllib
+import random
 
 CAT_CONFIG = "cat config.toml"
 ENEMY_CONFIG = "enemy config.toml"
@@ -68,7 +69,7 @@ def parse_file(path):
                     path_name = group_name + "." + variable_name
                     predict_list.append([str(path_name),usefulize_result(value_string)])
                     value_string = ""
-    
+    config_file.close()
     #as proccessed as needed
     return predict_list
   
@@ -238,5 +239,37 @@ def spellcheck_value(value):
 
 settings = get_settings_dict()
 
+# gets seed, randomizes it if seed=0
+def get_seed():
+    global settings
+    seed = settings["game"]["general"]["seed"]
+    if seed == 0:
+        new_seed = ""
+        for x in range(0,6):
+            new_seed += str(random.randrange(0,10))
+        new_seed = str(int(new_seed))
+        set_seed(new_seed)
+        seed = new_seed
+    return int(seed)
+    
+# sets the seed in config
+def set_seed(seed):
+    config = "config\\"
+    file = open(config + GAME_CONFIG,"r")
+    config_file = []
+    while True:
+        line = file.readline()
+        if line == "":
+            break
+        else:
+            config_file.append(line)
+    
+    new_file = ""
+    for each in range(0,len(config_file)):
+        if "seed =" in config_file[each]:
+            config_file[each] = config_file[each].replace("0",seed)
+        new_file += config_file[each]
+
+seed = get_seed()
 
 

@@ -3,8 +3,7 @@ import os
 import shutil
 import math
 from PIL import Image
-random_list = []
-
+from dev.randomizer.parse_config import seed
 
 
 
@@ -45,26 +44,7 @@ def generate_random_string_characters(base_string):
         randomlist += radians[2:]
     return randomlist
 
-#generates a predictable random array with respect to a seed and an id (dont use)
-def rand(random_array,id):
-    #clamp id to within the bounds of the array
-    if id > len(random_array)-2:
-        id -= len(random_array)
-    if id < 1:
-        id += int(len(random_array)/2)
-    
-    #rotates the array by an amount and returns it
-    step_amount = (random_array[id]+1) * (random_array[id+1]+1)
-    random_array = step(random_array,step_amount)
-    return random_array
-
-#steps the input array by amount default to one (dont use)
-def step(random_array,amount=1):
-    for x in range(0,amount):
-        random_array.append(random_array[0])
-        random_array.pop(0)
-    return random_array
-
+#dont use
 #input seed and it makes random_list an array of single value random numbers 0-9, length varies based on seed
 def make_random_list(seed):
     string = generate_random_string_characters(str(abs(seed)))
@@ -80,46 +60,63 @@ def make_random_list(seed):
     global random_list
     random_list = random_array
 
+# creates a string 100-200 characters long of numbers 0-9
+def make_random_string(seed):
+    string = generate_random_string_characters(str(abs(seed)))
+    if len(string) < 100:
+        string = generate_random_string_characters(string)
+    if len(string) > 200:
+        string = ratio_shorten_string(string,200)
+    
+    return string
+    
+random_string = make_random_string(seed)
+
 #make an object of this class in each function you want to use random in and give it a unique instance id
 class randinst():
     def __init__(self,instance_id):
-        global random_list
-        self.list = []
-        #didnt feel like using copy
-        for each in random_list:
-            self.list.append(int(each))
+        global random_string
+        self.string = str(random_string)
+        self.index = 0
+        self.length = len(self.string)
         self.rotate(instance_id)
     
-
+    # steps an amount and then returns the new indexes value
     def step(self,amount=1):
-        for x in range(0,amount):
-            self.list.append(self.list[0])
-            self.list.pop(0)
+        self.index += amount
+        if self.index >= self.length:
+            self.index -= self.length
+        return self.string[self.index]
     
+    #shifts the index by a large amount
     def rotate(self,amount=1):
-        #finds the position to look
-        if amount > len(self.list)-2:
-            amount -= len(self.list)-2
+        # gets a proper amount
+        if amount > self.length-2:
+            amount -= self.length-2
         if amount < 1:
-            amount += int(len(self.list)/2)
+            amount += int(self.length/2)
         
         #rotates by a calculated amount
-        step_by = (self.list[amount]+1)*(self.list[amount+1]+1)+amount
-        self.step(step_by)
+        step_by = (1+self.step(amount))*(1+self.step())
+        self.step(int(step_by))
     
+    #returns an almost evenly distributed random number
     def randrange(self,lb,ub):
         size = ub-lb
         if size <= 0:
             return lb
-        digits = len(str(size))
-        result = ""
-        while len(result) < digits:
-            result += str(self.list[0])
-            step(1)
-        result = int(result)
-        while result >= size:
-            result -= size
-        return result + lb
+        
+        #makes number 1 digit longer than digits
+        digits = str(size)
+        number = ""
+        while len(number) <= len(digits):
+            number += self.step()
+        
+
+        number = int(number)
+        while number >= size:
+            number -= size
+        return (number + lb)
 
 
 

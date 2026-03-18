@@ -22,6 +22,7 @@ specified_swap = [
 
 #randomize setting
 trait_per_whole_unit = true         # floating goes to black for all of a units forms
+try_new_trait = true                # units will try to get traits they dont normally have
 
 
 [unit.talents]
