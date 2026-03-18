@@ -1,10 +1,10 @@
-
-import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
+import dev.randomizer.enums.enemy as e
 from dev.randomizer.enums.files import *
 from dev.randomizer.func.core import randinst
 from dev.randomizer.parse_config import settings
 import copy
+
 
 
 
@@ -113,13 +113,55 @@ def get_swap(r=randinst,enemy=True):
 
     return swaps
 
+def get_enemy_randotraits(r=randinst,estat=[]):
+    metals_removed = settings["game"]["gameplay"]["remove_metals"]
+    vanilla_traits = ["black","red","white","floating","relic","zombie","alien","angel","aku","metal"]
+    vanilla_trait_index = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
+    keep_trait_count = settings["enemy"]["traits"]["keep_trait_amount"]
+    always_new_trait = settings["enemy"]["traits"]["always_new_trait"]
+    force_dict = settings["enemy"]["force_traits"]
 
-    
-    
-    
-    
+    for unit in estat:
 
-    
+        #make randomized ordered trait list
+        unit_trait_list = []
+        temp_tl = copy.deepcopy(vanilla_trait_index)
+        while len(temp_tl) > 0:
+            index = r.randrange(0,len(temp_tl))
+            unit_trait_list.append(temp_tl.pop(index))
+        
+        #get unit info
+        has_traits = []
+        for trait in unit_trait_list:
+            if unit[trait] == 1:
+                has_traits.append(trait)
+        trait_count = len(has_traits)
+        old_traits = copy.deepcopy(has_traits)
+        for trait in unit_trait_list:
+            if trait not in old_traits:
+                old_traits.append(trait)
+        new_traits = copy.deepcopy(old_traits)
+
+        #remove metal from new trait and replace it with a trait the unit doesnt have
+        if metals_removed:
+            new_traits.remove(e.t.metal)
+            index_to_add = trait_count
+            if old_traits[index_to_add] == e.t.metal:
+                index_to_add += 1
+            new_traits.append(old_traits[index_to_add])
+        
+        #rotate new traits
+        for x in range(0,trait_count):
+            new_traits.append(new_traits[0])
+            new_traits.pop(0)
+        
+        #ready to be returned
+        
+
+
+
+
+
 
 
 
