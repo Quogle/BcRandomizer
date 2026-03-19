@@ -80,6 +80,7 @@ def randomize_abilities(estat):
 
 
 
+
 """
 needed functions
 id swap

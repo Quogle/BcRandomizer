@@ -19,11 +19,11 @@ def map_maker(estat,cstat):
     
     map = create_enemy_map(map,estat)
 
-def create_enemy_map(map,estat):
+def create_enemy_map(estat):
+    """
+    returns a map enemy length long of [[from],[to]] 
+    """
     r = randinst(0)
-    vanilla_traits = ["black","red","white","floating","relic","zombie","alien","angel","aku","metal"]
-    settings["enemy"]
-    metals_removed = settings["game"]["gameplay"]["remove_metals"]
     rando_mode = settings["enemy"]["traits"]["mode"]
     # [unit id][from/to]
     enemy_map = []
@@ -37,8 +37,9 @@ def create_enemy_map(map,estat):
         lists = get_enemy_randotraits(r,estat)
         for x in range(0,len(enemy_map)):
             enemy_map[x] = lists[x]
-    
-    
+
+    return enemy_map
+
 
 #gets swap list for cats and enemies, swap is just [[fromlist],[tolist]]
 def get_swap(r=randinst,enemy=True):

@@ -9,6 +9,9 @@ from dev.randomizer.parse_config import seed
 
 #steps the string number by 1, maintains length, can be specified to give a certain length
 def number_string_stepper(number,string_length=-1):
+    """
+    turns 001 into 002 
+    """
     if string_length==-1:
         string_length = len(number)
     number = str(int(number)+1)
@@ -74,6 +77,9 @@ random_string = make_random_string(seed)
 
 #make an object of this class in each function you want to use random in and give it a unique instance id
 class randinst():
+    """
+    create an object of this class and give it an id you think hasnt been used before and use that for randrange
+    """
     def __init__(self,instance_id):
         global random_string
         self.string = str(random_string)
@@ -84,7 +90,7 @@ class randinst():
     # steps an amount and then returns the new indexes value
     def step(self,amount=1):
         self.index += amount
-        if self.index >= self.length:
+        while self.index >= self.length:
             self.index -= self.length
         return int(self.string[self.index])
     

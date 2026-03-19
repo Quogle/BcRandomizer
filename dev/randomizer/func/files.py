@@ -2,9 +2,14 @@ import copy
 import os
 import shutil
 from PIL import Image
-import enums.enemy as e
-import enums.cats as c
-from enums.files import *
+import dev.randomizer.enums.enemy as e
+import dev.randomizer.enums.cats as c
+from dev.randomizer.enums.files import *
+import dev.randomizer.func.core as core
+WORKSPACE = "dev\\workspace\\"
+GAME_FILES = WORKSPACE + "Extracted_Packs\\"
+LOCAL_FILES = GAME_FILES + "local\\"
+SERVER_FILES = GAME_FILES + "server\\"
 
 
 
@@ -254,8 +259,6 @@ def csv_writer(path,info):
     file.write(file_string)
     file.close()
     
-
-
 #gets the maanim as an array first line is first entry, tries making all entries integers
 def maanim_reader(path):
     output = []
@@ -293,6 +296,66 @@ def maanim_writer(path,info):
 
 
 
+
+
+
+
+# returns the 2d enemy stats array
+def read_vanilla_enemy_stats():
+    """
+    returns the 2d enemys stats array
+    """
+    path = LOCAL_FILES + "DataLocal\\t_unit.csv"
+    return csv_reader(path)
+
+# returns the 3d cat stats array
+def read_vanilla_cat_stats():
+    """
+    returns the 3d cat stats array
+    """
+    directory = LOCAL_FILES + "DataLocal\\unit"
+    ending = ".csv"
+    current_unit = "000"
+    units = []
+    while len(current_unit) < 4:
+        current_unit = core.number_string_stepper(current_unit,3)
+        path = directory + current_unit + ending
+        unit = 0 #puts a 0 instead of the unit array if unit file not found (helps fix if a random unit csv is missing)
+        if os.path.exists(path):
+            unit = csv_reader(path)
+        units.append(unit)
+    
+    #reads backwards through the array removing all 0 
+    while True:
+        if 0 == units[-1]:
+            units.pop()
+        else:
+            break
+    
+    #now replaces all remaining instances of 0 with basic cat
+    for x in range(0,len(units)):
+        if 0 == units[x]:
+            units[x] = units[0]
+    return units
+
+def write_enemy_stats_to_dl(estat):
+    """
+    writes input stats to downloadlocal t_unit
+    """
+    path = WORKSPACE + "DownloadLocal\\t_unit.csv"
+    csv_writer(path,estat)
+
+def write_cat_stats_to_dl(cstat):
+    """
+    writes input stats to downloadlocal cat files
+    """
+    directory = WORKSPACE + "DownloadLocal\\unit"
+    ending = ".csv"
+    for x in range(0,len(cstat)):
+        #using number step to set the string increases it to the correct number
+        number = core.number_string_stepper(x,3)
+        path = directory + number + ending
+        csv_writer(path,cstat[x])
 
 """
 Image Files
