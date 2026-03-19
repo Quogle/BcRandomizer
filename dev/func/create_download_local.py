@@ -1,14 +1,14 @@
 from pathlib import Path as SysPath
 from tbcml import Path, PackFile, CountryCode, GameVersion, Data, GameFile
 
-BASE = SysPath(__file__).resolve().parents[1]
+BASE = SysPath(__file__).resolve().parents[2]
 
 # Folder containing extracted files for a pack
-LOCAL_PACK_FOLDER = Path(BASE / "workspace/DownloadLocal")
-OUTPUT_PACK = Path(BASE / "workspace/decompiled/root/assets/DownloadLocal.pack")
-OUTPUT_LIST = Path(BASE / "workspace/decompiled/root/assets/DownloadLocal.list")
+LOCAL_PACK_FOLDER = Path(BASE / "dev/workspace/DownloadLocal")
+OUTPUT_PACK = Path(BASE / "dev/workspace/decompiled/root/assets/DownloadLocal.pack")
+OUTPUT_LIST = Path(BASE / "dev/workspace/decompiled/root/assets/DownloadLocal.list")
 
-OUTPUT_DIR = Path(BASE / "workspace/decompiled/root/assets")
+OUTPUT_DIR = Path(BASE / "dev/workspace/decompiled/root/assets")
 
 OUTPUT_DIR.generate_dirs()
 LOCAL_PACK_FOLDER.generate_dirs()

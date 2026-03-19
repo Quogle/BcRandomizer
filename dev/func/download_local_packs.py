@@ -33,7 +33,7 @@ def download_local_packs():
             pack_file,
             CountryCode.EN,
             pack_name,
-            GameVersion.from_string("")
+            GameVersion.from_string("15.2.0")
         )
 
         # Extract all files to a subfolder named after the pack

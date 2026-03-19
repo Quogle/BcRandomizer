@@ -3,16 +3,16 @@ import subprocess
 import shutil
 from config.internal_config import GAME_VERSION, MOD_VERSION
 
-BASE = Path(__file__).resolve().parents[1]
+BASE = Path(__file__).resolve().parents[2]
 
-WORKSPACE = BASE / "workspace"
+WORKSPACE = BASE / "dev" / "workspace"
 MODDED_APKS = BASE / "moddedAPKS"
 
-BUILD_TOOLS = BASE / "dependencies" / "build-tools"
-APKEDITOR = BASE / "dependencies" / "apkeditor.jar"
+BUILD_TOOLS = BASE / "dev" / "dependencies" / "build-tools"
+APKEDITOR = BASE / "dev" / "dependencies" / "apkeditor.jar"
 ZIPALIGN = BUILD_TOOLS / "zipalign.exe"
 APKSIGNER = BUILD_TOOLS / "apksigner.bat"
-KEYSTORE = BASE / "dependencies" / "keystore.jks"
+KEYSTORE = BASE / "dev" / "dependencies" / "keystore.jks"
 
 PACKAGE = "jp.co.bcrando.battlecatsen"
 

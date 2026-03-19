@@ -2,10 +2,10 @@ import random
 import shutil
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parents[1]
+BASE = Path(__file__).resolve().parents[2]
 
-ICON_XL = BASE / "assets" / "apk_icons_xl"
-WORKSPACE = BASE / "workspace"
+ICON_XL = BASE / "dev" / "assets" / "apk_icons_xl"
+WORKSPACE = BASE / "dev" / "workspace"
 DECOMPILED = WORKSPACE / "decompiled"
 RES = DECOMPILED / "resources" / "package_1" / "res"
 

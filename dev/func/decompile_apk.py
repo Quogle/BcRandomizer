@@ -2,11 +2,11 @@ import subprocess
 import shutil
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parents[1]
+BASE = Path(__file__).resolve().parents[2]
 
-APKEDITOR = BASE / "dependencies" / "apkeditor.jar"
+APKEDITOR = BASE / "dev" / "dependencies" / "apkeditor.jar"
 
-WORKSPACE = BASE / "workspace"
+WORKSPACE = BASE / "dev" / "workspace"
 DECOMPILED = WORKSPACE / "decompiled"
 
 WORKSPACE.mkdir(exist_ok=True)
