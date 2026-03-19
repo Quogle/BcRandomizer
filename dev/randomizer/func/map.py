@@ -184,7 +184,6 @@ def get_enemy_rando_map(r=randinst,estat=[]):
     
     return map_list
 
-
 def get_cat_rando_map(r=randinst,cstat=[],ctalent=[]):
     metals_removed = settings["game"]["gameplay"]["remove_metals"]
     per_whole_unit = settings["cat"]["unit"]["traits"]["trait_per_whole_unit"]
