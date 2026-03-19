@@ -1,6 +1,8 @@
 import tomllib
 import random
 
+CONFIGS = "configs\\"
+DEFAULTS = "defaults\\"
 CAT_CONFIG = "cat config.toml"
 ENEMY_CONFIG = "enemy config.toml"
 GAME_CONFIG = "game config.toml"
@@ -220,10 +222,9 @@ def overwrite_default_path_list(default,new):
 
 # gets the fully prepared config from a path
 def get_config(path):
-    config = "config\\"
-    defaults = "defaults\\"
-    default = parse_file(config+defaults+path)
-    new = parse_file(config+path)
+
+    default = parse_file(CONFIGS+DEFAULTS+path)
+    new = parse_file(CONFIGS+path)
     path_list = overwrite_default_path_list(default,new)
     this_config = turn_path_list_into_dict(path_list)
     return this_config
@@ -258,8 +259,7 @@ def get_seed():
     
 # sets the seed in config
 def set_seed(seed):
-    config = "config\\"
-    file = open(config + GAME_CONFIG,"r")
+    file = open(CONFIGS + GAME_CONFIG,"r")
     config_file = []
     while True:
         line = file.readline()
@@ -273,7 +273,7 @@ def set_seed(seed):
         if "seed =" in config_file[each]:
             config_file[each] = config_file[each].replace("0",seed)
         new_file += config_file[each]
-    file = open(config + GAME_CONFIG,"w")
+    file = open(CONFIGS + GAME_CONFIG,"w")
     file.write(new_file)
     file.close()
     print("I set seed to " + str(seed))

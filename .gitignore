@@ -652,4 +652,4 @@ FodyWeavers.xsd
 *moddedAPKS
 *dev/workspace
 *.test.py
-
+*configs/**.toml
