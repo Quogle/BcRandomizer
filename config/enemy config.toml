@@ -15,13 +15,12 @@ mode = "randomize"
 
 # swap settings
 specified_swaps = [                         # control trait swap if swap mode is selected, otherwise ignored
-    ["",""],                                # trait swaps in the format ["from_trait", "to_trait"], ie ["red", "black"] (red enemies all become black)
+                                            # trait swaps in the format ["from_trait", "to_trait"], ie ["red", "black"] (red enemies all become black)
     ]
 
 # randomize settings
-only_1_trait = false                        # enemies get only 1 trait
-always_new_trait = true                     # enemies will try to not change into their vanilla trait
-
+keep_trait_amount = true                    # enemies keep their original number of traits (if false, they only get 1 trait)
+always_new_trait = true                     # enemies will never randomize into their base trait
 
 ################# TRAIT GIMMICKS #################
 

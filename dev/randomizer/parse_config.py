@@ -243,6 +243,10 @@ settings = get_settings_dict()
 def get_seed():
     global settings
     seed = settings["game"]["general"]["seed"]
+    try:
+        seed = int(seed)
+    except:
+        seed = 0
     if seed == 0:
         new_seed = ""
         for x in range(0,6):
@@ -263,12 +267,16 @@ def set_seed(seed):
             break
         else:
             config_file.append(line)
-    
+    file.close()
     new_file = ""
     for each in range(0,len(config_file)):
         if "seed =" in config_file[each]:
             config_file[each] = config_file[each].replace("0",seed)
         new_file += config_file[each]
+    file = open(config + GAME_CONFIG,"w")
+    file.write(new_file)
+    file.close()
+    print("I set seed to " + str(seed))
 
 seed = get_seed()
 
