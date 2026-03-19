@@ -25,17 +25,22 @@ def create_enemy_map(map,estat):
     settings["enemy"]
     metals_removed = settings["game"]["gameplay"]["remove_metals"]
     rando_mode = settings["enemy"]["traits"]["mode"]
-    
-    map = [[],[]]
-
+    # [unit id][from/to]
+    enemy_map = []
+    for x in range(0,len(estat)):
+        enemy_map.append([[],[]])
     if rando_mode == "swap":
-        map[0] = get_swap(r,True)
+        swap = get_swap(r,True)
+        for x in range(0,len(enemy_map)):
+            enemy_map[x] = swap
     elif rando_mode == "randomize":
-        map[0]
+        lists = get_enemy_randotraits(r,estat)
+        for x in range(0,len(enemy_map)):
+            enemy_map[x] = lists[x]
     
     
 
-#gets swap list for cats and enemies
+#gets swap list for cats and enemies, swap is just [[fromlist],[tolist]]
 def get_swap(r=randinst,enemy=True):
     swaps = [[],[]]
     #get game settings
@@ -160,7 +165,6 @@ def get_enemy_randotraits(r=randinst,estat=[]):
     
     return map_list
         
-
 
 
 
