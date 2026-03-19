@@ -120,7 +120,7 @@ def get_enemy_randotraits(r=randinst,estat=[]):
     keep_trait_count = settings["enemy"]["traits"]["keep_trait_amount"]
     always_new_trait = settings["enemy"]["traits"]["always_new_trait"]
     force_dict = settings["enemy"]["force_traits"]
-
+    map_list = []
     for unit in estat:
 
         #make randomized ordered trait list
@@ -156,6 +156,9 @@ def get_enemy_randotraits(r=randinst,estat=[]):
             new_traits.pop(0)
         
         #ready to be returned
+        map_list.append([old_traits,new_traits])
+    
+    return map_list
         
 
 
