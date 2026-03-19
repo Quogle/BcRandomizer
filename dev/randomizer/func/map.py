@@ -56,7 +56,7 @@ def get_swap(r=randinst,enemy=True):
     temp_vanilla_traits = copy.deepcopy(vanilla_traits)
     trait_list = []
     while len(temp_vanilla_traits) > 0:
-        index = r.randrange(0,len(vanilla_traits))
+        index = r.randrange(0,len(temp_vanilla_traits))
         trait_list.append(temp_vanilla_traits.pop(index))
         
     

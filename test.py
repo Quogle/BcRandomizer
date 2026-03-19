@@ -4,5 +4,14 @@ import dev.randomizer.func.map as map
 from dev.randomizer.func.core import randinst
 r = randinst(0)
 
-map.get_swap(r,True)
+swap = map.get_swap(r,True)
 
+
+
+
+
+
+
+swap = [[]]
+for each in range(0,len(swap[0])):
+    print(str(swap[0][each]) + str(swap[1][each]))

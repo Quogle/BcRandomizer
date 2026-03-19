@@ -86,7 +86,7 @@ class randinst():
         self.index += amount
         if self.index >= self.length:
             self.index -= self.length
-        return self.string[self.index]
+        return int(self.string[self.index])
     
     #shifts the index by a large amount
     def rotate(self,amount=1):
@@ -110,7 +110,7 @@ class randinst():
         digits = str(size)
         number = ""
         while len(number) <= len(digits):
-            number += self.step()
+            number += str(self.step())
         
 
         number = int(number)
