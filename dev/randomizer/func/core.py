@@ -66,9 +66,10 @@ def make_random_list(seed):
 # creates a string 100-200 characters long of numbers 0-9
 def make_random_string(seed):
     string = generate_random_string_characters(str(abs(seed)))
-    if len(string) < 200:
+    length = 300
+    if len(string) < length:
         string = generate_random_string_characters(string)
-    if len(string) > 300:
+    if len(string) > length+100:
         string = ratio_shorten_string(string,200)
     
     return string

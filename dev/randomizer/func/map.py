@@ -183,7 +183,8 @@ def get_enemy_rando_map(r=randinst,estat=[]):
         map_list.append([old_traits,new_traits])
     
     return map_list
-        
+
+
 def get_cat_rando_map(r=randinst,cstat=[],ctalent=[]):
     metals_removed = settings["game"]["gameplay"]["remove_metals"]
     per_whole_unit = settings["cat"]["unit"]["traits"]["trait_per_whole_unit"]
@@ -241,48 +242,50 @@ def get_cat_rando_map(r=randinst,cstat=[],ctalent=[]):
             #add array to map
             cat_map.append([old_traits,new_traits])
         else:
-            #how tf do I do per form
+            #how tf do I do per form, this seems ok
             unit_map = []
-            for form in range(0,len(cstat[unit])):
-                #get unit trait order
-                old_traits = []
+            for form in range(0,5):
+                # get form trait order for all 5 forms (regardless if they exist to fix new forms breaking it)
                 current_trait_order = []
                 temp_trait_list = copy.deepcopy(vanilla_trait_list)
                 for trait in range(0,len(temp_trait_list)):
                     index = r.randrange(0,len(temp_trait_list))
                     current_trait_order.append(temp_trait_list.pop(index))
-                
-                #get old traits
-                for trait in current_trait_order:
-                    if cstat[unit][form][trait] == 1:
-                        old_traits.append(trait)
-                # get talents
-                if form > 1:
-                    pass #still dont know how Im formatting talents
 
-                # finish old traits
-                for trait in current_trait_order:
-                    if trait not in old_traits:
-                        old_traits.append(trait)
-                
-                # make new traits
-                new_traits = copy.deepcopy(old_traits)
-                if metals_removed:
-                    index = 0
-                    if current_trait_order[index] == e.t.metal:
-                        index += 1
-                    metal_index = new_traits.index(e.t.metal)
-                    new_traits[metal_index] = current_trait_order[index]
-                
-                #rotate the array
-                max_length = trait_count
-                if not try_new_trait:
-                    max_length = len(new_traits)
-                for x in range(0,max_length):
-                    new_traits.append(new_traits[0])
-                    new_traits.pop(0)
-                
-                unit_map.append([old_traits,new_traits])
+                #do form if exist
+                if len(cstat[unit]) >= form:
+                    #get old traits
+                    for trait in current_trait_order:
+                        if cstat[unit][form][trait] == 1:
+                            old_traits.append(trait)
+                    # get talents
+                    if form > 1:
+                        pass #still dont know how Im formatting talents
+
+                    # finish old traits
+                    for trait in current_trait_order:
+                        if trait not in old_traits:
+                            old_traits.append(trait)
+                    
+                    # make new traits
+                    new_traits = copy.deepcopy(old_traits)
+                    if metals_removed:
+                        index = 0
+                        if current_trait_order[index] == e.t.metal:
+                            index += 1
+                        metal_index = new_traits.index(e.t.metal)
+                        new_traits[metal_index] = current_trait_order[index]
+                    
+                    #rotate the array
+                    max_length = trait_count
+                    if not try_new_trait:
+                        max_length = len(new_traits)
+                    for x in range(0,max_length):
+                        new_traits.append(new_traits[0])
+                        new_traits.pop(0)
+                    
+                    unit_map.append([old_traits,new_traits])
+              
             cat_map.append(unit_map)
     
     return cat_map
