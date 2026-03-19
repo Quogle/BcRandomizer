@@ -19,7 +19,7 @@ specified_swaps = [                         # control trait swap if swap mode is
     ]
 
 # randomize settings
-keep_trait_amount = true                    # enemies keep their original number of traits (if false, they only get 1 trait)
+only_1_trait = false                        # enemies get only 1 trait
 always_new_trait = true                     # enemies will try to not change into their vanilla trait
 
 

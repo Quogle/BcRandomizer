@@ -7,17 +7,24 @@ import copy
 
 
 
-
-def map_maker(estat,cstat):
+#returns a trait map [0] is enemy [1] is cat ([from,to] if per unit,[[from,to],[from,to]] if per form)
+def map_maker(estat,cstat,ctalents):
     #sets map to max length
     map = []
     map_size = len(cstat)
     if len(estat) > map_size:
         map_size = len(estat)
     for x in range(0,map_size):
-        map.append([])
+        map.append([[],[]])
     
-    map = create_enemy_map(map,estat)
+    enemy_map = create_enemy_map(estat)
+    cat_map = create_cat_map(cstat,ctalents)
+    for x in range(0,len(enemy_map)):
+        map[x][0] = enemy_map[x]
+    for x in range(0,len(cat_map)):
+        map[x][1] = cat_map[x]
+    
+    return map
 
 def create_enemy_map(estat):
     """
@@ -34,12 +41,27 @@ def create_enemy_map(estat):
         for x in range(0,len(enemy_map)):
             enemy_map[x] = swap
     elif rando_mode == "randomize":
-        lists = get_enemy_randotraits(r,estat)
+        lists = get_enemy_rando_map(r,estat)
         for x in range(0,len(enemy_map)):
             enemy_map[x] = lists[x]
 
     return enemy_map
 
+def create_cat_map(cstat,ctalent):
+    """
+    returns a map enemy length long of [[from],[to]] if per unit and that xform a layer deeper per unit if per form
+    """
+    r = randinst(1)
+    rando_mode = settings["cat"]["unit"]["traits"]["mode"]
+    cat_map = []
+    if rando_mode == "swap":
+        swap = get_swap(r)
+        for x in range(0,len(cstat)):
+            cat_map.append(swap)
+    elif rando_mode == "randomize":
+        cat_map = get_cat_rando_map(r,cstat,ctalent)
+    
+    return cat_map
 
 #gets swap list for cats and enemies, swap is just [[fromlist],[tolist]]
 def get_swap(r=randinst,enemy=True):
@@ -119,13 +141,9 @@ def get_swap(r=randinst,enemy=True):
 
     return swaps
 
-def get_enemy_randotraits(r=randinst,estat=[]):
+def get_enemy_rando_map(r=randinst,estat=[]):
     metals_removed = settings["game"]["gameplay"]["remove_metals"]
-    vanilla_traits = ["black","red","white","floating","relic","zombie","alien","angel","aku","metal"]
     vanilla_trait_index = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
-    keep_trait_count = settings["enemy"]["traits"]["keep_trait_amount"]
-    always_new_trait = settings["enemy"]["traits"]["always_new_trait"]
-    force_dict = settings["enemy"]["force_traits"]
     map_list = []
     for unit in estat:
 
@@ -166,10 +184,108 @@ def get_enemy_randotraits(r=randinst,estat=[]):
     
     return map_list
         
+def get_cat_rando_map(r=randinst,cstat=[],ctalent=[]):
+    metals_removed = settings["game"]["gameplay"]["remove_metals"]
+    per_whole_unit = settings["cat"]["unit"]["traits"]["trait_per_whole_unit"]
+    try_new_trait = settings["cat"]["unit"]["traits"]["try_new_trait"]
+    vanilla_trait_list = []
+    for each in c.t:
+        vanilla_trait_list.append(each)
+    
 
+    cat_map = []
 
+    for unit in range(0,len(cstat)):
+        if per_whole_unit:
+            #get unit trait order
+            old_traits = []
+            current_trait_order = []
+            temp_trait_list = copy.deepcopy(vanilla_trait_list)
+            for trait in range(0,len(temp_trait_list)):
+                index = r.randrange(0,len(temp_trait_list))
+                current_trait_order.append(temp_trait_list.pop(index))
+            # get old has traits
+            for form in range(0,len(unit)):
+                for trait in current_trait_order:
+                    if cstat[unit][form][trait] == 1 and trait not in old_traits:
+                        old_traits.append(trait)
+            
+            # add talents to old traits
+            has_talent = False
+            for x in range(0,len(ctalent)):
+                pass #I cant properly finish this until I bother to remember what talents are where
 
+            #finish old traits 
+            trait_count = len(old_traits)
+            for trait in current_trait_order:
+                if trait not in old_traits:
+                    old_traits.append(trait)
+            
+            #establish new traits
+            new_traits = copy.deepcopy(old_traits)
+            if metals_removed:
+                index = 0
+                if current_trait_order[index] == e.t.metal:
+                    index += 1
+                metal_index = new_traits.index(e.t.metal)
+                new_traits[metal_index] = current_trait_order[index]
+            
+            #rotate the array
+            max_length = trait_count
+            if not try_new_trait:
+                max_length = len(new_traits)
+            for x in range(0,max_length):
+                new_traits.append(new_traits[0])
+                new_traits.pop(0)
+            
+            #add array to map
+            cat_map.append([old_traits,new_traits])
+        else:
+            #how tf do I do per form
+            unit_map = []
+            for form in range(0,len(cstat[unit])):
+                #get unit trait order
+                old_traits = []
+                current_trait_order = []
+                temp_trait_list = copy.deepcopy(vanilla_trait_list)
+                for trait in range(0,len(temp_trait_list)):
+                    index = r.randrange(0,len(temp_trait_list))
+                    current_trait_order.append(temp_trait_list.pop(index))
+                
+                #get old traits
+                for trait in current_trait_order:
+                    if cstat[unit][form][trait] == 1:
+                        old_traits.append(trait)
+                # get talents
+                if form > 1:
+                    pass #still dont know how Im formatting talents
 
+                # finish old traits
+                for trait in current_trait_order:
+                    if trait not in old_traits:
+                        old_traits.append(trait)
+                
+                # make new traits
+                new_traits = copy.deepcopy(old_traits)
+                if metals_removed:
+                    index = 0
+                    if current_trait_order[index] == e.t.metal:
+                        index += 1
+                    metal_index = new_traits.index(e.t.metal)
+                    new_traits[metal_index] = current_trait_order[index]
+                
+                #rotate the array
+                max_length = trait_count
+                if not try_new_trait:
+                    max_length = len(new_traits)
+                for x in range(0,max_length):
+                    new_traits.append(new_traits[0])
+                    new_traits.pop(0)
+                
+                unit_map.append([old_traits,new_traits])
+            cat_map.append(unit_map)
+    
+    return cat_map
 
 
 
