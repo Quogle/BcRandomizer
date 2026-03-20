@@ -1,7 +1,7 @@
 from pathlib import Path
 import subprocess
 import shutil
-from config.internal_config import GAME_VERSION, MOD_VERSION
+from configs.internal_config import GAME_VERSION, MOD_VERSION
 
 BASE = Path(__file__).resolve().parents[2]
 

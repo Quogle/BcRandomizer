@@ -1,6 +1,6 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
-from config.internal_config import APP_NAME, MOD_ID, PACKAGE
+from configs.internal_config import APP_NAME, MOD_ID, PACKAGE
 
 BASE = Path(__file__).resolve().parents[2]
 WORKSPACE = BASE / "dev" / "workspace"

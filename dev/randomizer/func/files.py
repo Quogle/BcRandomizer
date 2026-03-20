@@ -318,6 +318,7 @@ def read_vanilla_cat_stats():
     current_unit = "000"
     units = []
     while len(current_unit) < 4:
+
         current_unit = core.number_string_stepper(current_unit,3)
         path = directory + current_unit + ending
         unit = 0 #puts a 0 instead of the unit array if unit file not found (helps fix if a random unit csv is missing)
@@ -325,6 +326,7 @@ def read_vanilla_cat_stats():
             unit = csv_reader(path)
         units.append(unit)
     
+
     #reads backwards through the array removing all 0 
     while True:
         if 0 == units[-1]:
@@ -356,6 +358,15 @@ def write_cat_stats_to_dl(cstat):
         number = core.number_string_stepper(x,3)
         path = directory + number + ending
         csv_writer(path,cstat[x])
+
+def read_vanilla_talents():
+    """
+    returns a 3d array of talents
+    """
+    path = LOCAL_FILES + "DataLocal\\SkillAcquisition.csv"
+    base = csv_reader(path)
+    
+
 
 """
 Image Files

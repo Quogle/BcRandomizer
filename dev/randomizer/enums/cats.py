@@ -116,7 +116,162 @@ class t(IntEnum):
     aku = 96
     metal = 18
 
+class tpos(IntEnum):
+    """
+    has the posion of values in talents array
+    """
+    unit_id = 0
+    type_id = 1
+    length = 14
 
+    #these are relative
+    ability_id = 0
+    max_level = 1
+    stat1_min = 2
+    #stat1_max = 3
+    stat2_min = 4
+    #stat2_max = 5
+    stat3_min = 6
+    #stat3_max = 7
+    stat4_min = 8
+    #stat4_max = 9
+    text_id = 10
+    talent_cost = 11
+    name = 12
+    limit = 13
+
+    #ability specific    most similar abilities can be used for each other 
+    weaken_chance = stat1_min
+    weaken_time = stat2_min
+    weaken_to = stat3_min
+    freeze_chance = stat1_min
+    freeze_time = stat2_min
+    slow_chance = stat1_min
+    slow_time = stat2_min
+    kb_chance = stat1_min
+    warp_chance = stat1_min
+    warp_time = stat2_min
+    warp_start = stat3_min
+    warp_width = stat4_min
+    strengthen_losing = stat1_min
+    strengthen_by = stat2_min
+    lethal_chance = stat1_min
+    crit_chance = stat1_min
+    barrier_break_chance = stat1_min
+    wave_chance = stat1_min
+    wave_level = stat2_min
+    resist_debuff = stat1_min
+    cost_down = stat1_min
+    recharge = stat1_min
+    speed = stat1_min
+    savage_chance = stat1_min
+    savage_by = stat2_min
+    dodge_chance = stat1_min
+    dodge_for = stat2_min
+    surge_chance = stat1_min
+    surge_level = stat2_min
+    surge_start = stat3_min
+    surge_width = stat4_min
+    shield_pierce_chance = stat1_min
+    curse_chance = stat1_min
+    curse_time = stat2_min
+    tba = stat1_min
+    miniwave_chance = stat1_min
+    miniwave_level = stat2_min
+    behemoth_slayer_dodge_chance = stat1_min
+    behemoth_slayer_dodge_duration = stat2_min
+    minisurge_chance = stat1_min
+    minisurge_level = stat2_min
+    minisurge_start = stat3_min
+    minisurge_width = stat4_min
+    explosion_chance = stat1_min
+    explosion_start = stat2_min
+    explosion_width = stat3_min
+
+class tv(IntEnum):
+    """
+    has values of things in talent array
+    """
+    sum_red = 1
+    sum_floating = 2
+    sum_black = 4
+    sum_metal = 8
+    sum_angel = 16
+    sum_alien = 32
+    sum_zombie = 64
+    sum_relic = 128
+    sum_white = 258
+    sum_witch = 512
+    sum_eva = 1024
+    sum_aku = 2048
+
+    weaken = 1
+    freeze = 2
+    slow = 3
+    attack_only = 4
+    strong = 5
+    resist = 6
+    massive = 7
+    kb = 8
+    warp = 9
+    strengthen = 10
+    lethal = 11
+    base_destroyer = 12
+    crit = 13
+    zkill = 14
+    barrier_break = 15
+    bounty = 16
+    wave = 17
+    rweaken = 18
+    rfreeze = 19
+    rslow = 20
+    rkb = 21
+    rwave = 22
+    wave_block = 23
+    rwarp = 24
+    cost_down = 25
+    recharge = 26
+    speed = 27
+    improved_kb = 28
+    icurse = 29
+    rcurse = 30
+    attack = 31
+    health = 32
+    red = 33
+    floating = 34
+    black = 35
+    metal = 36
+    angel = 37
+    alien = 38
+    zombie = 39
+    relic = 40
+    white = 41
+    witch = 42  #not sure bout these two
+    eva = 43    #
+    iweaken = 44
+    ifreeze = 45
+    islow = 46
+    ikb = 47
+    iwave = 48
+    iwarp = 49
+    savage = 50
+    dodge = 51
+    rpoison = 52
+    ipoison = 53
+    rsurge = 54
+    isurge = 55
+    surge = 56
+    aku = 57
+    shield_pierce = 58
+    soulstrike = 59
+    curse = 60
+    tba = 61
+    miniwave = 62
+    collosus_slayer = 63
+    behemother_slayer = 64
+    minisurge = 65
+    sage_slayer = 66
+    explosion = 67
 
 
 

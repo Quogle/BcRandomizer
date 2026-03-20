@@ -1,6 +1,6 @@
 from pathlib import Path as SysPath
 from tbcml import PackFile, Data, Path, CountryCode, GameVersion, GamePacks
-from config.internal_config import SELECTED_VERSION
+from configs.internal_config import SELECTED_VERSION
 
 BASE = SysPath(__file__).resolve().parents[1]
 
