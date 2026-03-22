@@ -1,3 +1,3 @@
-from dev.randomizer.func.unit import randomize_target
+from dev.randomizer.func.nyancombo import randomize_combos
 
-randomize_target()
+randomize_combos()
