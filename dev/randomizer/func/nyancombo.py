@@ -10,7 +10,7 @@ COMBO_DATA = DOWNLOAD_LOCAL / "NyancomboData.csv"
 
 UNIT_ID = [3, 5, 7, 9, 11]
 UNIT_FORM = [4, 6, 8, 10, 12]
-UNIT_FORM_MAX = 0
+UNIT_FORM_MAX = 0   # temp set to 0
 EFFECT = 13
 EFFECT_MAX = 27
 LEVEL = 14          # 0:sm, 1:M, 2:L, 3:XL, 4:DOWN
