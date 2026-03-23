@@ -1,5 +1,5 @@
 from pathlib import Path
-import re
+import json
 from configs.internal_config import UNIT_COUNT
 import csv
 import random
@@ -7,6 +7,15 @@ import random
 BASE = Path(__file__).resolve().parents[2]
 DOWNLOAD_LOCAL = BASE / "workspace" / "DownloadLocal"
 COMBO_DATA = DOWNLOAD_LOCAL / "NyancomboData.csv"
+DATA_PATH = BASE / "randomizer" / "data" / "unit_blacklist.json"
+
+with open(DATA_PATH) as f:
+    data = json.load(f)
+
+COLLAB = set(data["collab"])
+VERSION_EXCLUSIVE = set(data["version_exclusive"])
+UNOBTAINABLE = set(data["unobtainable"])
+LIMITED = set(data["limited_event"])
 
 UNIT_ID = [3, 5, 7, 9, 11]
 UNIT_FORM = [4, 6, 8, 10, 12]
