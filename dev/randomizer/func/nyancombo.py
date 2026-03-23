@@ -1,8 +1,10 @@
-from pathlib import Path
+from pathlib import Path 
 import json
 from configs.internal_config import UNIT_COUNT
 import csv
 import random
+
+#id,combo set, IDFK, S1 id,S1 form,S2 id,S2 form,S3 id,S3 form,S4 id,S4 form,S5 id,S5 form,effect,level,always -1
 
 BASE = Path(__file__).resolve().parents[2]
 DOWNLOAD_LOCAL = BASE / "workspace" / "DownloadLocal"
