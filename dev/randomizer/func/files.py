@@ -230,8 +230,17 @@ def file_reader(file):
     elif ending == "csv":
         return csv_reader(input)
     
-        
+def file_writer(file,info):
+    """
+    writes file to dl
+    """
+    end_check = file.split(".")
+    end = end_check[-1]
 
+    if end == "tsv":
+        pass
+    if end == "csv":
+        csv_writer(file,info)
 
 #reads 2d array from path, cut and pastes first line if file is in first_line_csv
 def csv_reader(file_path):
