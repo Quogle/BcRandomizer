@@ -221,8 +221,8 @@ def file_reader(file):
             for each in servers:
                 subfolders.append("server\\" + each)
             for each in subfolders:
-                if os.path.exists(GAME_FILES+each+file):
-                    input = GAME_FILES+each+file
+                if os.path.exists(GAME_FILES+each+"\\"+file):
+                    input = GAME_FILES+each+"\\"+file
                     break
     
     if ending == "tsv":
@@ -236,11 +236,12 @@ def file_writer(file,info):
     """
     end_check = file.split(".")
     end = end_check[-1]
+    dl_path = DOWNLOAD_LOCAL
 
     if end == "tsv":
         pass
     if end == "csv":
-        csv_writer(file,info)
+        csv_writer(DOWNLOAD_LOCAL + file,info)
 
 #reads 2d array from path, cut and pastes first line if file is in first_line_csv
 def csv_reader(file_path):

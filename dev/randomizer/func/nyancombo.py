@@ -14,8 +14,8 @@ COMBO_FILE = "NyancomboData.csv"
 COMBO_DATA = DOWNLOAD_LOCAL / COMBO_FILE
 DATA_PATH = BASE / "randomizer" / "data" / "unit_blacklist.json"
 
-with open(DATA_PATH) as f:
-    data = json.load(f)
+with open(DATA_PATH) as datapath:
+    data = json.load(datapath)
 
 COLLAB = set(data["collab"])
 VERSION_EXCLUSIVE = set(data["version_exclusive"])
@@ -48,7 +48,6 @@ def randomize_combos():
     for x in range(0,len(vanilla_cat_array)):
         if x not in disallowed:
             allowable_units.append(x)
-
     
     for combo in combos:
 
