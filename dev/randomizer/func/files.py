@@ -195,9 +195,50 @@ def copy_many_directory_files_to_single(directory_from,directory_to):
 File Readers
 """
 
+def file_reader(file):
+    """
+    returns 2d array from file, use only file name to check if in dl first
+    """
+    #get csv or tsv
+    check_ending = file.split(".")
+    ending = check_ending[-1]
+
+    input = file
+    #get path
+    use_path = False
+    if "\\" in file:
+        use_path = True
+    
+    if not use_path:
+        if os.path.exists(DOWNLOAD_LOCAL+file):
+            input = DOWNLOAD_LOCAL + file
+        else:
+            subfolders = []
+            locals = os.listdir(LOCAL_FILES)
+            servers = os.listdir(SERVER_FILES)
+            for each in locals:
+                subfolders.append("local\\" + each)
+            for each in servers:
+                subfolders.append("server\\" + each)
+            for each in subfolders:
+                if os.path.exists(GAME_FILES+each+file):
+                    input = GAME_FILES+each+file
+                    break
+    
+    if ending == "tsv":
+        pass #Ill add this later
+    elif ending == "csv":
+        return csv_reader(input)
+    
+        
+
+
 #reads 2d array from path, cut and pastes first line if file is in first_line_csv
-def csv_reader(path):
-    file = open(path,"r",encoding="utf-8")
+def csv_reader(file_path):
+    """
+    returns int 2d array of csv at path
+    """
+    file = open(file_path,"r",encoding="utf-8")
     
 
     #check if first line integerable
@@ -211,10 +252,8 @@ def csv_reader(path):
     
     #shove first line in dict
     if first_line_unreadable:
-        split_path = path.split("\\")
-        file_name = split_path[-1]
         global first_line_csv
-        first_line_csv[file_name] = first_line
+        first_line_csv[file_path] = first_line
     else:
         file.seek(0)
     
@@ -238,8 +277,6 @@ def csv_reader(path):
             except:
                 line_array[x] = 0
         output.append(line_array)
-        print(line_array)
-        print("\v")
     file.close()
     
     return output

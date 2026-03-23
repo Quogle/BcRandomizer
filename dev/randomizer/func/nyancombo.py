@@ -1,9 +1,10 @@
 from pathlib import Path 
 import json
-from configs.internal_config import UNIT_COUNT
+#from configs.internal_config import UNIT_COUNT
 import csv
 import random
-
+from dev.randomizer.func.core import randinst as randinst
+from dev.randomizer.func.unit import vanilla_cat_array
 #id,combo set, IDFK, S1 id,S1 form,S2 id,S2 form,S3 id,S3 form,S4 id,S4 form,S5 id,S5 form,effect,level,always -1
 
 BASE = Path(__file__).resolve().parents[2]
@@ -28,6 +29,7 @@ LEVEL = 14          # 0:sm, 1:M, 2:L, 3:XL, 4:DOWN
 LEVEL_MAX = 4
 
 def randomize_combos():
+    r = randinst(16)
     # Read first
     with open(COMBO_DATA, newline='') as infile:
         reader = csv.reader(infile)
