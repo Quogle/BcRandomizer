@@ -10,7 +10,7 @@ WORKSPACE = "dev\\workspace\\"
 GAME_FILES = WORKSPACE + "Extracted_Packs\\"
 LOCAL_FILES = GAME_FILES + "local\\"
 SERVER_FILES = GAME_FILES + "server\\"
-
+DOWNLOAD_LOCAL = WORKSPACE + "DownloadLocal\\"
 
 
 
@@ -220,7 +220,7 @@ def csv_reader(path):
     
     #read csv
     output = []
-    csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-"]
+    csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-","."]
     while True:
         next_line = file.readline()
         if next_line == "":
@@ -232,11 +232,16 @@ def csv_reader(path):
         line_array = line_string.split(",")
         for x in range(0,len(line_array)):
             try:
-                line_array[x] = int(line_array[x])
+                line_array[x] = float(line_array[x])
+                if int(line_array[x]) == line_array[x]:
+                    line_array[x] = int(line_array[x])
             except:
                 line_array[x] = 0
         output.append(line_array)
+        print(line_array)
+        print("\v")
     file.close()
+    
     return output
 
 #writes 2d array info to path, attatches first line before if file is in first_line_csv
@@ -361,11 +366,27 @@ def write_cat_stats_to_dl(cstat):
 
 def read_vanilla_talents():
     """
-    returns a 3d array of talents
+    returns a 3d array of talents, first two in each unit are integers
     """
     path = LOCAL_FILES + "DataLocal\\SkillAcquisition.csv"
     base = csv_reader(path)
+    talents = []
+    for each in base:
+        line = []
+        line.append(each[0])
+        line.append(each[1])
+        pos = 2
+        while pos < len(each):
+            talent = []
+            for x in range(0,c.tpos.length):
+                talent.append(each[pos+x])
+            pos += c.tpos.length
+        talents.append(line)
     
+    return talents
+
+
+
 
 
 """
@@ -386,6 +407,153 @@ def enemy_sprite_killer(directory):
 
 
 
+
+
+
+
+"""
+classes for things
+"""
+
+class csv():
+    def __init__(self,file_name):
+        self.file_name = file_name
+        self.array = []
+        self.read_csv()
+
+    def read_csv(self):
+        base_path = LOCAL_FILES + "DataLocal\\" + self.file_name #could prolly make it check if the file exists in each of the local dir and choose the one it does
+        self.array = csv_reader(base_path)
+    
+    def write_csv(self):
+        base_path = DOWNLOAD_LOCAL + self.file_name
+        #needs to update the array if editing outside variables
+        csv_writer(base_path,self.array)
+
+
+
+
+class stage_sche(csv):
+    def __init__(s, file_name):
+        super().__init__(file_name)
+        #line 1
+        s.base_id = 1
+        s.no_continues = 0
+        #map decides what map the stage is chosen from and it appears to choose an equally weighted stage from first to last
+        s.extra_chance = 0
+        s.extra_map = 0
+        s.extra_first_stage = 0
+        s.extra_last_stage = 0
+        s.establish_first_line()
+
+        #line 2
+        s.stage_length = 5000
+        s.base_hp = 1000
+        s.min_respawn = 1
+        s.max_respawn = 1
+        s.background = 1
+        s.enemy_limit = 8
+        s.animated_base = 0
+        s.dojo_time = 0
+        s.green_barrier = 0
+        s.second_row_mystery = 0 #idk what it does
+        s.establish_second_line()
+        
+
+        #position info
+        s.enemy_id = 0
+        s.number_of_spawns = 1
+        s.spawn_start_halved = 2
+        s.respawn_start_halved = 3
+        s.respawn_end_halved = 4
+        s.spawn_hp = 5
+        s.zmin = 6
+        s.zmax = 7
+        s.boss = 8
+        s.magnification = 9
+        s.score = 10
+        s.attack_mag = 11
+        s.time = 12 #what is this
+        s.kill_count = 13
+
+        s.enemies = []
+        s.establish_grid()
+
+
+
+
+
+    def establish_first_line(s):
+        size = len(s.array[0])
+        first = s.array[0]
+        if size>0:
+            s.base_id = first[0]
+        if size>1:
+            s.no_continues = first[1]
+        if size>2:
+            s.extra_chance = first[2]
+        if size>3:
+            s.extra_map = first[3]
+        if size>4:
+            s.extra_first_stage = first[4]
+        if size>5:
+            s.extra_last_stage = first[5]
+    
+    def establish_second_line(s):
+        size = len(s.array[1])
+        first = s.array[1]
+        if size>0:
+            s.stage_length = first[0]
+        if size>1:
+            s.base_hp = first[1]
+        if size>2:
+            s.min_respawn = first[2]
+        if size>3:
+            s.max_respawn = first[3]
+        if size>4:
+            s.background = first[4]
+        if size>5:
+            s.enemy_limit = first[5]
+        if size>6:
+            s.animated_base = first[6]
+        if size>7:
+            s.dojo_time = first[7]
+        if size>8:
+            s.green_barrier = first[8]
+        if size>9:
+            s.second_row_mystery = first[9]
+
+    def establish_grid(s):
+        enemy = []
+        for x in range(2,len(s.array)):
+            enemy.append(s.array[x])
+        s.enemies = enemy
+
+    def submit(s):
+        s.array = []
+        s.array.append([
+            s.base_id,
+            s.no_continues,
+            s.extra_chance,
+            s.extra_map,
+            s.extra_first_stage,
+            s.extra_last_stage
+        ])
+        s.array.append([
+            s.stage_length,
+            s.base_hp,
+            s.min_respawn,
+            s.max_respawn,
+            s.background,
+            s.enemy_limit,
+            s.animated_base,
+            s.dojo_time,
+            s.green_barrier,
+            s.second_row_mystery
+        ])
+        for each in s.enemies:
+            s.array.append(each)
+        s.write_csv()
 
 
 
