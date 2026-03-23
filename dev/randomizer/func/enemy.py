@@ -1,9 +1,10 @@
 
 import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
-from dev.randomizer.enums.files import *
 from dev.randomizer.func.core import randinst
 from dev.randomizer.parse_config import settings
+import copy
+
 
 
 ABILITIES = {
@@ -62,7 +63,10 @@ def randomize_abilities(estat):
 
 
 
-
+def make_base_enemy(estat):
+    new_stats = copy.deepcopy(estat)
+    new_stats = early_enemy_balance(new_stats)
+    return new_stats
 
 def early_enemy_balance(estat):
     """

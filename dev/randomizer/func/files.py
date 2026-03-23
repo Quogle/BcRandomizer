@@ -4,13 +4,15 @@ import shutil
 from PIL import Image
 import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
-from dev.randomizer.enums.files import *
-import dev.randomizer.func.core as core
-WORKSPACE = "dev\\workspace\\"
-GAME_FILES = WORKSPACE + "Extracted_Packs\\"
-LOCAL_FILES = GAME_FILES + "local\\"
-SERVER_FILES = GAME_FILES + "server\\"
-DOWNLOAD_LOCAL = WORKSPACE + "DownloadLocal\\"
+from dev.randomizer.func.core import number_string_stepper
+from dev.randomizer.data.filepaths import *
+
+
+
+
+
+#add those with info on first line to this dictionary
+first_line_csv = {}
 
 
 
@@ -371,7 +373,7 @@ def read_vanilla_cat_stats():
     units = []
     while len(current_unit) < 4:
 
-        current_unit = core.number_string_stepper(current_unit,3)
+        current_unit = number_string_stepper(current_unit,3)
         path = directory + current_unit + ending
         unit = 0 #puts a 0 instead of the unit array if unit file not found (helps fix if a random unit csv is missing)
         if os.path.exists(path):
@@ -390,6 +392,27 @@ def read_vanilla_cat_stats():
     for x in range(0,len(units)):
         if 0 == units[x]:
             units[x] = units[0]
+    
+    #find the longest array
+    max_length = 0
+    for unit in units:
+        if len(unit[0]) > max_length:
+            max_length = len(unit[0])
+    
+
+    #now lengthen them
+    egg_id = 757
+    egg_length = len(units[egg_id][0])
+    for unit_id in range(0,len(units)):
+        for form_id in range(0,len(units[unit_id])):
+            current_length = len(units[unit_id][form_id])
+            while current_length < egg_length:
+                units[unit_id][form_id].append(units[egg_id][0][current_length])
+                current_length += 1
+            while current_length < max_length:
+                units[unit_id][form_id].append(0)
+                current_length += 1
+
     return units
 
 def write_enemy_stats_to_dl(estat):
@@ -407,7 +430,7 @@ def write_cat_stats_to_dl(cstat):
     ending = ".csv"
     for x in range(0,len(cstat)):
         #using number step to set the string increases it to the correct number
-        number = core.number_string_stepper(x,3)
+        number = number_string_stepper(x,3)
         path = directory + number + ending
         csv_writer(path,cstat[x])
 

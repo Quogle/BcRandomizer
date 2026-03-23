@@ -6,12 +6,13 @@ import random
 from dev.randomizer.func.core import randinst as randinst
 from dev.randomizer.func.unit import vanilla_cat_array
 import dev.randomizer.func.files as f
+from dev.randomizer.data.filepaths import *
 #id,combo set, IDFK, S1 id,S1 form,S2 id,S2 form,S3 id,S3 form,S4 id,S4 form,S5 id,S5 form,effect,level,always -1
 
 BASE = Path(__file__).resolve().parents[2]
-DOWNLOAD_LOCAL = BASE / "workspace" / "DownloadLocal"
+
 COMBO_FILE = "NyancomboData.csv"
-COMBO_DATA = DOWNLOAD_LOCAL / COMBO_FILE
+COMBO_DATA = DOWNLOAD_LOCAL + COMBO_FILE
 DATA_PATH = BASE / "randomizer" / "data" / "unit_blacklist.json"
 
 with open(DATA_PATH) as datapath:

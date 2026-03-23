@@ -1,6 +1,5 @@
 import dev.randomizer.enums.cats as c
 import dev.randomizer.enums.enemy as e
-from dev.randomizer.enums.files import *
 from dev.randomizer.func.core import randinst
 from dev.randomizer.parse_config import settings
 import copy
