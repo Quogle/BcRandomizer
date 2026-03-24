@@ -632,6 +632,29 @@ class map_data(csv):
         s.establish_data()
         s.establish_grid()
 
+
+        s.energy = 0
+        s.xp = 1
+        s.music1 = 2
+        s.swap_music_at = 3
+        s.music2 = 4
+        s.drop1_rate = 5
+        s.drop1_id = 6
+        s.drop1_count = 7
+        s.drop_scheme = 8
+        s.drop2_rate = 9
+        s.drop2_id = 10
+        s.drop2_count = 11
+        s.drop3_rate = 12
+        s.drop3_id = 13
+        s.drop3_count = 14
+        s.drop4_rate = 15
+        s.drop4_id = 16
+        s.drop4_count = 17
+
+        
+
+
     def establish_data(s):
         first = s.array[0]
         le = len(first)
