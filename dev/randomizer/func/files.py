@@ -488,17 +488,11 @@ classes for things
 class csv():
     def __init__(self,file_name):
         self.file_name = file_name
-        self.array = []
-        self.read_csv()
+        self.array = file_reader(file_name)
 
-    def read_csv(self):
-        base_path = LOCAL_FILES + "DataLocal\\" + self.file_name #could prolly make it check if the file exists in each of the local dir and choose the one it does
-        self.array = csv_reader(base_path)
     
     def write_csv(self):
-        base_path = DOWNLOAD_LOCAL + self.file_name
-        #needs to update the array if editing outside variables
-        csv_writer(base_path,self.array)
+        file_writer(self.file_name,self.array)
 
 
 
@@ -625,6 +619,53 @@ class stage_sche(csv):
             s.array.append(each)
         s.write_csv()
 
+class map_data(csv):
+    def __init__(s, file_name):
+        super().__init__(file_name)
+        s.map_background = 0
+        s.normal_reward_id = 0 #never did check if this was what it was
+        s.score_reward_id = -1
+        s.visible_key = -1
+        s.unlock_key = -1
+
+        s.map_pattern = 0
+        s.establish_data()
+        s.establish_grid()
+
+    def establish_data(s):
+        first = s.array[0]
+        le = len(first)
+        if le>0:
+            s.map_background = first[0]
+        if le>1:
+            s.normal_reward_id = first[1]
+        if le>2:
+            s.score_reward_id = first[2]
+        if le>3:
+            s.visible_key = first[3]
+        if le>4:
+            s.unlock_key = first[4]
+        s.map_background = s.array[1][0]
+    
+    def establish_grid(s):
+        grid = []
+        for x in range(2,len(s.array)):
+            grid.append(s.array[x])
+        s.stages = grid
+    
+    def submit(s):
+        array = []
+        array.append([
+            s.map_background,
+            s.normal_reward_id,
+            s.score_reward_id,
+            s.visible_key,
+            s.unlock_key
+        ])
+        array.append([s.map_pattern])
+        for each in s.stages:
+            array.append(each)
+        s.write_csv(s.file_name,array)
 
 
 
