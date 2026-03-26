@@ -16,7 +16,7 @@ replace_icon()
 #randomizer code
 #encrypt dl here
 
-input("Press Enter to continue...")
+#input("Press Enter to continue...")
 
 create_download_local()
 compile()
