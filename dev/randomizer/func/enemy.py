@@ -313,7 +313,76 @@ def late_enemy_balance(estat):
 
 
 
+"""
+trait gimmicks
+"""
 
+def black_speed(estat):
+    """
+    does all the black kb speed shit, interprets config and has defaults of +3 and 1.5x
+    """
+    black_info = settings["game"]["traits"]["gimmicks"]["black"]
+    if black_info["enabled"]:
+        speed_info = black_info["speed_boost"]
+        round_down = black_info["rounds_down"]
+        kb_boost = black_info["kb_mult"]
+        #first of each entry in speed buff is the speed after which it flips, second is how much to buff
+        speed_buff = []
+        for each in speed_info:
+            try:
+                speed_flip = int(each[1])
+                speed_by = each[0]
+                speed_buff.append([speed_flip,speed_by])
+            except:
+                pass
+
+        for unit in estat:
+            if unit[e.t.black] == 1:
+                boosted = False
+                current_speed = unit[e.s.speed]
+                for each in speed_buff:
+                    if current_speed <= each[0] and not boosted:
+                        # if mult, get mult and do rounding
+                        if "x" in each[1]:
+                            speed_mult = each[1].replace("x","")
+                            try:
+                                speed_mult = float(speed_mult)
+                            except:
+                                speed_mult = 1.5
+                            
+                            new_speed = speed_mult*current_speed
+                            #round up or down
+                            if new_speed != int(new_speed):
+                                if not round_down:
+                                    new_speed = int(new_speed+1)
+                            new_speed = int(new_speed)
+                            
+                        else: #increase speed additively, default 3 if unreadable
+                            try:
+                                speed_boost = int(float(each[1]))
+                            except:
+                                speed_boost = 3
+                            new_speed = current_speed + speed_boost
+                        
+                        #set speed as new seed and stop further boosting
+                        unit[e.s.speed] = new_speed
+                        boosted = True
+                #kb boost
+                #get kb boost
+                try:
+                    kb_boost = float(kb_boost)
+                except:
+                    kb_boost = 1.5
+                
+                new_kbs = unit[e.s.kbs]*kb_boost
+                if int(new_kbs) != new_kbs:
+                    if not round_down:
+                        new_kbs = int(new_kbs+1)
+                new_kbs = int(new_kbs)
+            
+                unit[e.s.kbs] = new_kbs
+    
+    return estat
 
 """
 needed functions
