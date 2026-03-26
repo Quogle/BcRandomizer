@@ -4,18 +4,7 @@ import shutil
 import math
 from PIL import Image
 from dev.randomizer.parse_config import seed
-from dev.randomizer.func.files import read_vanilla_cat_stats
-from dev.randomizer.func.files import read_vanilla_enemy_stats
-from dev.randomizer.func.unit import make_base_cat
-from dev.randomizer.func.enemy import make_base_enemy
 
-
-
-vanilla_cat_array = read_vanilla_cat_stats()
-vanilla_enemy_array = read_vanilla_enemy_stats()
-
-base_cat_array = make_base_cat(vanilla_cat_array)
-base_enemy_array = make_base_enemy(vanilla_enemy_array)
 
 
 #steps the string number by 1, maintains length, can be specified to give a certain length

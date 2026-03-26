@@ -3,7 +3,13 @@ import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
 from dev.randomizer.func.core import randinst
 from dev.randomizer.parse_config import settings
+import dev.randomizer.func.files as f
 import copy
+
+
+
+
+
 
 
 
@@ -398,6 +404,10 @@ id swap
 
 
 
+#the array straight from t_unit
+vanilla_enemy_array = f.read_vanilla_enemy_stats()
 
+#stat array with the before everything reworks applied to it
+base_enemy_array = make_base_enemy(vanilla_enemy_array)
 
 

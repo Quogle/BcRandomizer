@@ -1,5 +1,5 @@
 import dev.randomizer.enums.cats as c
-import dev.randomizer.func.files as files
+import dev.randomizer.func.files as f
 from dev.randomizer.parse_config import settings
 import copy
 
@@ -286,8 +286,11 @@ def early_reworks(cstats):
 
 
 
+#the 3d array straight from the files
+vanilla_cat_array = f.read_vanilla_cat_stats()
 
-
+#the 3d array with the before everything reworks applied to it
+base_cat_array = make_base_cat(vanilla_cat_array)
 
 
 
