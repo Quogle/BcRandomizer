@@ -8,7 +8,7 @@ from pathlib import Path
 CONFIG_PATH = Path("config.toml")
 
 apk = find_apk()
-#decompile(apk)
+decompile(apk)
 edit_manifest()
 replace_icon()
 

@@ -5,6 +5,3 @@ SELECTED_VERSION = GAME_VERSION
 APP_NAME = "BCR"
 MOD_ID = "bcrando"
 PACKAGE = f"jp.co.{MOD_ID}.battlecatsen"
-
-UNIT_COUNT = 854 - 1
-ENEMY_COUNT = ""
