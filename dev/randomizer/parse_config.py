@@ -7,7 +7,7 @@ CAT_CONFIG = "cat config.toml"
 ENEMY_CONFIG = "enemy config.toml"
 GAME_CONFIG = "game config.toml"
 VALID_WORDS = ["none","swap","randomize"]
-SPELLCHECK = [["white","traitless"]]
+SPELLCHECK = [["white","traitless"],["true","yes"],["false","no"]]
 
 #I dont like this one
 def deprecated_get_settings_dict():
