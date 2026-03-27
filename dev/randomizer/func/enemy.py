@@ -428,12 +428,67 @@ def red_gimmick(estat):
 
     return estat
 
+def white_gimmick(estat):
+    """
+    gives whitees sage, does nothing else
+    """
+    white_info = settings["game"]["traits"]["gimmicks"]["white"]
+    do_white = white_info["enabled"]
+    white_sages = white_info["whites_are_sage"]
 
+    if do_white:
+        for unit in estat:
+            if unit[e.t.white]:
+                unit[e.s.sage] = 1
+    
+    return estat
 
+def floating_gimmick(estat):
+    """
+    applies a floating immunity, defaults of 20% extra ability chance and 5,5,5,3 wb as 3
+    """
+    r = randinst(47)
+    floating_info = settings["game"]["traits"]["gimmicks"]["white"]
+    do_floating = floating_info["enabled"]
+    wi_weight = floating_info["wave_immune_weight"]
+    si_weight = floating_info["surge_immune_weight"]
+    cs_weight = floating_info["counter_surge_weight"]
+    wb_weight = floating_info["wave_block_weight"]
+    duo = floating_info["dual_ability_chance"]
 
+    total_weight = 0
+    weights = [wi_weight,si_weight,cs_weight,wb_weight]
+    for each in weights:
+        total_weight += each
+    
+    if do_floating:
+        for unit in estat:
+            if unit[e.t.floating] == 1:
 
+                #figure out if its duo
+                chance = r.randrange(0,100)
+                times = 1
+                if chance < duo:
+                    times = 2
+                #this scheme of making it duo doesnt actually make it have the correct chance since it fails to block repeats but idc
+                for x in range(0,times):
 
+                    ability_decider = r.randrange(0,total_weight)
 
+                    if ability_decider >= 0 and ability_decider < weights[0]:
+                        unit[e.s.waveImmune] = 1
+                    ability_decider -= weights[0]
+                    if ability_decider >= 0 and ability_decider < weights[1]:
+                        unit[e.s.surgeImmune] = 1
+                    ability_decider -= weights[1]
+                    if ability_decider >= 0 and ability_decider < weights[2]:
+                        unit[e.s.counterSurge] = 1
+                    ability_decider -= weights[2]
+                    if ability_decider >= 0 and ability_decider < weights[3]:
+                        unit[e.s.waveBlock] = 1
+                    ability_decider -= weights[3]
+    
+    return estat
 
 
 
