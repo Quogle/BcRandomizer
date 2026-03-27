@@ -323,7 +323,7 @@ def late_enemy_balance(estat):
 trait gimmicks
 """
 
-def black_speed(estat):
+def black_gimmick(estat):
     """
     does all the black kb speed shit, interprets config and has defaults of +3 and 1.5x
     """
@@ -389,6 +389,55 @@ def black_speed(estat):
                 unit[e.s.kbs] = new_kbs
     
     return estat
+
+def red_gimmick(estat):
+    """
+    applies red speed and kb down, conditional, default x0.8 sp and x0.5 kb
+    """
+    red_info = settings["game"]["traits"]["gimmicks"]["red"]
+    do_red = red_info["enabled"]
+    speed_mult = red_info["speed_mult"]
+    kb_mult = red_info["kb_mult"]
+    round_down = red_info["rounds_down"]
+
+    if do_red:
+        for unit in estat:
+            if unit[e.t.red] == 1:
+                unit_speed = unit[e.s.speed]
+                unit_kb = unit[e.s.kbs]
+
+                new_speed = unit_speed*speed_mult
+                new_kb = unit_kb*kb_mult
+
+                if not round_down:
+                    if new_speed != int(new_speed):
+                        new_speed += 1
+                    if new_kb != int(new_kb):
+                        new_kb += 1
+                
+                new_speed = int(new_speed)
+                new_kb = int(new_kb)
+
+                if new_speed == 0:
+                    new_speed = 1
+                if new_kb == 0:
+                    new_kb = 1
+
+                unit[e.s.speed] = new_speed
+                unit[e.s.kbs] = new_kb
+
+    return estat
+
+
+
+
+
+
+
+
+
+
+
 
 """
 needed functions
