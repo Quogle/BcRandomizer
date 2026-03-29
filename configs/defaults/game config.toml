@@ -20,7 +20,7 @@ remove_cotc_crystals = true             # removes cotc crystals from the game, r
 
 [gameplay.unit_reworks]
 rework_units = true                     # reworks ex metals and certain favoured units, theyre fun
-courier = true                     # removes massive to stop it from killing an entire trait
+courier = true                          # removes massive to stop it from killing an entire trait
 jurassic = true
 space = true
 jumprope = true
@@ -43,10 +43,40 @@ hayabusa = true
 moneko = true
 neneko = true
 summer_neneko = true
-new_year_neneko = true
+new_year_neneko = true                  
 valentine_neneko = true
 easter_neneko = true
 cmoneko = true
+
+
+################# CAT COMBO CHANGES #################
+
+[nyancombo]
+RANDOMIZE_COMBOS = true
+randomize_units = true                                  # randomize cat combo units
+randomize_multipliers = true                            # randomize combo multiplier sizes (sm, M, L, XL, DOWN)
+randomize_effects = true                                # randomize combo effects
+
+[nyancombo.size]
+CUSTOM_MULTIPLIER_WEIGHTS = true                        # If false, chooses between the 5 combo effect multipliers at equal chance  
+
+# For each combo unit count ("1"–"5"), defines the weight of each effect size
+# Higher value = higher chance of being selected
+# Only used if CUSTOM_MULTIPLIER_WEIGHTS = true
+"1" = { SM = 45, M = 25, L = 5, XL = 0, DOWN = 20 }                  
+"2" = { SM = 35, M = 40, L = 10, XL = 0, DOWN = 15 }    
+"3" = { SM = 10, M = 45, L = 35, XL = 5, DOWN = 5 }    
+"4" = { SM = 0, M = 15, L = 65, XL = 15, DOWN = 5 }    
+"5" = { SM = 0, M = 5, L = 70, XL = 25, DOWN = 0 } 
+
+PRESERVE_COMBO_UNIT_COUNT = true                        # Combos stay at their original unit count
+CUSTOM_UNIT_COUNT_WEIGHTS = false                       # If false, chooses between having 1-5 units at random
+
+# Relative weights for choosing combo unit count (1–5)
+# Higher value = higher chance of being selected        
+# Only applied if CUSTOM_UNIT_COUNT_WEIGHTS = true
+unit_count_weights = { "1" = 10, "2" = 25, "3" = 35, "4" = 20, "5" = 10 }
+
 
 ################# QUALITY OF LIFE CHANGES #################
 
