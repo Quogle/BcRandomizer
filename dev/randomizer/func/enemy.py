@@ -456,10 +456,7 @@ def floating_gimmick(estat):
     wb_weight = floating_info["wave_block_weight"]
     duo = floating_info["dual_ability_chance"]
 
-    total_weight = 0
     weights = [wi_weight,si_weight,cs_weight,wb_weight]
-    for each in weights:
-        total_weight += each
     
     if do_floating:
         for unit in estat:
@@ -473,20 +470,18 @@ def floating_gimmick(estat):
                 #this scheme of making it duo doesnt actually make it have the correct chance since it fails to block repeats but idc
                 for x in range(0,times):
 
-                    ability_decider = r.randrange(0,total_weight)
+                    
 
-                    if ability_decider >= 0 and ability_decider < weights[0]:
+                    choice = r.weighted_list(weights)
+
+                    if choice == 0:
                         unit[e.s.waveImmune] = 1
-                    ability_decider -= weights[0]
-                    if ability_decider >= 0 and ability_decider < weights[1]:
+                    elif choice == 1:
                         unit[e.s.surgeImmune] = 1
-                    ability_decider -= weights[1]
-                    if ability_decider >= 0 and ability_decider < weights[2]:
+                    elif choice == 2:
                         unit[e.s.counterSurge] = 1
-                    ability_decider -= weights[2]
-                    if ability_decider >= 0 and ability_decider < weights[3]:
+                    elif choice == 3:
                         unit[e.s.waveBlock] = 1
-                    ability_decider -= weights[3]
     
     return estat
 

@@ -140,6 +140,22 @@ class randinst():
             if pos < 0:  # once the random point is inside this segment
                 return choices[i]
 
+    def weighted_list(self,weights):
+        """
+        takes weights list and returns an index in that list
+        input [20,20,40,20,20] and get an index from 0-4 for example
+        """
+        total = 0
+        for each in weights:
+            total += each
+        number = self.randrange(0,total)
+        for x in range(0,len(weights)):
+            if number < weights[x]:
+                return x
+            else:
+                number -= weights[x]
+        #if all fails output -1
+        return -1
 
 
 
