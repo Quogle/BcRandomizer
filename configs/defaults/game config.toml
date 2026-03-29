@@ -75,7 +75,7 @@ CUSTOM_MULTIPLIER_WEIGHTS = true                        # If false, chooses betw
 "4" = { SM = 0, M = 15, L = 65, XL = 15, DOWN = 5 }    
 "5" = { SM = 0, M = 5, L = 70, XL = 25, DOWN = 0 } 
 
-PRESERVE_COMBO_UNIT_COUNT = true                        # Combos stay at their original unit count
+preserve_combo_unit_count = true                        # Combos stay at their original unit count
 CUSTOM_UNIT_COUNT_WEIGHTS = false                       # If false, chooses between having 1-5 units at random
 
 # Relative weights for choosing combo unit count (1–5)
