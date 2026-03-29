@@ -125,6 +125,20 @@ class randinst():
         while number >= size:
             number -= size
         return (number + lb)
+    
+    def weighted_choice(self, choices, weights):
+        total = sum(weights)
+        if total <= 0:
+            raise ValueError("Weights must sum to a positive value")
+
+        # pick a random position along the weighted line
+        pos = self.randrange(0, total)  
+
+         # move down each choice’s segment until the random point falls inside
+        for i, weight in enumerate(weights):
+            pos -= weight
+            if pos < 0:  # once the random point is inside this segment
+                return choices[i]
 
 
 

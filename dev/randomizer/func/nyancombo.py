@@ -24,30 +24,37 @@ LIMITED = set(data["limited_event"])
 UNIT_ID_POS = [3, 5, 7, 9, 11]
 EFFECT_POS = 13
 EFFECT_MAX = 27
-LEVEL_POS = 14          # 0:sm, 1:M, 2:L, 3:XL, 4:DOWN
-LEVEL_MAX = 4
+MULT_POS = 14          # 0:sm, 1:M, 2:L, 3:XL, 4:DOWN
+MULT_MAX = 4
+
+MULT_NAME_TO_INDEX = {
+    "SM": 0,
+    "M": 1,
+    "L": 2,
+    "XL": 3,
+    "DOWN": 4
+}
 
 def randomize_combos():
+    cfg = config_settings()
     r = randinst(16)
-    # Read first
-    combos = f.file_reader(COMBO_FILE)
 
-    allowable_units = []
-    disallowed = []
-    for each in COLLAB:
-        disallowed.append(int(each))
-    for each in VERSION_EXCLUSIVE:
-        disallowed.append(int(each))
-    for each in UNOBTAINABLE:
-        disallowed.append(int(each))
-    for each in LIMITED:
-        disallowed.append(int(each))
-    #add something to remove my beloeved collab and special cats
+    # Decide which units are allowed
+    disallowed = set()
+    if cfg["blacklist_collab"]:
+        disallowed.update(COLLAB)
+    if cfg["blacklist_version_exclusive"]:
+        disallowed.update(VERSION_EXCLUSIVE)
+    if cfg["blacklist_unobtainable"]:
+        disallowed.update(UNOBTAINABLE)
+    if cfg["blacklist_limited_event"]:
+        disallowed.update(LIMITED)
+
+    # Put allowed units in an array 
+    allowable_units = [i for i in range(len(vanilla_cat_array)) if i not in disallowed]
     
-    for x in range(0,len(vanilla_cat_array)):
-        if x not in disallowed:
-            allowable_units.append(x)
-    
+        # Read first
+    combos = f.file_reader(COMBO_FILE)    
     for combo in combos:
 
         #set cat ids
@@ -66,9 +73,72 @@ def randomize_combos():
                 combo[cat_id_pos] = allowable_units[cat_id]
                 combo[cat_id_pos+1] = r.randrange(0,len(vanilla_cat_array[allowable_units[cat_id]]))
         
-        #set combos effect
-        combo[EFFECT_POS] = r.randrange(0,EFFECT_MAX+1)
-        combo[LEVEL_POS] = r.randrange(0,LEVEL_MAX+1)
+        # randomize combos effect
+        if cfg["randomize_effects"]:
+            combo[EFFECT_POS] = r.randrange(0,EFFECT_MAX+1)
+        if cfg["randomize_multipliers"]:
+            if cfg["CUSTOM_MULTIPLIER_WEIGHTS"]:
+                # Count how many units are in this combo
+                unit_count = sum(1 for pos in UNIT_ID_POS if combo[pos] != -1)
+                unit_count = max(1, unit_count)
+
+                # Get the weights for this unit count
+                weights_dict = cfg["multiplier_weights"][str(unit_count)]
+
+                # Choices in order 0:SM, 1:M, 2:L, 3:XL, 4:DOWN
+                multipliers = [MULT_NAME_TO_INDEX[name] for name in ["SM","M","L","XL","DOWN"]]
+                weights = [weights_dict[name] for name in ["SM","M","L","XL","DOWN"]]
+
+                # Pick a weighted random multiplier
+                combo[MULT_POS] = r.weighted_choice(multipliers, weights)
+            else:
+                # Uniform random if not using custom weights
+                combo[MULT_POS] = r.randrange(0, MULT_MAX+1)
 
     #write to dl
     f.file_writer(COMBO_FILE,combos)
+
+def config_settings():
+    RANDOMIZE_COMBOS = settings["game"]["catcombo"]["RANDOMIZE_COMBOS"]
+    
+    # Randomization toggles
+    randomize_units = settings["game"]["catcombo"]["randomize_units"]
+    randomize_multipliers = settings["game"]["catcombo"]["randomize_multipliers"]
+    randomize_effects = settings["game"]["catcombo"]["randomize_effects"]
+
+    # Blacklist options
+    blacklist_collab = settings["game"]["catcombo"]["blacklist"]["collab"]
+    blacklist_version_exclusive = settings["game"]["catcombo"]["blacklist"]["version_exclusive"]
+    blacklist_unobtainable = settings["game"]["catcombo"]["blacklist"]["unobtainable"]
+    blacklist_limited_event = settings["game"]["catcombo"]["blacklist"]["limited_event"]
+
+    # Size multipliers
+    CUSTOM_MULTIPLIER_WEIGHTS = settings["game"]["catcombo"]["size"]["CUSTOM_MULTIPLIER_WEIGHTS"]
+    multiplier_weights = {
+        "1": settings["game"]["catcombo"]["size"]["1"],
+        "2": settings["game"]["catcombo"]["size"]["2"],
+        "3": settings["game"]["catcombo"]["size"]["3"],
+        "4": settings["game"]["catcombo"]["size"]["4"],
+        "5": settings["game"]["catcombo"]["size"]["5"]
+    }
+
+    # Unit count options
+    preserve_combo_unit_count = settings["game"]["catcombo"]["preserve_combo_unit_count"]
+    CUSTOM_UNIT_COUNT_WEIGHTS = settings["game"]["catcombo"]["CUSTOM_UNIT_COUNT_WEIGHTS"]
+    unit_count_weights = settings["game"]["catcombo"]["unit_count_weights"]
+
+    return {
+        "RANDOMIZE_COMBOS": RANDOMIZE_COMBOS,
+        "randomize_units": randomize_units,
+        "randomize_multipliers": randomize_multipliers,
+        "randomize_effects": randomize_effects,
+        "blacklist_collab": blacklist_collab,
+        "blacklist_version_exclusive": blacklist_version_exclusive,
+        "blacklist_unobtainable": blacklist_unobtainable,
+        "blacklist_limited_event": blacklist_limited_event,
+        "CUSTOM_MULTIPLIER_WEIGHTS": CUSTOM_MULTIPLIER_WEIGHTS,
+        "multiplier_weights": multiplier_weights,
+        "preserve_combo_unit_count": preserve_combo_unit_count,
+        "CUSTOM_UNIT_COUNT_WEIGHTS": CUSTOM_UNIT_COUNT_WEIGHTS,
+        "unit_count_weights": unit_count_weights
+    }
