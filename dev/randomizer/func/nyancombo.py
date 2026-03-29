@@ -1,8 +1,6 @@
 from pathlib import Path 
 import json
-#from configs.internal_config import UNIT_COUNT
-import csv
-import random
+from dev.randomizer.parse_config import settings
 from dev.randomizer.func.core import randinst as randinst
 from dev.randomizer.func.unit import vanilla_cat_array
 import dev.randomizer.func.files as f

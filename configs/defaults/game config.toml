@@ -51,19 +51,19 @@ cmoneko = true
 
 ################# CAT COMBO CHANGES #################
 
-[nyancombo]
+[catcombo]
 RANDOMIZE_COMBOS = true
 randomize_units = true                                  # randomize cat combo units
 randomize_multipliers = true                            # randomize combo multiplier sizes (sm, M, L, XL, DOWN)
 randomize_effects = true                                # randomize combo effects
 
-[nyancombo.blacklist]                                   # units blacklisted from appearing in combos
+[catcombo.blacklist]                                   # units blacklisted from appearing in combos
 collab = true                                           # dissallow units only obtained through collaborations
 version_exclusive = true                                # dissallow units exclusive to non english versions of the game
 unobtainable = true                                     # dissallow normally unobtainable units ( iron wall, conjures )
 limited_event = true                                    # dissallow limited promotion units (such as capsule and gacha cat)
 
-[nyancombo.size]
+[catcombo.size]
 CUSTOM_MULTIPLIER_WEIGHTS = true                        # If false, chooses between the 5 combo effect multipliers at equal chance  
 
 # For each combo unit count ("1"–"5"), defines the weight of each effect size
