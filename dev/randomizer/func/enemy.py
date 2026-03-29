@@ -469,9 +469,6 @@ def floating_gimmick(estat):
                     times = 2
                 #this scheme of making it duo doesnt actually make it have the correct chance since it fails to block repeats but idc
                 for x in range(0,times):
-
-                    
-
                     choice = r.weighted_list(weights)
 
                     if choice == 0:
@@ -485,6 +482,73 @@ def floating_gimmick(estat):
     
     return estat
 
+def relic_gimmick(estat):
+    """
+    
+    """
+    r = randinst(46)
+    relic_info = settings["game"]["traits"]["gimmicks"]["relic"]
+    do_relic = relic_info["enabled"]
+    get_curse = relic_info["get_curse"]
+    get_pierce = relic_info["get_weak_pierce"]
+    pierce_damage = relic_info["pierce_atk_percent"]
+    pierce_rate = relic_info["pierce_range_percent"]
+
+    if do_relic:
+        for unit in estat:
+            #shitty future proofing
+            rand1 = r.randrange(80,120)
+            rand2 = r.randrange(80,120)
+            if unit[e.t.relic] == 1:
+
+                if get_curse:
+                    attack_rate = unit[e.s.tba] + unit[e.s.preatk]
+                    if attack_rate < 10:
+                        attack_rate += 20
+                    #maybe I could get the post attack animations from somewhere
+
+                    curse_chance = 15+attack_rate/3
+                    curse_duration = 30+attack_rate
+                    #adjust them by an amount
+                    curse_chance = int(curse_chance*rand1)
+                    curse_duration = int(curse_duration*rand2)
+
+                    if curse_chance > 100:
+                        curse_chance = 100
+                    
+                    unit[e.s.curseChance] = curse_chance
+                    unit[e.s.curseDuration] = curse_duration
+                
+                if get_pierce: #only do it to single attack non ld units
+                    if unit[e.s.multiDamage2] == 0 and unit[e.s.ldWidth] == 0:
+                        #damage portion
+                        attack = unit[e.s.attack]
+                        second_damage = int(attack*pierce_damage/100)
+                        first_damage = int(attack-second_damage)
+                        unit[e.s.attack] = first_damage
+                        unit[e.s.multiDamage2] = second_damage
+                        unit[e.s.multiPreAtk2] = unit[e.s.preatk]
+                        
+                        #range portion
+                        base_range = unit[e.s.range]
+                        second_range = int(base_range*(1+pierce_rate/100))
+                        first_range = -320 - base_range
+                        second_range += 320
+                        #set
+                        unit[e.s.multiHasLdRange2] = 1
+                        unit[e.s.multiLdStart2] = -320
+                        unit[e.s.multiLdWidth2] = second_range
+
+
+                        unit[e.s.ldMinRange] = base_range
+                        unit[e.s.ldWidth] = first_range
+
+                        unit[e.s.multiHasAbility1] = 1
+                        unit[e.s.multiHasAbility2] = 2
+    
+    return estat
+
+                
 
 
 
