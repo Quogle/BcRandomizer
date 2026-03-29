@@ -1,9 +1,10 @@
 import shutil
-from dev.randomizer.parse_config import CAT_CONFIG
-from dev.randomizer.parse_config import ENEMY_CONFIG
-from dev.randomizer.parse_config import GAME_CONFIG
-from dev.randomizer.parse_config import CONFIGS
-from dev.randomizer.parse_config import DEFAULTS
+
+CONFIGS = "configs\\"
+DEFAULTS = "defaults\\"
+CAT_CONFIG = "cat config.toml"
+ENEMY_CONFIG = "enemy config.toml"
+GAME_CONFIG = "game config.toml"
 
 
 def wipe():
