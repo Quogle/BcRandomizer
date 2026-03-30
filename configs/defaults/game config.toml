@@ -66,14 +66,14 @@ limited_event = true                                    # dissallow limited prom
 [catcombo.size]
 CUSTOM_MULTIPLIER_WEIGHTS = true                        # If false, chooses between the 5 combo effect multipliers at equal chance  
 
-# For each combo unit count ("1"–"5"), defines the weight of each effect size
+# For each combo unit count (1–5), defines the weight of each effect size
 # Higher value = higher chance of being selected
 # Only used if CUSTOM_MULTIPLIER_WEIGHTS = true
-"1" = { SM = 45, M = 25, L = 5, XL = 0, DOWN = 20 }                  
-"2" = { SM = 35, M = 40, L = 10, XL = 0, DOWN = 15 }    
-"3" = { SM = 10, M = 45, L = 35, XL = 5, DOWN = 5 }    
-"4" = { SM = 0, M = 15, L = 65, XL = 15, DOWN = 5 }    
-"5" = { SM = 0, M = 5, L = 70, XL = 25, DOWN = 0 } 
+1 = { SM = 45, M = 25, L = 5, XL = 0, DOWN = 20 }                  
+2 = { SM = 35, M = 40, L = 10, XL = 0, DOWN = 15 }    
+3 = { SM = 10, M = 45, L = 35, XL = 5, DOWN = 5 }    
+4 = { SM = 0, M = 15, L = 65, XL = 15, DOWN = 5 }    
+5 = { SM = 0, M = 5, L = 70, XL = 25, DOWN = 0 } 
 
 preserve_combo_unit_count = true                        # Combos stay at their original unit count
 CUSTOM_UNIT_COUNT_WEIGHTS = false                       # If false, chooses between having 1-5 units at random
