@@ -116,6 +116,7 @@ balanced = true                             # balanced makes hp/speed buffs half
 speed_mult = 1.3
 attack_mult = 0.8
 health_mult = 1.3
+round_up = true
 
 [traits.gimmicks.aku]
 enabled = true

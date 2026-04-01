@@ -886,7 +886,52 @@ def alien_gimmick(estat):
 
     return estat
 
+def angel_gimmick(estat):
+    """
+    increases angel speed and hp, reduces attack
+    """
+    a_info = settings["game"]["traits"]["gimmicks"]["angel"]
+    do_a = a_info["enabled"]
+    balance = a_info["balanced"]
+    speed_mult = a_info["speed_mult"]
+    attack_mult = a_info["attack_mult"]
+    health_mult = a_info["health_mult"]
+    round_up = a_info["round_up"]
+    BALANCE_AT = 2000000
 
+    if do_a:
+        for unit in estat:
+            speed_by = speed_mult-1
+            health_by = health_mult-1
+            if unit[e.s.hp] >= BALANCE_AT and balance:
+                speed_by /= 2
+                health_by /= 2
+            
+            speed = unit[e.s.speed] * (1+speed_by)
+            health = unit[e.s.hp] * (1+health_by)
+            attack = unit[e.s.attack] * attack_mult
+            second = unit[e.s.multiDamage2] * attack_mult
+            third = unit[e.s.multiDamage3] * attack_mult
+            if round_up:
+                if speed != int(speed):
+                    speed += 1
+                if health != int(health):
+                    health + 1
+                if attack != int(attack):
+                    attack += 1
+                if second != int(second):
+                    second += 1
+                if third != int(third):
+                    third += 1
+            
+            unit[e.s.speed] = int(speed)
+            unit[e.s.hp] = int(health)
+            unit[e.s.attack] = int(attack)
+            unit[e.s.multiDamage2] = int(second)
+            unit[e.s.multiDamage3] = int(third)
+
+
+    return estat
 
 
 
