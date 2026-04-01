@@ -484,7 +484,7 @@ def floating_gimmick(estat):
 
 def relic_gimmick(estat):
     """
-    
+    gives relics curse and pierce if able
     """
     r = randinst(46)
     relic_info = settings["game"]["traits"]["gimmicks"]["relic"]
@@ -528,7 +528,7 @@ def relic_gimmick(estat):
                         unit[e.s.attack] = first_damage
                         unit[e.s.multiDamage2] = second_damage
                         unit[e.s.multiPreAtk2] = unit[e.s.preatk]
-                        
+
                         #range portion
                         base_range = unit[e.s.range]
                         second_range = int(base_range*(1+pierce_rate/100))
@@ -548,7 +548,103 @@ def relic_gimmick(estat):
     
     return estat
 
+def zombie_gimmick(estat):
+    """
+    gives zombies without revive burrow/revive, does not use a normal weight system
+    """               
+    r = randinst(49)
+    z_info = settings["game"]["traits"]["gimmicks"]["relic"]
+    do_z = z_info["enabled"]
+    z_balance = z_info["balanced"]
+    grant_rev = z_info["grant_revive"]
+    rev_freq = z_info["revive_frequency"]
+    rev_types = z_info["revive_types"]
+    grant_burrow = z_info["grant_burrow"]
+    burrow_freq = z_info["burrow_frequency"]
+    burrow_types = z_info["burrow_types"]
+
+    if do_z:
+        #get weight list totals
+        rev_total = 0
+        for each in rev_types:
+            rev_total += each[3]
+        burrow_total = 0
+        for each in burrow_types:
+            burrow_total += each[2]
+        
+        for unit in estat:
+            #get the values first to make it unaffected if what is or isnt a zombie changes
+            rev_decider = r.randrange(0,rev_total)
+            burrow_decider = r.randrange(0,burrow_total)
+            has_rev = r.randrange(0,100)
+            has_burrow = r.randrange(0,100)
+            time_mult = r.randrange(7,14)
+            if unit[e.t.zombie] == 1 and unit[e.s.revive] == 0:
+                #calc zombie strength
+                strength = 0
+                if unit[e.s.hp] >= 200000:
+                    strength += 1
+                if unit[e.s.hp] >= 800000:
+                    strength += 1
+                if unit[e.s.range] >= 600:
+                    strength += 1
+                if strength == 0 and unit[e.s.range] >= 400:
+                    strength += 1
+                if strength == 0:
+                    strength = -3
+                if not z_balance: #this is what stops rebalance from doing anything
+                    strength = 0
                 
+                #shift that thang!!!!, made burrow weaker for both super strong and weak enemies, supposedly
+                BURROW_SHIFT = 20
+                REVIVE_SHIFT = -20
+                rev_decider += int(REVIVE_SHIFT/100 * rev_total * strength/3)
+                burrow_decider += int(BURROW_SHIFT/100 * burrow_total * abs(strength/3))
+
+                if has_rev < rev_freq and grant_rev:
+                    #default to last rev, loop through decreasing revdec till its less than current weight
+                    index = -1
+                    for each in range(0,len(rev_types)):
+                        if rev_decider < rev_types[each][-1]:
+                            index = each
+                            break
+                        else:
+                            rev_decider -= rev_types[each][-1]
+                    
+                    revive = rev_types[index]
+                    unit[e.s.revive] = revive[0]
+                    unit[e.s.reviveHp] = revive[1]
+                    unit[e.s.reviveTime] = int(revive[2]*time_mult/10)
+                
+                if has_burrow < burrow_freq and grant_burrow:
+                    index = -1
+                    for each in range(0,len(burrow_types)):
+                        if burrow_decider < burrow_types[each][-1]:
+                            index = each
+                            break
+                        else:
+                            burrow_decider -= burrow_types[each][-1]
+                    
+                    burrow = burrow_types[index]
+                    unit[e.s.burrow] = burrow[0]
+                    unit[e.s.burrowLength] = burrow[1]
+    
+    return estat
+                    
+
+                    
+
+                    
+                        
+
+
+
+
+
+
+
+                    
+                    
 
 
 

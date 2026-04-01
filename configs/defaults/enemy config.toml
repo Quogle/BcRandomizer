@@ -71,17 +71,17 @@ grant_revive = true
 revive_frequency = 100                      #determines how many zombies have revive
 revive_types = [
     [-1, 100, 30, 5],                       # [count (-1 for inf), revive at hp%, revive after, weight]
-    [-1, 10, 60, 5],
-    [3, 50, 70, 10],
-    [1, 100, 120, 10],
-    [1, 50, 120, 10],
-    [1, 100, 480, 5],
+    [-1, 10, 200, 5],
+    [3, 50, 90, 10],
+    [1, 100, 300, 10],
+    [1, 50, 240, 10],
+    [1, 100, 900, 5],
     [2, 10, 30, 5],
-    [1, 10, 90, 10],
+    [1, 10, 180, 10],
 ]
 grant_burrow = true
-burrow_ratio = 7
-burrow_types = [
+burrow_frequency = 70
+burrow_types = [                            # put burrows weak enemies shouldnt get higher in this list
     [-1,1600,3],                            # [count, distance x 4, weight]
     [3,2400,3],
     [1,6000,6],
