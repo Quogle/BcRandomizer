@@ -121,9 +121,7 @@ class randinst():
             number += str(self.step())
         
 
-        number = int(number)
-        while number >= size:
-            number -= size
+        number = int(number) % size
         return (number + lb)
     
     def weighted_choice(self, choices, weights):
@@ -156,6 +154,16 @@ class randinst():
                 number -= weights[x]
         #if all fails output -1
         return -1
+    
+    def clamp_value(value):
+        """
+        clamps a value as an int between 0-100, on r for convenience
+        """
+        if value<0:
+            value = 0
+        if value>100:
+            value = 100
+        return int(value)
 
 
 

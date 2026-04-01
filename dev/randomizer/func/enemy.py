@@ -553,7 +553,7 @@ def zombie_gimmick(estat):
     gives zombies without revive burrow/revive, does not use a normal weight system
     """               
     r = randinst(49)
-    z_info = settings["game"]["traits"]["gimmicks"]["relic"]
+    z_info = settings["game"]["traits"]["gimmicks"]["zombie"]
     do_z = z_info["enabled"]
     z_balance = z_info["balanced"]
     grant_rev = z_info["grant_revive"]
@@ -631,11 +631,265 @@ def zombie_gimmick(estat):
     
     return estat
                     
+def alien_gimmick(estat):
+    """
+    does the alien shit yo, does give starred aliens the flag
+    """               
+    r = randinst(63)
+    a_info = settings["game"]["traits"]["gimmicks"]["alien"]
+    do_a = a_info["enabled"]
+    freeze_weight = a_info["freeze_weight"]
+    slow_weight = a_info["slow_weight"]
+    kb_weight = a_info["kb_weight"]
+    weak_weight = a_info["weak_weight"]
+    wave_weight = a_info["wave_weight"]
+    surge_weight = a_info["surge_weight"]
+    explode_weight = a_info["explode_weight"]
+    crit_weight = a_info["crit_weight"]
+    savage_weight = a_info["savage_weight"]
+    lethal_weight = a_info["lethal_weight"]
+    base_des_weight = a_info["base_des_weight"]
+    multihit_weight = a_info["multihit_weight"]
+    
+    starred_freq = a_info["starred_frequency"]
+    warp_freq = a_info["warp_frequency"]
+    barrier_freq = a_info["barrier_frequency"]
 
-                    
+    WARP_TYPE_COUNT = 10
+    WARP_RESTRICT = 3
+    BARR_TYPE_COUNT = 10
+    STAR_SECOND_ABILITY = 20 #this could be added to the config
 
-                    
+    if do_a:
+        #make weight lists
+        abilities = [freeze_weight,slow_weight,kb_weight,weak_weight,wave_weight,surge_weight,explode_weight,crit_weight,savage_weight,lethal_weight,base_des_weight,multihit_weight]
+        ability_weight_total = 0
+        for each in abilities:
+            ability_weight_total += each
+        
+        for unit in estat:
+            #assign random numbers here
+            star = r.randrange(0,100)
+            warp_barr = r.randrange(0,100)
+            starred_ability = r.randrange(0,100)
+            ability_strength = r.randrange(0,100)
+            duration_mult = r.randrange(6,15)
+            barrier_hp_mult = r.randrange(0,11)
+            ability = r.weighted_list(abilities)
+            warp_dec = r.randrange(0,WARP_TYPE_COUNT)
+            barr_dec = r.randrange(0,BARR_TYPE_COUNT)
+            strong_barr = r.randrange(0,5)
+            
+
+
+
+
+
+
+            if unit[e.t.alien] == 1:
+                #find unit stats here, maybe add post attack anim here
+                attack_cycle = unit[e.s.tba]
+                if attack_cycle == 0:
+                    attack_cycle += 10
+                attack_cycle += unit[e.s.preatk]
+                base_chance = attack_cycle/300
+                base_duration = attack_cycle*duration_mult/10
+                
+
+                done_starred = False
+                if star < starred_freq:
+                    done_starred = True
+                    unit[e.s.starred_god] == 1
+                    if warp_barr < warp_freq:
+                        #block weak units from getting last 2 warps
+                        if unit[e.s.hp] < 50000 and warp_dec >= WARP_TYPE_COUNT-WARP_RESTRICT:
+                            warp_dec -= WARP_RESTRICT
+
                         
+                        warp_chance_boost = 15
+                        match warp_dec:
+                            case 0:
+                                distance = 2
+                                time = 10
+                            case 1:
+                                distance = 2
+                                time = 20
+                            case 2:
+                                distance = 1
+                                time = 20
+                                warp_chance_boost = 20
+                            case 3:
+                                distance = 3
+                                time = 30
+                            case 4:
+                                distance = 3
+                                time = 10
+                            case 5:
+                                distance = 4
+                                time = 10
+                            case 6:
+                                distance = 6
+                                time = 40
+                            case 7:
+                                distance = -2
+                                time = 20
+                            case 9:
+                                distance = 0.2
+                                time = 5
+                        
+                        unit[e.s.warpChance] = r.clamp_value(warp_chance_boost+base_chance)
+                        unit[e.s.warpDuration] = int(attack_cycle*time/10)
+                        unit[e.s.warpMin4x] = int(distance*unit[e.s.range])
+                        unit[e.s.warpMax4x] = int(distance*unit[e.s.range])
+
+                    if warp_barr >= (100-barrier_freq):
+                        if unit[e.s.hp] < 50000 and barr_dec == BARR_TYPE_COUNT-1:
+                            barr_dec -= 1
+                        if unit[e.s.hp] < 10000:
+                            strong_barr = 1
+
+                        #goofy barr at 1/10, strongest bar at 1/10 disallowed for weaks
+                        if barr_dec == 0:
+                            barr_hp = 10
+                        elif barr_dec == BARR_TYPE_COUNT-1:
+                            barr_hp = 15000
+                        elif barr_hp < 4:
+                            barr_hp = 6000
+                        else:
+                            barr_hp = 3000
+
+                        #multiple by a number between 1-2 and then by 10 if strong (currently 20% chance)
+                        barr_hp *= (1+barrier_hp_mult/10)
+                        if strong_barr == 0:
+                            barr_hp *= 10
+                        
+                        unit[e.s.barrierHp] = int(barr_hp)
+                #untrip marked as starred completed
+                if starred_ability < STAR_SECOND_ABILITY:
+                    done_starred = False
+                
+
+
+                # normal alien abilities
+                if not done_starred:
+                    if ability == 0:
+                        if unit[e.s.freezeChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.freezeChance] = r.clamp_value(5+base_chance/1.5)
+                            unit[e.s.freezeTime] = int(30+base_duration/1.4)
+                    if ability == 1:
+                        if unit[e.s.slowChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.slowChance] = r.clamp_value(15+base_chance/2)
+                            unit[e.s.slowTime] = int(30+base_duration)
+                    if ability == 2:
+                        if unit[e.s.kbChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.kbChance] = r.clamp_value(15+base_chance/1.2)
+                    if ability == 3:
+                        if unit[e.s.weakenChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.weakenChance] = r.clamp_value(5+base_duration/1.5)
+                            if ability_strength <30:
+                                unit[e.s.weakenPercent] = 10
+                                unit[e.s.weakenTime] = int(50+base_duration/2)
+                            else:
+                                unit[e.s.weakenPercent] = 50
+                                unit[e.s.weakenTime] = int(20+base_duration*1.5)
+                    if ability == 4:
+                        if unit[e.s.waveChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.waveChance] = r.clamp_value(2+((base_chance/250)**2)*80)
+                            if ability_strength < 60:
+                                unit[e.s.waveLevel] = 1
+                            elif ability_strength < 80:
+                                unit[e.s.waveLevel] = 2
+                            elif ability_strength < 90:
+                                unit[e.s.waveLevel] = 3
+                            else:
+                                unit[e.s.waveLevel] = 10
+                    if ability == 5:
+                        if unit[e.s.surgeChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.surgeChance] = r.clamp_value(5+((base_chance/300)**2)*100)
+                            unit[e.s.surgeWidth] = 0
+                            if ability_strength < 80:
+                                unit[e.s.surgeLevel] = 1
+                                unit[e.s.surgeStartPos] = int(3.5*unit[e.s.range])
+                            else:
+                                unit[e.s.surgeLevel] = 3
+                                unit[e.s.surgeStartPos] = int(1.5*unit[e.s.range])
+                    if ability == 6:
+                        if unit[e.s.explodeChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.explodeChance] = r.clamp_value(5+((base_chance/400)**2)*80)
+                            unit[e.s.explodeAt4x] = int(3*unit[e.s.range] - 75)
+                    if ability == 7:
+                        if unit[e.s.critChance] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.critChance] = r.clamp_value(10+base_chance)
+                    if ability == 8:
+                        if unit[e.s.savageChance] > 0:
+                            ability += 1
+                        else:
+                            savage_chance = r.clamp_value(55+base_chance/2) - 50
+                            if ability_strength < 50:
+                                unit[e.s.savageChance] = int(savage_chance)
+                                unit[e.s.savageBoost] = 200
+                            else:
+                                unit[e.s.savageChance] = int(savage_chance/2)
+                                unit[e.s.savageBoost] = 300
+                            unit[e.s.attack] = int(unit[e.s.attack]*(100-savage_chance)/100)
+                            unit[e.s.multiDamage2] = int(unit[e.s.multiDamage2]*(100-savage_chance)/100)
+                            unit[e.s.multiDamage3] = int(unit[e.s.multiDamage3]*(100-savage_chance)/100)
+                    if ability == 9:
+                        if unit[e.s.lethal] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.lethal] = 100
+                    if ability == 10:
+                        if unit[e.s.baseDestroyer] > 0:
+                            ability += 1
+                        else:
+                            unit[e.s.baseDestroyer] = 1
+                    if ability == 11:
+                        if unit[e.s.multiDamage2] > 0:
+                            ability += 1
+                        else:
+                            damage = unit[e.s.attack]
+                            preatk = unit[e.s.preatk]
+                            unit[e.s.multiHasAbility2] = 1
+                            if ability_strength < 50: #even split
+                                unit[e.s.attack] = int(unit[e.s.attack] - damage/2)
+                                unit[e.s.multiDamage2] = int(damage/2)
+                                unit[e.s.multiPreAtk2] = int(preatk+6)
+                            else: #shift 40% of the attack onto the other two hits
+                                damage = int(damage/5)
+                                unit[e.s.attack] = int(unit[e.s.attack] - damage*2)
+                                unit[e.s.multiDamage2] = damage
+                                unit[e.s.multiDamage3] = damage
+                                unit[e.s.multiHasAbility3] = 1
+                                unit[e.s.multiPreAtk2] = int(preatk+3)
+                                unit[e.s.multiPreAtk3] = int(preatk+6)
+                    if ability == 12: #double ability chances if failed to grant ability
+                        ability_chances = [e.s.freezeChance,e.s.slowChance,e.s.kbChance,e.s.weakenChance,e.s.critChance,e.s.lethal,e.s.savageChance]
+                        for each in ability_chances:
+                            unit[each] = r.clamp_value(unit[each]*2)
+
+    return estat
+
+
+
+
+
 
 
 
