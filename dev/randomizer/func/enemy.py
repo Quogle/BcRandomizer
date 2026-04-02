@@ -769,7 +769,7 @@ def alien_gimmick(estat):
                     done_starred = False
                 
 
-
+                # a while loop could make this not need the doubling at the end
                 # normal alien abilities
                 if not done_starred:
                     if ability == 0:
@@ -933,19 +933,162 @@ def angel_gimmick(estat):
 
     return estat
 
+def aku_gimmick(estat):
+    """
+    gives shield and ds
+    """
+    r= randinst(93)
+    a_info = settings["game"]["traits"]["gimmicks"]["aku"]
+    do_a = a_info["enabled"]
+    shield_freq = a_info["shield_frequency"]
+    death_freq = a_info["death_frequency"]
+    ds_ability_freq = a_info["ds_ability_frequency"]
+    ds_mini = a_info["ds_ability_is_mini"]
+
+    if do_a:
+        for unit in range(0,len(estat)):
+            aku_ability_dec = r.randrange(0,100)
+            ds_ab_dec = r.randrange(0,100)
+            ds_ab_type = r.randrange(0,100)
+            ds_lvl = r.randrange(0,100)
+            ds_range = r.randrange(0,100)
+            if estat[unit][e.t.aku] == 1:
+                give_ability = False
+                if ds_ab_dec < ds_ability_freq:
+                    give_ability = True
+                
+                if aku_ability_dec < shield_freq:
+                    estat[unit] = apply_shield(estat[unit])
+                if aku_ability_dec > (100-death_freq):
+                    estat[unit] = apply_death_surge(estat[unit],ds_lvl,give_ability,ds_ab_type,ds_mini,ds_range)
+    return estat
 
 
 
 
+"""
+parts of gimmick
+"""
 
+def apply_shield(stats):
+    """
+    gives shield, nonconditional
+    """
+    kb = stats[e.s.kbs]
+    hp = stats[e.s.hp]
 
+    #default barrier to 5k for most enemies
+    barrier_health = 0
+    if hp > 5000:
+        barrier_health = 5000
+    regen_at = 100
+    #1 30%,2 20%,3 15%,>24 15%, else 10%    (2 and else 50%)
+    if kb == 1:
+        barrier_health += hp*0.3
+    elif kb == 2:
+        barrier_health += hp*0.2
+        regen_at = 50
+    elif kb == 3:
+        barrier_health += hp*0.15
+    elif kb > 24:
+        barrier_health += hp*0.15
+    else:
+        barrier_health += hp*0.1
+        regen_at = 50
+    
+    stats[e.s.shieldHp] = int(barrier_health)
+    stats[e.s.shieldRegenPercent] = regen_at
 
+    return stats
 
+def apply_death_surge(stats,ds_lvl,has_ability,ds_ab,mini,ds_range):
+    """
+    applies aku death surge to stats and returns it, nonconditional
+    """
+    ds_chance = 100
+    if stats[e.s.hp] < 10000:
+        ds_chance = 50
 
-                    
-                    
+    ds_level = 1
+    if ds_lvl > 75:
+        ds_level = 2
+    if ds_lvl > 92:
+        ds_level = 3
 
+    #add 50 if range below 120, mult by 3.5, add either ~370 or 600
+    ds_start = stats[e.s.range]
+    if ds_start < 120:
+        ds_start += 50
+    ds_start = ds_start*3.5 + 1400
+    if ds_range > 60:
+        ds_start += 1000
+    ds_start = int(ds_start)
 
+    ds_variation = 0
+    #wild pattern
+    if ds_range > 95:
+        ds_variation = 6000
+        ds_start = -800
+        ds_chance = 100
+
+    
+    stats[e.s.deathSurgeChance] = ds_chance
+    stats[e.s.deathSurgeLevel] = ds_level
+    stats[e.s.deathSurgeStartPos] = ds_start
+    stats[e.s.deathSurgeWidth] = ds_variation
+    
+    #verify unit has no abilities
+    abilities = [e.s.freezeChance,e.s.slowChance,e.s.kbChance,e.s.weakenChance,e.s.waveChance,e.s.surgeChance,e.s.explodeChance,e.s.critChance,e.s.savageChance,e.s.warpChance,e.s.curseChance]
+    count = 0
+    for each in abilities:
+        if stats[each] > 0:
+            count += 1
+    
+    if has_ability and count == 0 and stats[e.s.multiDamage2] == 0:
+        #give mini or force level 1
+        if mini:
+            stats[e.s.miniSurge] = 1
+        else:
+            stats[e.s.deathSurgeLevel] = 1
+        
+        savage_chance = 0
+        savage_boost = 0
+
+        #abilities
+        if ds_ab < 10:
+            savage_chance = 20
+            savage_boost = 300
+        elif ds_ab < 25:
+            savage_chance = 50
+            savage_boost = 100
+        elif ds_ab < 45:
+            stats[e.s.freezeChance] = 100
+            stats[e.s.freezeTime] = 60
+        elif ds_ab < 65:
+            stats[e.s.slowChance] = 100
+            stats[e.s.slowTime] = 120
+        elif ds_ab < 85:
+            stats[e.s.weakenChance] = 100
+            stats[e.s.weakenTime] = 180
+            stats[e.s.weakenPercent] = 50
+        else:
+            stats[e.s.kbChance] = 100
+        
+        #currently makes it so if mini ds does 1.6x instead of 2x and 4.4x instead of 4x
+        if mini:
+            savage_boost = savage_boost * 7
+        
+        stats[e.s.savageBoost] = int(savage_boost)
+        stats[e.s.savageChance] = savage_chance
+
+        #all dat shit that gotta be done to make this work
+        stats[e.s.multiDamage2] = stats[e.s.attack]
+        stats[e.s.multiHasAbility2] = 0
+        stats[e.s.multiHasAbility1] = 1
+        stats[e.s.multiPreAtk2] = stats[e.s.preatk]
+        stats[e.s.preatk] = -1
+
+    return stats
 
 
 """

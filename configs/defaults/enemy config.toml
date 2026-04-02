@@ -122,7 +122,7 @@ round_up = true
 enabled = true
 shield_frequency = 50
 death_frequency = 50
-ds_ability_frequency = 20                   # some enemies will get an ability that only activates on death surge
+ds_ability_frequency = 50                   # some enemies will get an ability that only activates on death surge
 ds_ability_is_mini = true
 
 [traits.gimmicks.metal]
