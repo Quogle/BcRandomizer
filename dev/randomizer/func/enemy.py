@@ -430,7 +430,7 @@ def red_gimmick(estat):
 
 def white_gimmick(estat):
     """
-    gives whitees sage, does nothing else
+    gives whites sage, does nothing else
     """
     white_info = settings["game"]["traits"]["gimmicks"]["white"]
     do_white = white_info["enabled"]
@@ -740,7 +740,7 @@ def alien_gimmick(estat):
                         unit[e.s.warpChance] = r.clamp_value(warp_chance_boost+base_chance)
                         unit[e.s.warpDuration] = int(attack_cycle*time/10)
                         unit[e.s.warpMin4x] = int(distance*unit[e.s.range])
-                        unit[e.s.warpMax4x] = int(distance*unit[e.s.range])
+                        unit[e.s.warpMax4x] = int(distance*unit[e.s.range]) 
 
                     if warp_barr >= (100-barrier_freq):
                         if unit[e.s.hp] < 50000 and barr_dec == BARR_TYPE_COUNT-1:
@@ -1090,6 +1090,88 @@ def apply_death_surge(stats,ds_lvl,has_ability,ds_ab,mini,ds_range):
 
     return stats
 
+def apply_warp(stats,warp_dec,attack_cycle):
+    """
+    gives warp, nonconditional
+    """
+    #block 80 and above from below 50k hp units
+    if warp_dec >= 80 and stats[e.s.hp] < 50000:
+        warp_dec -= 20
+
+    base_chance = 15
+    distance = 2
+    time = 20
+    if warp_dec < 10:
+        distance = 2
+        time = 10
+    elif warp_dec < 20:
+        distance = 2
+        time = 20
+    elif warp_dec < 35:
+        distance = 1
+        time = 20
+        base_chance = 30
+    elif warp_dec < 50:
+        distance = 3
+        time = 40
+    elif warp_dec < 65:
+        distance = 3
+        time = 10
+    elif warp_dec < 80:
+        distance = 4
+        time = 10
+    elif warp_dec < 88:
+        distance = 60
+        time = 40
+    elif warp_dec < 94:
+        distance = -2
+        time = 20
+    elif warp_dec < 100:
+        distance = 0.2
+        time = 5
+
+    stats[e.s.warpChance] = clamp_value(base_chance+attack_cycle/300)
+    stats[e.s.warpDuration] = int(attack_cycle*time/10)
+    stats[e.s.warpMin4x] = int(distance*stats[e.s.range])
+    stats[e.s.warpMax4x] = int(distance*stats[e.s.range])
+
+    return stats
+
+def apply_barrier(stats,bar_dec,strong_bar,bar_hp_mult):
+    """
+    gives cat barrier, non conditional
+    """
+    #block strong barriers from weak enemies
+    if stats[e.s.hp] < 50000 and bar_dec > 75:
+        bar_dec -= 25
+    if stats[e.s.hp] < 10000:
+        strong_bar = 0
+    
+    #10% shitter, 40% 3k, 40% 6k, 10% 15k (these are then mult by 1-2x, 15k locked from weaks)
+    barhp = 0
+    if bar_dec < 10:
+        barhp = 10
+    elif bar_dec < 50:
+        barhp = 3000
+    elif bar_dec < 90:
+        barhp = 6000
+    else:
+        barhp = 15000
+    
+    barhp *= (1+bar_hp_mult/10)
+    if strong_bar > 90: #strong barrier makes it 10x stronger
+        barhp *= 10
+
+    stats[e.s.barrierHp] = int(barhp)
+
+    return stats
+
+def apply_ability(stats):
+    """
+    
+    """
+
+
 
 """
 needed functions
@@ -1102,6 +1184,18 @@ id swap
 
 
 """
+def clamp_value(value):
+        """
+        clamps a value as an int between 0-100
+        """
+        if value<0:
+            value = 0
+        if value>100:
+            value = 100
+        return int(value)
+
+
+
 
 
 
