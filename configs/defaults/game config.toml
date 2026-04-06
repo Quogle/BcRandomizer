@@ -56,6 +56,8 @@ RANDOMIZE_COMBOS = true
 randomize_units = true                                  # randomize cat combo units
 randomize_multipliers = true                            # randomize combo multiplier sizes (sm, M, L, XL, DOWN)
 randomize_effects = true                                # randomize combo effects
+max_uber_count = 1                                      # How many ubers/lr can be in a catcombo (1-5)
+allow_legend_rares = false                              # Whether legend rares can be in combos (will use max_uber_count)
 
 [catcombo.blacklist]                                   # units blacklisted from appearing in combos
 collab = true                                           # dissallow units only obtained through collaborations
@@ -75,7 +77,7 @@ CUSTOM_MULTIPLIER_WEIGHTS = true                        # If false, chooses betw
 4 = { SM = 0, M = 15, L = 65, XL = 15, DOWN = 5 }    
 5 = { SM = 0, M = 5, L = 70, XL = 25, DOWN = 0 } 
 
-preserve_combo_unit_count = true                        # Combos stay at their original unit count
+preserve_combo_unit_count = true                        # Whether combos stay at their original unit count                            #
 CUSTOM_UNIT_COUNT_WEIGHTS = false                       # If false, chooses between having 1-5 units at random
 
 # Relative weights for choosing combo unit count (1–5)

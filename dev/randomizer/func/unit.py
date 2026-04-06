@@ -289,6 +289,8 @@ def early_reworks(cstats):
 #the 3d array straight from the files
 vanilla_cat_array = f.read_vanilla_cat_stats()
 
+vanilla_unitbuy_array = f.read_vanilla_unitbuy()
+
 #the 3d array with the before everything reworks applied to it
 base_cat_array = make_base_cat(vanilla_cat_array)
 

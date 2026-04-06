@@ -3,8 +3,11 @@ import json
 from dev.randomizer.parse_config import settings
 from dev.randomizer.func.core import randinst as randinst
 from dev.randomizer.func.unit import vanilla_cat_array
+from dev.randomizer.func.unit import vanilla_unitbuy_array
 import dev.randomizer.func.files as f
 from dev.randomizer.data.filepaths import *
+from dev.randomizer.enums.unitbuy import ub
+
 #id,combo set, IDFK, S1 id,S1 form,S2 id,S2 form,S3 id,S3 form,S4 id,S4 form,S5 id,S5 form,effect,level,always -1
 
 BASE = Path(__file__).resolve().parents[2]
@@ -35,6 +38,9 @@ MULT_NAME_TO_INDEX = {
     "down": 4
 }
 
+UBER_RARE = 4
+LEGEND_RARE = 5
+
 def randomize_combos():
     cfg = config_settings()
     r = randinst(16)
@@ -59,6 +65,9 @@ def randomize_combos():
 
         #set cat ids
         has_cats = []
+
+        current_uber_lr_count = 0
+
         for cat_id_pos in UNIT_ID_POS:
             #only add cats if the combo has them defaultly
             if combo[cat_id_pos] != -1:
@@ -68,10 +77,19 @@ def randomize_combos():
                     cat_id += 1
                     if cat_id >= len(allowable_units):
                         cat_id -= 2
+
+                # Enforce max uber count
+                while is_uber_lr(allowable_units[cat_id], cfg) and current_uber_lr_count >= cfg["max_uber_count"]:
+                   cat_id = r.randrange(0, len(allowable_units))
+
                 #add unit and one of its existing forms to combo line
                 has_cats.append(cat_id)
                 combo[cat_id_pos] = allowable_units[cat_id]
                 combo[cat_id_pos+1] = r.randrange(0,len(vanilla_cat_array[allowable_units[cat_id]]))
+
+                # Increment if unit is an uber or legend rare
+                if is_uber_lr(allowable_units[cat_id],cfg):
+                    current_uber_lr_count += 1
         
         # randomize combos effect
         if cfg["randomize_effects"]:
@@ -99,6 +117,15 @@ def randomize_combos():
     f.file_writer(COMBO_FILE,combos)
     print(f"All {len(combos)} combos randomized and saved to {COMBO_FILE}")
 
+def is_uber_lr(unit_id, cfg):
+    # Return True if the unit counts toward the uber/lr limit
+    rarity = vanilla_unitbuy_array[unit_id][ub.rarity]
+    if rarity == UBER_RARE:
+        return True
+    if rarity == LEGEND_RARE and cfg["allow_legend_rares"]:
+        return True
+    return False
+
 def config_settings():
     RANDOMIZE_COMBOS = settings["game"]["catcombo"]["RANDOMIZE_COMBOS"]
     
@@ -106,6 +133,8 @@ def config_settings():
     randomize_units = settings["game"]["catcombo"]["randomize_units"]
     randomize_multipliers = settings["game"]["catcombo"]["randomize_multipliers"]
     randomize_effects = settings["game"]["catcombo"]["randomize_effects"]
+    max_uber_count = settings["game"]["catcombo"]["max_uber_count"]
+    allow_legend_rares = settings["game"]["catcombo"]["allow_legend_rares"]
 
     # Blacklist options
     blacklist_collab = settings["game"]["catcombo"]["blacklist"]["collab"]
@@ -133,6 +162,8 @@ def config_settings():
         "randomize_units": randomize_units,
         "randomize_multipliers": randomize_multipliers,
         "randomize_effects": randomize_effects,
+        "max_uber_count": max_uber_count,
+        "allow_legend_rares": allow_legend_rares,
         "blacklist_collab": blacklist_collab,
         "blacklist_version_exclusive": blacklist_version_exclusive,
         "blacklist_unobtainable": blacklist_unobtainable,
