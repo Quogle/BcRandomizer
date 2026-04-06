@@ -88,14 +88,22 @@ class randinst():
         self.index = 0
         self.length = len(self.string)
         self.rotate(instance_id)
-        self.shifter = randinst(instance_id+1,False)
+
+        #these are extras to prevent it from looping as much
+        self.user_specified = user_specified #required to stop infinite recursion
+        if self.user_specified:
+            self.shifter = randinst(instance_id+1,False) #second instance to generate shift
+        self.current_shift = 0 #the amount stepped by in step (part of whats changed by shifter)
     
     # steps an amount and then returns the new indexes value
     def step(self,amount=1):
         self.index += amount
-        if self.index >= self.length:
+        if amount == 1:
+            self.index += self.current_shift
+        if self.index >= self.length and self.user_specified:
             self.index += self.shifter.step()
-            self.index = self.index % self.length
+            self.current_shift = self.shifter.step()
+        self.index = self.index % self.length
         return int(self.string[self.index])
     
     #shifts the index by a large amount
