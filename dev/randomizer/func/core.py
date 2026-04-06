@@ -67,12 +67,12 @@ def make_random_list(seed):
 # creates a string 100-200 characters long of numbers 0-9
 def make_random_string(seed):
     string = generate_random_string_characters(str(abs(seed)))
-    length = 300
-    if len(string) < length:
+    length_min = 300
+    length_max = 400
+    while len(string) < length_min:
         string = generate_random_string_characters(string)
-    if len(string) > length+100:
-        string = ratio_shorten_string(string,200)
-    
+    if len(string) > length_max:
+        string = ratio_shorten_string(string,length_max)
     return string
     
 random_string = make_random_string(seed)
@@ -82,18 +82,20 @@ class randinst():
     """
     create an object of this class and give it an id you think hasnt been used before and use that for randrange
     """
-    def __init__(self,instance_id):
+    def __init__(self,instance_id,user_specified = True):
         global random_string
         self.string = str(random_string)
         self.index = 0
         self.length = len(self.string)
         self.rotate(instance_id)
+        self.shifter = randinst(instance_id+1,False)
     
     # steps an amount and then returns the new indexes value
     def step(self,amount=1):
         self.index += amount
-        while self.index >= self.length:
-            self.index -= self.length
+        if self.index >= self.length:
+            self.index += self.shifter.step()
+            self.index = self.index % self.length
         return int(self.string[self.index])
     
     #shifts the index by a large amount
