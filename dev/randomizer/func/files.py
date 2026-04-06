@@ -419,8 +419,8 @@ def read_vanilla_unitbuy():
     """
     returns the 2d unitbuy stats array
     """
-    path = LOCAL_FILES + "DataLocal\\unitbuy.csv"
-    return csv_reader(path)
+    path = "unitbuy.csv"
+    return file_reader(path)
 
 def write_enemy_stats_to_dl(estat):
     """
