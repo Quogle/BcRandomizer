@@ -28,11 +28,11 @@ MULT_POS = 14          # 0:sm, 1:M, 2:L, 3:XL, 4:DOWN
 MULT_MAX = 4
 
 MULT_NAME_TO_INDEX = {
-    "SM": 0,
-    "M": 1,
-    "L": 2,
-    "XL": 3,
-    "DOWN": 4
+    "sm": 0,
+    "m": 1,
+    "l": 2,
+    "xl": 3,
+    "down": 4
 }
 
 def randomize_combos():
@@ -86,8 +86,8 @@ def randomize_combos():
                 weights_dict = cfg["multiplier_weights"][str(unit_count)]
 
                 # Choices in order 0:SM, 1:M, 2:L, 3:XL, 4:DOWN
-                multipliers = [MULT_NAME_TO_INDEX[name] for name in ["SM","M","L","XL","DOWN"]]
-                weights = [weights_dict[name] for name in ["SM","M","L","XL","DOWN"]]
+                multipliers = [MULT_NAME_TO_INDEX[name] for name in ["sm","m","l","xl","down"]]
+                weights = [weights_dict[name] for name in ["sm","m","l","xl","down"]]
 
                 # Pick a weighted random multiplier
                 combo[MULT_POS] = r.weighted_choice(multipliers, weights)
@@ -97,6 +97,7 @@ def randomize_combos():
 
     #write to dl
     f.file_writer(COMBO_FILE,combos)
+    print(f"All {len(combos)} combos randomized and saved to {COMBO_FILE}")
 
 def config_settings():
     RANDOMIZE_COMBOS = settings["game"]["catcombo"]["RANDOMIZE_COMBOS"]
@@ -123,9 +124,9 @@ def config_settings():
     }
 
     # Unit count options
-    preserve_combo_unit_count = settings["game"]["catcombo"]["preserve_combo_unit_count"]
-    CUSTOM_UNIT_COUNT_WEIGHTS = settings["game"]["catcombo"]["CUSTOM_UNIT_COUNT_WEIGHTS"]
-    unit_count_weights = settings["game"]["catcombo"]["unit_count_weights"]
+    preserve_combo_unit_count = settings["game"]["catcombo"]["size"]["preserve_combo_unit_count"]
+    CUSTOM_UNIT_COUNT_WEIGHTS = settings["game"]["catcombo"]["size"]["CUSTOM_UNIT_COUNT_WEIGHTS"]
+    unit_count_weights = settings["game"]["catcombo"]["size"]["unit_count_weights"]
 
     return {
         "RANDOMIZE_COMBOS": RANDOMIZE_COMBOS,
