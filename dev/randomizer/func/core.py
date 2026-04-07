@@ -87,13 +87,13 @@ class randinst():
         self.string = str(random_string)
         self.index = 0
         self.length = len(self.string)
-        self.rotate(instance_id)
-
         #these are extras to prevent it from looping as much
         self.user_specified = user_specified #required to stop infinite recursion
         if self.user_specified:
             self.shifter = randinst(instance_id+1,False) #second instance to generate shift
         self.current_shift = 0 #the amount stepped by in step (part of whats changed by shifter)
+
+        self.rotate(instance_id)
     
     # steps an amount and then returns the new indexes value
     def step(self,amount=1):
