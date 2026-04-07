@@ -15,7 +15,7 @@ class ub(IntEnum):
     xp_lvl_8 = 9
     xp_lvl_9 = 10
     xp_lvl_10 = 11
-    unlock_type = 12
+    unlock_type = 12                # 0 = gacha, 1 = catfood, 2 = xp ?????
     rarity = 13                     # 0 = basic, 1 = special, 2 = rare, 3 = sr, 4 = uber, 5 = lr
     display_order = 14
     unlock_chapter_eoc = 15

@@ -3,18 +3,6 @@ import dev.randomizer.func.files as f
 from dev.randomizer.parse_config import settings
 import copy
 
-
-
-
-
-
-
-
-
-
-
-
-
 """
 rebalancers
 """
@@ -200,17 +188,6 @@ def early_reworks(cstats):
                 cstats[358][x][c.s.savage_chance] = 30
                 cstats[358][x][c.s.crit_chance] = 30
         
-
-
-
-
-
-
-
-
-
-
-
 
         #single form changes
         if jurassic:
