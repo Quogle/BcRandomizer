@@ -1,5 +1,6 @@
 import dev.randomizer.enums.cats as c
 import dev.randomizer.func.files as f
+from dev.randomizer.func.core import randinst
 from dev.randomizer.parse_config import settings
 import copy
 
@@ -254,9 +255,212 @@ def early_reworks(cstats):
 
          
 
+def get_swaps(stats):
+    """
+    gets cat swaps, conditional
+    """
+    r = randinst(201)
+    remove_metals = settings["game"]["gameplay"]["remove_metals"]
+    traits = [c.t.black,c.t.red,c.t.white,c.t.floating,c.t.relic,c.t.zombie,c.t.alien,c.t.angel,c.t.aku,c.t.metal]
+    text_traits = ["black","red","white","floating","relic","zombie","alien","angel","aku","metal"]
+
+    specified_swap_texts = settings["cat"]["unit"]["traits"]["specified_swap"]
+    user_from = []
+    user_to = []
+    for each in specified_swap_texts:
+        try:
+            first = text_traits.index(each[0])
+            second = text_traits.index(each[1])
+            user_from.append(traits[first])
+            user_to.append(traits[second])
+        except:
+            pass
+    
+    #get current working trait order
+    current_trait_order = []
+    temp_tl = copy.deepcopy(traits)
+    for x in range(temp_tl):
+        current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+    
+    #get traits to be added
+    missing_from = []
+    missing_to = []
+    for trait in current_trait_order:
+        if trait not in user_from and trait not in user_to:
+            missing_from.append(trait)
+            missing_to.append(trait)
+    dually_missing_count = len(missing_from)
+    for trait in current_trait_order:
+        if trait not in user_from:
+            missing_from.append(trait)
+        if trait not in user_to:
+            missing_to.append(trait)
+    
+    current_index = 0
+    while len(missing_to) < len(missing_from):
+        missing_to.append(missing_to[current_index])
+        current_index += 1
+    
+    #rotate
+    for x in range(0,dually_missing_count):
+        missing_to.append(missing_to.pop(0))
+    
+    
+    if remove_metals:
+        index = 0
+        if current_trait_order[0] == c.t.metal:
+            index = 1
+        for x in range(0,len(missing_to)):
+            if missing_to[x] == c.t.metal:
+                missing_to[x] = current_trait_order[index]
+    
+    swaps = [[],[]]
+    for x in range(0,len(user_from)):
+        swaps[0].append(user_from[x])
+        swaps[1].append(user_to[x])
+    
+    for x in range(0,len(missing_from)):
+        swaps[0].append(missing_from[x])
+        swaps[1].append(missing_to[x])
+    
+    map_to_return = []
+    for x in range(0,len(stats)):
+        unit_map = []
+        for y in range(0,stats[x]):
+            unit_map.append(swaps)
+        map_to_return.append(unit_map)
+    
+    return map_to_return
+    
+def get_cat_randomization_map(stats):
+    """
+    creates map based on input array
+    """
+    r = randinst(201)
+    remove_metals = settings["game"]["gameplay"]["remove_metals"] #this isnt done here anymore
+    trait_per_whole_unit = settings["cat"]["unit"]["traits"]["trait_per_whole_unit"]
+    try_new_trait = settings["cat"]["unit"]["traits"]["try_new_trait"] #this can be mimmicked by just not using the shift when applying map
+    all_traits = [c.t.black,c.t.red,c.t.white,c.t.floating,c.t.relic,c.t.zombie,c.t.alien,c.t.angel,c.t.aku,c.t.metal]
+
+    map_to_return = [] #maybe initialize it with a bunch of values if theres a file with no forms
+    for unit_id in range(0,len(stats)):
+        units_map = []
+        if trait_per_whole_unit:
+            #establish units working trait order
+            current_trait_order = []
+            temp_tl = copy.deepcopy(all_traits)
+            for x in range(0,len(temp_tl)):
+                current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+            
+            has_traits = []
+            for trait in current_trait_order:
+                for form_id in stats[unit_id]:
+                    if stats[unit_id][form_id][trait] == 1 and trait not in has_traits:
+                        has_traits.append(trait)
+            
+            traits_had = len(has_traits)
+            #finish traits
+            for trait in current_trait_order:
+                if trait not in has_traits:
+                    has_traits.append(trait)
+            
+            shift = r.randrange(1,len(current_trait_order)-1)
+            if try_new_trait:
+                shift = traits_had
+            
+            form_map = create_form_map(has_traits,shift,traits_had,remove_metals)
+            for form_id in range(0,len(stats[unit_id])):
+                units_map.append(form_map)
+
+        else: #trait per form
+            #run 5 times for future proof
+            for form_id in range(0,5):
+                current_trait_order = []
+                temp_tl = copy.deepcopy(current_trait_order)
+                for x in range(0,len(temp_tl)):
+                    current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+                shift = r.randrange(1,len(current_trait_order)-1)
+                if len(stats[unit_id]) > form_id:
+                    has_traits = []
+                    for trait in current_trait_order:
+                        if stats[unit_id][form_id][trait] == 1:
+                            has_traits.append(trait)
+                    
+                    traits_had = len(has_traits)
+                    #finish hastraits
+                    for trait in current_trait_order:
+                        if trait not in has_traits:
+                            has_traits.append(trait)
+                    
+                    if try_new_trait:
+                        shift = traits_had
+                    
+                    form_map = create_form_map(has_traits,shift,traits_had,remove_metals)
+                    units_map.append(form_map)
+
+        map_to_return.append(units_map)
+    return map_to_return
+                    
+def get_map(stats):
+    """
+    gets map from stats, conditional
+    """
+    mode = settings["cat"]["unit"]["traits"]["mode"]
+    cat_map = []
+    if mode == "swap":
+        cat_map = get_swaps(stats)
+    if mode == "randomize":
+        cat_map = get_cat_randomization_map(stats)
+    return cat_map
 
 
+def create_form_map(traits,shift,traits_had,remove_metals):
+    new_traits = copy.deepcopy(traits)
+    for x in range(0,shift): #rotate it
+        new_traits.append(new_traits.pop(0))
+    
+    if remove_metals: #replace metal with first entry cat wont get
+        metal_index = new_traits.index(c.t.metal)
+        new_index = traits_had%len(new_traits)
+        if new_traits[new_traits] == c.t.metal:
+            new_index = new_index%len(new_traits)
+        new_traits[metal_index] = new_traits[new_index]
+    
+    form_map = [traits,new_traits]
+    return form_map
 
+def apply_map(stats,map):
+    """
+    applies a map to unit array
+    """
+    if len(map) == 0: #this is used when set to none
+        return stats
+    #create traitless array
+    new_stats = copy.deepcopy(stats)
+    for unit_id in range(0,len(new_stats)):
+        for form_id in range(0,len(new_stats[unit_id])):
+            for trait in c.t:
+                new_stats[unit_id][form_id][trait] = 0
+    
+    for unit_id in range(0,len(stats)):
+        for form_id in range(0,len(stats[unit_id])):
+            for index in range(0,len(map[unit_id][form_id][0])): #its done this way so if someone puts multiple swaps from the same trait it works
+                old_trait = map[unit_id][form_id][0][index]
+                new_trait = map[unit_id][form_id][1][index]
+                if stats[unit_id][form_id][old_trait] == 1:
+                    new_stats[unit_id][form_id][new_trait] = 1
+    
+    return new_stats
+
+def do_trait_randomization(stats):
+    """
+    generates trait map from stats and applies it to stats
+    """
+    cat_map = get_map(stats)
+    new_stats = apply_map(stats,cat_map)
+    return new_stats
+
+#need one for giving/taking zkill curse and shield and barrier but idk how I intend to do that rn since talents
 
 
 
