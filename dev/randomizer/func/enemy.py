@@ -339,73 +339,88 @@ def create_enemy_trait_map():
 
 def get_swap(stats):
     """
-    makes the swap map, I hate this function
+    makes the swap map
     """
+    r = randinst(200)
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
     traits = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
     text_traits = ["black","red","white","floating","relic","zombie","alien","angel","aku","metal"]
-    swaps = []
-    specified_swaps = settings["enemy"]["traits"]["specified_swaps"]
-    for each in specified_swaps:
+    
+    #gets set ones from config
+    specified_swap_texts = settings["enemy"]["traits"]["specified_swaps"]
+    user_from = []
+    user_to = []
+    for each in specified_swap_texts:
         try:
-            first_index = text_traits.index(each[0])
-            second_index = text_traits.index(each[1])
-            swaps.append([traits[first_index],traits[second_index]])
+            first = text_traits.index(each[0])
+            second = text_traits.index(each[1])
+            user_from.append(traits[first])
+            user_to.append(traits[second])
         except:
             pass
-    #used later for metals
-    copy_swap = copy.deepcopy(swaps)
-
-    #generate a randomly ordered trait list
+    
+    #get current working trait order
     current_trait_order = []
-    r = randinst(6)
-    temp_traits = copy.deepcopy(traits)
-    for each in range(0,len(temp_traits)):
-        index = r.randrange(0,len(temp_traits))
-        current_trait_order.append(temp_traits.pop(index))
+    temp_tl = copy.deepcopy(traits)
+    for x in range(0,len(temp_tl)):
+        current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
     
-    #get traits needed to be added to swaps
-    to_add_traits = copy.deepcopy(current_trait_order)
-    for each in swaps:
-        try:
-            to_add_traits.remove(each[0])
-        except:
-            pass
+    # get missing traits, put dually missing in first
+    missing_from = []
+    missing_to = []
+    for trait in current_trait_order:
+        if trait not in user_from and trait not in user_to:
+            missing_from.append(trait)
+            missing_to.append(trait)
+    for trait in current_trait_order:
+        if trait not in user_from and trait not in missing_from:
+            missing_from.append(trait)
+        if trait not in user_to and trait not in missing_to:
+            missing_to.append(trait)
     
-    #copy and rotate an array
-    rotated = copy.deepcopy(to_add_traits)
-    if len(to_add_traits) > 1:
-        for x in range(1,r.randrange(1,len(to_add_traits)-1)):
-            rotated.append(rotated.pop(0))
+    #make sure there is a trait per missing from
+    while len(missing_to) < len(missing_from):#fill out missing to with matching trait from missing from
+        missing_index = len(missing_to)
+        missing_to.append(missing_from[missing_index])
     
-    #add them to swap
-    for x in range(0,len(to_add_traits)):
-        swaps.append([to_add_traits[x],rotated[x]])
+    try: #set shift
+        shift = r.randrange(1,len(missing_from)-1)
+    except:
+        shift = 1
     
-    #if metals are removed and not in copy swap replace them with first non metal trait in current trait order
-    swaped_to_traits = []
-    for each in copy_swap:
-        swaped_to_traits.append(each[1])
-    if remove_metals and e.t.metal not in swaped_to_traits:
+    #now rotate missing to, ifed to prevent breakage if missings are 0 length
+    if len(missing_from) > 0:
+        for x in range(0,shift):
+            missing_to.append(missing_to.pop(0))
+    
+    #kill metals only if not in specified swap
+    if remove_metals:
         index = 0
         if current_trait_order[0] == e.t.metal:
             index = 1
-        for each in swaps:
-            if each[1] == e.t.metal:
-                each[1] = current_trait_order[index]
+        for x in range(0,len(missing_to)):
+            if missing_to[x] == e.t.metal:
+                missing_to[x] = current_trait_order[index]
     
-    map_to_return = []
+    #combine user specified swaps with generated swaps
+    total_from = copy.deepcopy(user_from)
+    total_to = copy.deepcopy(user_to)
+    for x in range(0,len(missing_from)):
+        total_from.append(missing_from[x])
+        total_to.append(missing_to[x])
+    
+    map_to_return = [] #create map to return
     for x in range(0,len(stats)):
-        map_to_return.append(swaps)
+        map_to_return.append([total_from,total_to])
     return map_to_return
-
+    
 def get_randomization_map(stats):
     """
-    
+    creates a map from stats
     """
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
     trait_list = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
-    r = randinst(6)
+    r = randinst(200)
     map_to_return = []
     for unit_id in range(0,len(stats)):
         #get units trait order
@@ -440,7 +455,7 @@ def get_randomization_map(stats):
         
         map_to_return.append([from_traits,to_traits])
     
-    return stats
+    return map_to_return
         
 def do_traits(stats):
     """
@@ -454,18 +469,19 @@ def do_traits(stats):
             for trait in e.t:
                 unit[trait] = 0
         
-        #loop through unit and trait in map and apply them to new stats
-        for unit_id in range(0,len(stats)):
-            for trait_id in range(0,len(enemy_map[unit_id][0])):
-                old_trait = enemy_map[unit_id][0][trait_id]
-                new_trait = enemy_map[unit_id][1][trait_id]
-                if stats[unit_id][old_trait] == 1:
+        #apply map to stats
+        for unit_id in range(0,len(new_stats)):
+            for trait in range(0,len(enemy_map[unit_id][0])):
+                old_trait = enemy_map[unit_id][0][trait]
+                new_trait = enemy_map[unit_id][1][trait]
+                if new_stats[unit_id][old_trait] == 1:
                     new_stats[unit_id][new_trait] = 1
-        
+
+        #set new stats as stats
         stats = new_stats
-    stats = trait_exceptions(stats)
+    stats = trait_exceptions(stats) #applies the forced traits
     return stats
-    
+
 
 """
 trait gimmicks
