@@ -70,6 +70,9 @@ def randomize_abilities(estat):
 
 
 def make_base_enemy(estat):
+    """
+    makes the non vanilla base enemy stats array to work off of
+    """
     new_stats = copy.deepcopy(estat)
     new_stats = early_enemy_balance(new_stats)
     return new_stats
@@ -317,7 +320,152 @@ def late_enemy_balance(estat):
 
     return estat
 
+"""
+rando or swap traits
+"""
 
+def create_enemy_trait_map():
+    """
+    creates the enemy trait map, conditional, uses base ennemy array for now
+    """
+    rando_mode = settings["enemy"]["traits"]["mode"]
+    enemy_map = []
+    if rando_mode == "swap":
+        enemy_map = get_swap(base_enemy_array)
+    if rando_mode == "randomize":
+        enemy_map = get_randomization_map(base_enemy_array)
+    
+    return enemy_map
+
+def get_swap(stats):
+    """
+    makes the swap map, I hate this function
+    """
+    remove_metals = settings["game"]["gameplay"]["remove_metals"]
+    traits = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
+    text_traits = ["black","red","white","floating","relic","zombie","alien","angel","aku","metal"]
+    swaps = []
+    specified_swaps = settings["enemy"]["traits"]["specified_swaps"]
+    for each in specified_swaps:
+        try:
+            first_index = text_traits.index(each[0])
+            second_index = text_traits.index(each[1])
+            swaps.append([traits[first_index],traits[second_index]])
+        except:
+            pass
+    #used later for metals
+    copy_swap = copy.deepcopy(swaps)
+
+    #generate a randomly ordered trait list
+    current_trait_order = []
+    r = randinst(6)
+    temp_traits = copy.deepcopy(traits)
+    for each in range(0,len(temp_traits)):
+        index = r.randrange(0,len(temp_traits))
+        current_trait_order.append(temp_traits.pop(index))
+    
+    #get traits needed to be added to swaps
+    to_add_traits = copy.deepcopy(current_trait_order)
+    for each in swaps:
+        try:
+            to_add_traits.remove(each[0])
+        except:
+            pass
+    
+    #copy and rotate an array
+    rotated = copy.deepcopy(to_add_traits)
+    if len(to_add_traits) > 1:
+        for x in range(1,r.randrange(1,len(to_add_traits)-1)):
+            rotated.append(rotated.pop(0))
+    
+    #add them to swap
+    for x in range(0,len(to_add_traits)):
+        swaps.append([to_add_traits[x],rotated[x]])
+    
+    #if metals are removed and not in copy swap replace them with first non metal trait in current trait order
+    swaped_to_traits = []
+    for each in copy_swap:
+        swaped_to_traits.append(each[1])
+    if remove_metals and e.t.metal not in swaped_to_traits:
+        index = 0
+        if current_trait_order[0] == e.t.metal:
+            index = 1
+        for each in swaps:
+            if each[1] == e.t.metal:
+                each[1] = current_trait_order[index]
+    
+    map_to_return = []
+    for x in range(0,len(stats)):
+        map_to_return.append(swaps)
+    return map_to_return
+
+def get_randomization_map(stats):
+    """
+    
+    """
+    remove_metals = settings["game"]["gameplay"]["remove_metals"]
+    trait_list = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
+    r = randinst(6)
+    map_to_return = []
+    for unit_id in range(0,len(stats)):
+        #get units trait order
+        current_trait_order = []
+        temp_tl = copy.deepcopy(trait_list)
+        for x in range(0,len(temp_tl)):
+            current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+        #get traits a unit has
+        has_traits = []
+        for each in current_trait_order:
+            if stats[unit_id][each] == 1:
+                has_traits.append(each)
+        #fill from traits with remaining traits unit doesnt have
+        from_traits = copy.deepcopy(has_traits)
+        for each in current_trait_order:
+            if each not in from_traits:
+                from_traits.append(each)
+        #rotate to traits by len has traits (blocks duplicates)
+        to_traits = copy.deepcopy(from_traits)
+        for x in range(0,len(has_traits)):
+            to_traits.append(to_traits.pop(0))
+        
+        if remove_metals: #change metals to the first trait a unit wont receive
+            index = len(has_traits)
+            if to_traits[index] == e.t.metal:
+                index += 1
+            if index >= len(to_traits):
+                index = 0
+            for each in range(0,len(to_traits)):
+                if to_traits[each] == e.t.metal:
+                    to_traits[each] = to_traits[index]
+        
+        map_to_return.append([from_traits,to_traits])
+    
+    return stats
+        
+def do_traits(stats):
+    """
+    applies trait map to stats, also applied trait exceptions
+    """
+    enemy_map = create_enemy_trait_map()
+    if len(enemy_map) > 0:
+        #create stats devoid of traits
+        new_stats = copy.deepcopy(stats)
+        for unit in new_stats:
+            for trait in e.t:
+                unit[trait] = 0
+        
+        #loop through unit and trait in map and apply them to new stats
+        for unit_id in range(0,len(stats)):
+            for trait_id in range(0,len(enemy_map[unit_id][0])):
+                old_trait = enemy_map[unit_id][0][trait_id]
+                new_trait = enemy_map[unit_id][1][trait_id]
+                if stats[unit_id][old_trait] == 1:
+                    new_stats[unit_id][new_trait] = 1
+        
+        stats = new_stats
+    stats = trait_exceptions(stats)
+    return stats
+    
 
 """
 trait gimmicks
@@ -791,7 +939,7 @@ def gimmick_total(estat):
     """
     applies all gimmicks conditionally from config
     """
-    do_gimmicks = settings["traits"]["gimmicks"]["enabled"]
+    do_gimmicks = settings["enemy"]["traits"]["gimmicks"]["enabled"]
     if do_gimmicks: #aside from black before red there was never an order of op before
         estat = black_gimmick(estat)
         estat = red_gimmick(estat)
@@ -802,6 +950,7 @@ def gimmick_total(estat):
         estat = alien_gimmick(estat)
         estat = angel_gimmick(estat)
         estat = aku_gimmick(estat)
+        estat = gimmick_exceptions(estat)
     return estat
 
 """
@@ -1048,19 +1197,28 @@ def apply_ability(stats,chance,duration,ability,ability_strength):
             if stats[e.s.waveChance] > 0:
                 ability += 1
             else:
-                stats[e.s.waveChance] = clamp_value(2+((chance/250)**2)*80)
+                wave_level = 10
                 if ability_strength < 60:
-                    stats[e.s.waveLevel] = 1
+                    wave_level = 1
                 elif ability_strength < 80:
-                    stats[e.s.waveLevel] = 2
+                    wave_level = 2
                 elif ability_strength < 90:
-                    stats[e.s.waveLevel] = 3
-                else:
-                    stats[e.s.waveLevel] = 10
+                    wave_level = 3
+                stats[e.s.waveLevel] = wave_level
+                wave_chance = clamp_value(2+((chance/250)**2)*80)
+                stats[e.s.waveChance] = wave_chance
+                #keep dps the same for all attacks, except reduce it by 5% per wave level
+                if stats[e.s.multiHasAbility1] == 1:
+                    stats[e.s.attack] = int(stats[e.s.attack] * (100-5*wave_level)/(100+wave_chance))
+                if stats[e.s.multiHasAbility2] == 1:
+                    stats[e.s.multiDamage2] = int(stats[e.s.multiDamage2] * (100-5*wave_level)/(100+wave_chance))
+                if stats[e.s.multiDamage3] == 1:
+                    stats[e.s.multiDamage3] = int(stats[e.s.multiDamage3] * (100-5*wave_level)/(100+wave_chance))
+
         if ability == 5:
             if stats[e.s.surgeChance] > 0:
                 ability += 1
-            else:
+            else: #prob needs a dps reducer
                 stats[e.s.surgeChance] = clamp_value(5+((chance/300)**2)*100)
                 stats[e.s.surgeWidth] = 0
                 if ability_strength < 80:
@@ -1072,7 +1230,7 @@ def apply_ability(stats,chance,duration,ability,ability_strength):
         if ability == 6:
             if stats[e.s.explodeChance] > 0:
                 ability += 1
-            else:
+            else: #prob needs a dps reducer
                 stats[e.s.explodeChance] = clamp_value(5+((chance/400)**2)*80)
                 stats[e.s.explodeAt4x] = int(3*stats[e.s.range] - 75)
         if ability == 7:
@@ -1135,13 +1293,165 @@ def apply_ability(stats,chance,duration,ability,ability_strength):
 
 
 
+def trait_exceptions(estat):
+    """
+    applies force traits and exceptions before gimmicks, conditional
+    """
+    exceptions = settings["enemy"]["exceptions"]
+    force = settings["enemy"]["force_traits"]
+    johnny = exceptions["johnny"]
+    poultrio = exceptions["poultrio"]
+    doge = force["tad_type_apk"]
+    squirrel = force["dab_type_apk"]
+    bluck = force["amph_type_apk"]
+    red_face = force["ryelo_type_apk"]
+    nu_metal = settings["game"]["gameplay"]["remove_metals"]
+
+    traits = [t for t in e.t]
+    if nu_metal:
+        try:
+            traits.remove(e.t.metal)
+        except:
+            pass
+    
+    for trait in traits:
+        if johnny:
+            estat[523][trait] = 1
+        if poultrio:
+            estat[771][trait] = 1
+        if doge:
+            estat[2][trait] = 0
+        if squirrel:
+            estat[17][trait] = 0
+        if bluck:
+            estat[38][trait] = 0
+        if red_face:
+            estat[19][trait] = 0
+    
+    if doge:
+        estat[2][e.t.alien] = 1
+    if squirrel:
+        estat[17][e.t.angel] = 1
+    if bluck:
+        estat[38][e.t.aku] = 1
+    if red_face:
+        estat[19][e.t.alien] = 1
+    
+    return estat
+
+def gimmick_exceptions(estat):
+    """
+    applies post gimmick exceptions from config
+    """
+    exceptions = settings["enemy"]["exceptions"]
+    doge = exceptions["doge"]
+    brollow = exceptions["brollow"]
+    squirrel = exceptions["squirrel"]
+    red_face = settings["enemy"]["force_traits"]["ryelo_type_apk"]
+    remove_crystals = settings["game"]["gameplay"]["remove_itf_crystals"]
+
+    if doge:
+        if not remove_crystals:
+            estat[2][e.s.attack] = 1
+        estat[2][e.s.area] = 1
+        estat[2][e.s.attackOnce] = 1
+        estat[2][e.s.selfDestruct] = 2
+        estat[2][e.s.ldMinRange] = -320
+        estat[2][e.s.ldWidth] = 1320
+        estat[2][e.s.freezeChance] = 100
+        estat[2][e.s.freezeTime] = 120
+    
+    if squirrel:
+        estat[17][e.s.explodeChance] = 35
+        estat[17][e.s.explodeAt4x] = 1400
+        estat[17][e.s.explodeVariance] = 800
+        estat[17][e.s.explodeImmune] = 1
+        estat[17][e.s.kbChance] = 100
+    
+    if brollow: #set stats based trait, some of these are less interesting
+        brol = estat[209]
+        r = randinst(10)
+
+
+
+        if brol[e.t.black] == 1: #applies double the speed boost
+            speed_info = settings["enemy"]["traits"]["gimmicks"]["black"]["speed_boost"]
+            last_speed = speed_info[-1]
+            mult = False
+            if "x" in last_speed:
+                last_speed.replace("x","")
+                mult = True
+            try:
+                speed = float(last_speed)
+            except:
+                speed = 1.5
+            
+            if mult:
+                brol[e.s.speed] = int(99*(1+(speed-1)*2))
+            else:
+                brol[e.s.speed] = int(99 + 80) #just adds 80 for now
+        
+        if brol[e.t.red] == 1: #multiplies health by reduced kb ratio
+            brol[e.s.hp] = int(19000 * 10/brol[e.s.kbs])
+        
+        if brol[e.t.white] == 1: #idk
+            pass
+        
+        if brol[e.t.floating] == 1: #immune to wavess and counters surge
+            brol[e.s.waveImmune] = 1
+            brol[e.s.counterSurge] = 1
+        
+        if brol[e.t.relic] == 1: # gets 1/5 of second hits damage as pierce additional 100 range, increases curse chance as a result
+            brol[e.s.multiHasAbility3] = 1
+            brol[e.s.multiDamage3] = int(brol[e.s.multiDamage2]/5)
+            brol[e.s.multiDamage2] = int(brol[e.s.multiDamage2] - brol[e.s.multiDamage3])
+            brol[e.s.multiLdStart3] = -320
+            brol[e.s.multiLdWidth3] = brol[e.s.multiLdWidth2] + 100
+            brol[e.s.multiHasLdRange3] = 1
+            brol[e.s.multiPreAtk3] = 1
+        
+        if brol[e.t.zombie] == 1: #current just makes it so brollows burrow count is stronger, idk what to do
+            if brol[e.s.revive] > 0:
+                brol[e.s.revive] = int(1 + brol[e.s.revive])
+            elif brol[e.s.revive] < 0:
+                brol[e.s.reviveHp] = 100
+            
+            if brol[e.s.burrow] > 0:
+                pass #really dunno what to do here
+            if brol[e.s.burrow] < 0:
+                brol[e.s.burrowLength] += 500
+        
+        if brol[e.t.alien] == 1: #get a second ability, excludes multihit and isnt weighted
+            
+            brol = apply_ability(brol,50,150,r.randrange(0,10),r.randrange(0,100))
+        
+        if brol[e.t.angel] == 1: #doubles speed and health boost
+            brol[e.s.speed] = int(vanilla_enemy_array[209][e.s.speed] + 2*(brol[e.s.speed]-vanilla_enemy_array[209][e.s.speed]))
+            brol[e.s.hp] = int(vanilla_enemy_array[209][e.s.hp] + 2*(brol[e.s.hp]-vanilla_enemy_array[209][e.s.hp]))
+     
+        if brol[e.t.aku] == 1: #gives both shield and a death surge ability as minisurge
+            brol = apply_shield(brol)
+            brol = apply_death_surge(brol,1,100,r.randrange(0,100),True,r.randrange(0,100))
+        
+        #theres still no metal
+        estat[209] = brol
+    
+    if red_face:
+        estat[19][e.s.starred_god] = 1
+        estat[19][e.s.surgeChance] = 20
+        estat[19][e.s.miniSurge] = 1
+        estat[19][e.s.surgeLevel] = 1
+        estat[19][e.s.surgeStartPos] = 800
+        estat[19][e.s.surgeWidth] = 0
+
+    return estat
+
+
+
+
 """
 needed functions
 id swap
-
-
-
-
 
 
 

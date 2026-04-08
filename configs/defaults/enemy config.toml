@@ -15,7 +15,7 @@ mode = "randomize"
 
 # swap settings
 specified_swaps = [                         # control trait swap if swap mode is selected, otherwise ignored
-                                            # trait swaps in the format ["from_trait", "to_trait"], ie ["red", "black"] (red enemies all become black)
+    ["red","black"],                                        # trait swaps in the format ["from_trait", "to_trait"], ie ["red", "black"] (red enemies all become black)
     ]
 
 # randomize settings
@@ -130,7 +130,7 @@ enabled = false                             # metals arent meant to exist so thi
 
 ################# ENEMY EXCEPTIONS #################
 
-[exceptions]  # these exceptions will change specific enemies
+[exceptions]        # these exceptions will change specific enemies
 doge = true         # stops alien doge from making korea impossible
 johnny = true       # makes johnny our mascot (sprite will be incorrect if false)
 brollow = true      # makes brollow always fucked
