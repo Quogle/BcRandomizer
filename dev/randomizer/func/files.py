@@ -201,6 +201,10 @@ def file_reader(file):
     """
     returns 2d array from file, use only file name to check if in dl first
     """
+    non_num_csv = ["imgcut","mamodel","maanim"]
+    num_csv = ["csv"]
+    tsv = ["tsv"]
+    skip = ["json","png","preset"] #json and preset seem the same and can prolly be split
     #get csv or tsv
     check_ending = file.split(".")
     ending = check_ending[-1]
@@ -227,10 +231,16 @@ def file_reader(file):
                     input = GAME_FILES+each+"\\"+file
                     break
     
-    if ending == "tsv":
-        pass #Ill add this later
-    elif ending == "csv":
+    if ending in tsv:
+        csv_reader(input,False,"\t")
+    elif ending in num_csv:
         return csv_reader(input)
+    elif ending in non_num_csv:
+        return csv_reader(input,False)
+    elif ending in skip:
+        pass
+    else:
+        return csv_reader(input,False) #current default to non numercial csv
     
 def file_writer(file,info):
     """
@@ -246,16 +256,18 @@ def file_writer(file,info):
         csv_writer(DOWNLOAD_LOCAL + file,info)
 
 #reads 2d array from path, cut and pastes first line if file is in first_line_csv
-def csv_reader(file_path):
+def csv_reader(file_path,force_num=True,splitter=","):
     """
     returns int 2d array of csv at path
+    \n now capable of reading non numerical csv if force_num is false
+    \n can also read from tsv if splitter is \\t
     """
     file = open(file_path,"r",encoding="utf-8")
     
 
     #check if first line integerable
     first_line = file.readline()
-    first_line_array = first_line.split(",")
+    first_line_array = first_line.split(splitter)
     first_line_unreadable = False
     try:
         int(first_line_array[0])
@@ -272,6 +284,8 @@ def csv_reader(file_path):
     #read csv
     output = []
     csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-","."]
+    if splitter not in csv_characters:
+        csv_characters.append(splitter)
     while True:
         next_line = file.readline()
         if next_line == "":
@@ -280,14 +294,15 @@ def csv_reader(file_path):
         for x in next_line:
             if x in csv_characters:
                 line_string += x
-        line_array = line_string.split(",")
+        line_array = line_string.split(splitter)
         for x in range(0,len(line_array)):
             try:
                 line_array[x] = float(line_array[x])
                 if int(line_array[x]) == line_array[x]:
                     line_array[x] = int(line_array[x])
             except:
-                line_array[x] = 0
+                if force_num:
+                    line_array[x] = 0
         output.append(line_array)
     file.close()
     
@@ -312,7 +327,10 @@ def csv_writer(path,info):
     file = open(path,"w",encoding="utf-8")
     file.write(file_string)
     file.close()
-    
+
+
+
+#maanim reader/writer arent needed anymore as file reader can handle them
 #gets the maanim as an array first line is first entry, tries making all entries integers
 def maanim_reader(path):
     output = []
