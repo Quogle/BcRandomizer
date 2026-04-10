@@ -248,13 +248,22 @@ def file_writer(file,info):
     """
     writes file to dl
     """
+    non_num_csv = ["imgcut","mamodel","maanim"]
+    num_csv = ["csv"]
+    tsv = ["tsv"]
+    skip = ["json","png","preset"] #json and preset seem the same and can prolly be split
     end_check = file.split(".")
     end = end_check[-1]
-    dl_path = DOWNLOAD_LOCAL
 
-    if end == "tsv":
+    if end in tsv:
         pass
-    if end == "csv":
+    elif end in non_num_csv: #theyre separated but Im not sure if theres actually a reason to
+        csv_writer(DOWNLOAD_LOCAL + file,info)
+    elif end in num_csv:
+        csv_writer(DOWNLOAD_LOCAL + file,info)
+    elif end in skip:
+        pass
+    else:
         csv_writer(DOWNLOAD_LOCAL + file,info)
 
 #reads 2d array from path, cut and pastes first line if file is in first_line_csv
@@ -330,6 +339,24 @@ def csv_writer(path,info):
     file.write(file_string)
     file.close()
 
+def tsv_writer(path,info):
+    # make initial file string first line if in csv dict
+    global first_line_csv
+    split_path = path.split("\\")
+    file_string = ""
+    if split_path[-1] in first_line_csv:
+        file_string = first_line_csv[split_path[-1]]
+
+    for line in info:
+        line_string = ""
+        for x in line:
+            line_string += str(x)
+            line_string += "\t"
+        line_string = line_string[:-1] + "\n"
+        file_string += line_string
+    file = open(path,"w",encoding="utf-8")
+    file.write(file_string)
+    file.close()
 
 
 #maanim reader/writer arent needed anymore as file reader can handle them
