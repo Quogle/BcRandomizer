@@ -52,6 +52,10 @@ class s(IntEnum):
     weaken_immune = 51
     zombie_killer = 52
     witch_killer = 53
+    witch_target = 54
+    unknown_1 = 55
+    boss_wave_immune = 56
+    unknown_2 = 57
     two_self_destruct = 58
     multi_damage_2 = 59
     multi_damage_3 = 60
