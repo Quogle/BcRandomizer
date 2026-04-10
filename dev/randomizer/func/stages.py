@@ -191,17 +191,7 @@ def buff_cotc_aliens_in_sol_ul():
                     break
                 stage_number += 1
         
-def buff_shop():
-    """
-    makes shop less shit
-    """
-    qol = settings["game"]["qol"]
-    shop_buff = qol["shop_buff"] #does this even do anything
-    cheaper = qol["cheaper_items"]
-    leadership = qol["leadership_in_shop"]
-    ototo_helper = qol["ototo_helper_in_shop"]
-    cheaper_catamin = qol["cheap_catamin"]
-    
+
 
 
 

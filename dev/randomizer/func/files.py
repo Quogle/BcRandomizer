@@ -359,7 +359,7 @@ def tsv_writer(path,info):
     file.close()
 
 
-#maanim reader/writer arent needed anymore as file reader can handle them
+#maanim reader/writer you need to use these if you are not writing to a file of the same name as was read from
 #gets the maanim as an array first line is first entry, tries making all entries integers
 def maanim_reader(path):
     output = []

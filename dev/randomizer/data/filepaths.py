@@ -21,7 +21,7 @@ COTC3_TREASURE_DATA = "treasueData2_2.csv"
 MAPSTAGEDATA = "MapStageData"
 STAGE_SCHEM = "stage"
 ENEMY_STATS = "t_unit.csv"
-
+SHOP_FILE = "itemShopData.tsv"
 
 
 GAUNTLET_MLETTER = "A"
