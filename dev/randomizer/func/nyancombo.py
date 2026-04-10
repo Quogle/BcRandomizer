@@ -7,12 +7,13 @@ from dev.randomizer.func.unit import vanilla_unitbuy_array
 import dev.randomizer.func.files as f
 from dev.randomizer.data.filepaths import *
 from dev.randomizer.enums.unitbuy import ub
+import dev.randomizer.enums.nyancombo as cc
 
 #id,combo set, IDFK, S1 id,S1 form,S2 id,S2 form,S3 id,S3 form,S4 id,S4 form,S5 id,S5 form,effect,level,always -1
 
 BASE = Path(__file__).resolve().parents[2]
-
 COMBO_FILE = "NyancomboData.csv"
+COMBO_NAME_DATA = DOWNLOAD_LOCAL + "Nyancombo_en.csv"
 COMBO_DATA = DOWNLOAD_LOCAL + COMBO_FILE
 DATA_PATH = BASE / "randomizer" / "data" / "unit_blacklist.json"
 
@@ -29,14 +30,6 @@ EFFECT_POS = 13
 EFFECT_MAX = 27
 MULT_POS = 14          # 0:sm, 1:M, 2:L, 3:XL, 4:DOWN
 MULT_MAX = 4
-
-MULT_NAME_TO_INDEX = {
-    "sm": 0,
-    "m": 1,
-    "l": 2,
-    "xl": 3,
-    "down": 4
-}
 
 UBER_RARE = 4
 LEGEND_RARE = 5
@@ -103,9 +96,21 @@ def randomize_combos():
                 # Get the weights for this unit count
                 weights_dict = cfg["multiplier_weights"][str(unit_count)]
 
-                # Choices in order 0:SM, 1:M, 2:L, 3:XL, 4:DOWN
-                multipliers = [MULT_NAME_TO_INDEX[name] for name in ["sm","m","l","xl","down"]]
-                weights = [weights_dict[name] for name in ["sm","m","l","xl","down"]]
+                multipliers = [
+                    cc.mult.sm,
+                    cc.mult.m,
+                    cc.mult.l,
+                    cc.mult.xl,
+                    cc.mult.down
+                ]
+                
+                weights = [
+                    weights_dict["sm"],
+                    weights_dict["m"],
+                    weights_dict["l"],
+                    weights_dict["xl"],
+                    weights_dict["down"]
+                ]
 
                 # Pick a weighted random multiplier
                 combo[MULT_POS] = r.weighted_choice(multipliers, weights)
@@ -113,9 +118,43 @@ def randomize_combos():
                 # Uniform random if not using custom weights
                 combo[MULT_POS] = r.randrange(0, MULT_MAX+1)
 
+    all_units_down(r, combos)
+
     #write to dl
     f.file_writer(COMBO_FILE,combos)
     print(f"All {len(combos)} combos randomized and saved to {COMBO_FILE}")
+
+
+def all_units_down(r, combos):
+ 
+    # id for cat combo
+    next_id = 20000
+
+    for unit_id in range(len(vanilla_cat_array)):
+        # Create empty combo row (match CSV structure length)
+        combo = [-1] * len(combos[0])
+
+        # Basic identifiers
+        combo[0] = next_id        # id
+        combo[1] = cc.set.Eoc1
+        combo[2] = -1             # unknown field
+
+        # Put unit in first slot
+        combo[UNIT_ID_POS[0]] = unit_id
+        combo[UNIT_ID_POS[0] + 1] = 0  # default form
+
+        # Set effect (pick something valid or leave as-is)
+        combo[EFFECT_POS] = r.randrange(0,EFFECT_MAX+1)  # or whatever default you want
+
+        # Force DOWN multiplier
+        combo[MULT_POS] = cc.mult.down
+
+        combos.append(combo)
+        next_id += 1
+
+    f.file_writer(COMBO_FILE, combos)
+
+    print(f"Added {len(vanilla_cat_array)} 'DOWN' combos.")
 
 def is_uber_lr(unit_id, cfg):
     # Return True if the unit counts toward the uber/lr limit
