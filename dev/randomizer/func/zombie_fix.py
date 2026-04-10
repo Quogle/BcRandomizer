@@ -7,14 +7,26 @@ from dev.randomizer.func.unit import vanilla_unitbuy_array
 import dev.randomizer.func.files as f
 from dev.randomizer.data.filepaths import *
 import dev.randomizer.enums.cats as c
+import dev.randomizer.enums.enemy as e
 
 #id,combo set, IDFK, S1 id,S1 form,S2 id,S2 form,S3 id,S3 form,S4 id,S4 form,S5 id,S5 form,effect,level,always -1
 
 BASE = Path(__file__).resolve().parents[2]
 
-
 def fix_zombie():
     
+    img015 = f.file_reader("img015.imgcut")
+    img015[331][0] = 211
+    img015[331][1] = 698
+    img015[331][2] = 41
+    img015[331][3] = 41
+
+    img015[229][0] = 410
+    img015[229][1] = 856
+    img015[229][2] = 51
+    img015[229][3] = 51
+    f.file_writer("img015.imgcut",img015)
+
     # get rid of zombie button
     book_attribute = f.file_reader("nyankoPictureBookData_Attribute.csv")
     book_attribute[6][1] = 99
@@ -31,18 +43,22 @@ def fix_zombie():
     book_effect[67][6] = 0
     f.file_writer("nyankoPictureBookData_EffectAbility.csv",book_effect)
 
-    #cat_guide = f.file_reader("img015.imgcut")
-    #cat_guide[301][0] = 654
-    #cat_guide[301][1] = 955
-    #cat_guide[301][2] = 51
-    #cat_guide[301][3] = 51
 
-    #cat_guide[302][0] = 654
-    #cat_guide[302][1] = 955
-    #cat_guide[302][2] = 51
-    #cat_guide[302][3] = 51
 
-    
+    enemy_file = f.file_reader("t_unit.csv")
+    for i in range(1,len(enemy_file)):
+        if enemy_file[i][e.s.collosus] == 1:
+            enemy_file[i][e.s.collosus] = 0
+            f.file_writer("t_unit.csv",enemy_file)
+            print(f"Zombie Fix: Remove colossus from enemy {i}")
+
+
+        if enemy_file[i][e.s.zombie] == 1:
+            enemy_file[i][e.s.witch] = 1
+            f.file_writer("t_unit.csv",enemy_file)
+            print(f"Zombie Fix: Fix applied to {i}")
+
+
     for i in range(1,len(vanilla_cat_array) + 1):
        
        # loop through all units
