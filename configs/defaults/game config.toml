@@ -14,7 +14,8 @@ use_metal_rework = true                 # uses my ex metal rebalance
 remove_behemoths = true
 use_behemoth_rebalance = true           # uses my ex behemoth rebalance
 preserve_old_zombies = true             # swaps zkiller and witch so old zombies can still burrow (makes sorting cats weird)
-preserve_alien_magnifications = true    # buffs itf/cotc aliens if no longer alien or crystals removed
+preserve_alien_mags_main_chapters = true# buffs itf/cotc aliens if no longer alien or crystals removed
+preserve_cotc_mags_sol_ul_events = true # buffs cotc aliens in sol and ul and events (like cosmic cyclone)
 remove_itf_crystals = false             # removes itf crystals from the game (if false no new aliens can be in itf to make it not stupid)
 remove_cotc_crystals = true             # removes cotc crystals from the game, recommended who likes these
 

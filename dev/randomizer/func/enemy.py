@@ -506,6 +506,23 @@ def do_traits(stats):
     stats = trait_exceptions(stats) #applies the forced traits
     return stats
 
+def starred_god(stats):
+    """
+    applies starred and god status to enemies
+    \n conditional
+    """
+    r = randinst(204)
+    star_freq = settings["enemy"]["traits"]["gimmicks"]["alien"]["starred_frequency"]
+    rando_god = settings["enemy"]["extras"]["randomize_god"]
+
+    for unit_id in range(0,len(stats)):
+        star = r.randrange(0,100)
+        if stats[unit_id][e.t.alien] == 1 and star < star_freq:
+            #add something to block eoc and itf enemies
+            stats[unit_id][e.s.starred_god] = 1
+    
+    #add god rando here
+    return stats
 
 """
 trait gimmicks

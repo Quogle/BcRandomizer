@@ -230,7 +230,9 @@ def file_reader(file):
                 if os.path.exists(GAME_FILES+each+"\\"+file):
                     input = GAME_FILES+each+"\\"+file
                     break
-    
+    if not os.path.exists(input): #stop it from attempting to read a file that doesnt exist
+        return
+
     if ending in tsv:
         csv_reader(input,False,"\t")
     elif ending in num_csv:
@@ -574,8 +576,10 @@ class stage_sche(csv):
 
 
     def establish_first_line(s):
-        size = len(s.array[0])
-        first = s.array[0]
+        size = 0
+        if s.array != None: #prevent it from trying to read data if stage doesnt naturally exist
+            size = len(s.array[0])
+            first = s.array[0]
         if size>0:
             s.base_id = first[0]
         if size>1:
@@ -590,8 +594,10 @@ class stage_sche(csv):
             s.extra_last_stage = first[5]
     
     def establish_second_line(s):
-        size = len(s.array[1])
-        first = s.array[1]
+        size = 0
+        if s.array != None:
+            size = len(s.array[1])
+            first = s.array[1]
         if size>0:
             s.stage_length = first[0]
         if size>1:
@@ -615,8 +621,9 @@ class stage_sche(csv):
 
     def establish_grid(s):
         enemy = []
-        for x in range(2,len(s.array)):
-            enemy.append(s.array[x])
+        if s.array != None:
+            for x in range(2,len(s.array)):
+                enemy.append(s.array[x])
         s.enemies = enemy
 
     def submit(s):
