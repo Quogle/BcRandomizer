@@ -505,8 +505,9 @@ class csv():
 
 
 class stage_sche(csv):
-    def __init__(s, file_name):
+    def __init__(s, file_name,number_of_starting_lines=2):
         super().__init__(file_name)
+        s.number_of_starting_lines = number_of_starting_lines
         #line 1
         s.base_id = 1
         s.no_continues = 0
@@ -602,14 +603,15 @@ class stage_sche(csv):
 
     def submit(s):
         s.array = []
-        s.array.append([
-            s.base_id,
-            s.no_continues,
-            s.extra_chance,
-            s.extra_map,
-            s.extra_first_stage,
-            s.extra_last_stage
-        ])
+        if s.number_of_starting_lines == 2: #this allows me to write eoc/itf/cotc stages
+            s.array.append([
+                s.base_id,
+                s.no_continues,
+                s.extra_chance,
+                s.extra_map,
+                s.extra_first_stage,
+                s.extra_last_stage
+            ])
         s.array.append([
             s.stage_length,
             s.base_hp,
