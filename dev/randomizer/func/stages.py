@@ -221,7 +221,7 @@ def buff_cotc_enemies_in_stage(file_path,mag_boost,stats):
     did_something = False
     for enemy in stage.enemies:
         enemy_id = enemy[stage.enemy_id]
-        if enemy_id-2 in to_buff_ids and stats[enemy_id][e.s.starred_god] != 1:
+        if enemy_id-2 in to_buff_ids and (stats[enemy_id][e.s.starred_god] != 1 or remove_cotc_crystals):
             did_something = True
             enemy[stage.magnification] = int(mag_boost*enemy[stage.magnification])
     if did_something:
