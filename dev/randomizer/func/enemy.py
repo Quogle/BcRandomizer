@@ -72,6 +72,7 @@ def randomize_abilities(estat):
 def make_base_enemy(estat):
     """
     makes the non vanilla base enemy stats array to work off of
+    \n conditional
     """
     new_stats = copy.deepcopy(estat)
     new_stats = early_enemy_balance(new_stats)
@@ -85,6 +86,7 @@ def early_enemy_balance(estat):
 
     remove behemoth
     rebalance behemoths
+    \n conditional
     """
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
     give_metal_new_trait = settings["game"]["gameplay"]["give_metals_new_trait"]
@@ -108,6 +110,10 @@ def early_enemy_balance(estat):
 
 #buffs the hp of things with metal trait
 def metal_hp_buffer(estat):
+    """
+    buffs hp of currently metals
+    \n nonconditional
+    """
     metal_hp_tipping = 1000
     low_buff = 400
     high_buff = 20
@@ -122,6 +128,10 @@ def metal_hp_buffer(estat):
 
 # sets all metals to red and then gives traits to specific ones
 def metal_new_trait(estat):
+    """
+    gives metals a default trait of red but then gives set traits to most, removes their metal
+    \n nonconditional
+    """
     # default to giving metals red
     for unit in estat:
         if unit[e.t.metal] == 1:
@@ -153,7 +163,10 @@ def metal_new_trait(estat):
 
 #rebalances metals, croc still needs to be added at the end
 def metal_rebalance(estat):
-
+    """
+    rebalances metals, does not remove trait
+    \n nonconditional
+    """
     
 
     # metal doge 147
@@ -203,13 +216,20 @@ def metal_rebalance(estat):
 
 #removes behemoth from all enemies
 def behemoth_killer(estat):
+    """
+    removes behemoths
+    \n nonconditional
+    """
     for unit in estat:
         unit[e.s.behemoth] = 0
     return estat
 
 #rebalances most behemoths
 def behemoth_rebalance(s):
-
+    """
+    rebalances behemoths, does not remove behemoth
+    \n nonconditional
+    """
     # wild doge 603
     s[605][e.s.hp] = 45000
     s[605][e.s.attack] = 12000
@@ -309,6 +329,7 @@ def late_enemy_balance(estat):
     """
     croc/kronium
     maybe put leave modded unchanged in here
+    \n nonconditional
     """
     #croc 497
     estat[499][e.t.metal] = 1
@@ -324,22 +345,24 @@ def late_enemy_balance(estat):
 rando or swap traits
 """
 
-def create_enemy_trait_map():
+def create_enemy_trait_map(stats):
     """
-    creates the enemy trait map, conditional, uses base ennemy array for now
+    creates the enemy trait map, uses base ennemy array for now
+    \n conditional
     """
     rando_mode = settings["enemy"]["traits"]["mode"]
     enemy_map = []
     if rando_mode == "swap":
-        enemy_map = get_swap(base_enemy_array)
+        enemy_map = get_swap(stats)
     if rando_mode == "randomize":
-        enemy_map = get_randomization_map(base_enemy_array)
+        enemy_map = get_randomization_map(stats)
     
     return enemy_map
 
 def get_swap(stats):
     """
     makes the swap map
+    \n conditional
     """
     r = randinst(200)
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
@@ -417,6 +440,7 @@ def get_swap(stats):
 def get_randomization_map(stats):
     """
     creates a map from stats
+    \n conditional
     """
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
     trait_list = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
@@ -461,7 +485,7 @@ def do_traits(stats):
     """
     applies trait map to stats, also applied trait exceptions
     """
-    enemy_map = create_enemy_trait_map()
+    enemy_map = create_enemy_trait_map(stats)
     if len(enemy_map) > 0:
         #create stats devoid of traits
         new_stats = copy.deepcopy(stats)
@@ -490,6 +514,7 @@ trait gimmicks
 def black_gimmick(estat):
     """
     does all the black kb speed shit, interprets config and has defaults of +3 and 1.5x
+    \n conditional
     """
     black_info = settings["game"]["traits"]["gimmicks"]["black"]
     if black_info["enabled"]:
@@ -556,7 +581,8 @@ def black_gimmick(estat):
 
 def red_gimmick(estat):
     """
-    applies red speed and kb down, conditional, default x0.8 sp and x0.5 kb
+    applies red speed and kb down, default x0.8 sp and x0.5 kb
+    \n conditional
     """
     red_info = settings["game"]["traits"]["gimmicks"]["red"]
     do_red = red_info["enabled"]
@@ -595,6 +621,7 @@ def red_gimmick(estat):
 def white_gimmick(estat):
     """
     gives whites sage, does nothing else
+    \n conditional
     """
     white_info = settings["game"]["traits"]["gimmicks"]["white"]
     do_white = white_info["enabled"]
@@ -603,13 +630,15 @@ def white_gimmick(estat):
     if do_white:
         for unit in estat:
             if unit[e.t.white]:
-                unit[e.s.sage] = 1
+                if white_sages:
+                    unit[e.s.sage] = 1
     
     return estat
 
 def floating_gimmick(estat):
     """
-    applies a floating immunity, defaults of 20% extra ability chance and 5,5,5,3 wb as 3
+    applies a floating immunity, defaults of 40% extra ability chance and 5,5,5,3,3 wb and ep imm as 3
+    \n conditional
     """
     r = randinst(47)
     floating_info = settings["game"]["traits"]["gimmicks"]["white"]
@@ -618,22 +647,25 @@ def floating_gimmick(estat):
     si_weight = floating_info["surge_immune_weight"]
     cs_weight = floating_info["counter_surge_weight"]
     wb_weight = floating_info["wave_block_weight"]
+    xp_weight = floating_info["explosion_immune_weight"]
     duo = floating_info["dual_ability_chance"]
 
-    weights = [wi_weight,si_weight,cs_weight,wb_weight]
+    weights = [wi_weight,si_weight,cs_weight,wb_weight,xp_weight]
     
     if do_floating:
-        for unit in estat:
+        for unit in estat: #run for all units to prevent breaking
+            chance = r.randrange(0,100)
+            choices = [r.weighted_list(weights),r.weighted_list(weights)]
             if unit[e.t.floating] == 1:
 
                 #figure out if its duo
-                chance = r.randrange(0,100)
+                
                 times = 1
                 if chance < duo:
                     times = 2
                 #this scheme of making it duo doesnt actually make it have the correct chance since it fails to block repeats but idc
                 for x in range(0,times):
-                    choice = r.weighted_list(weights)
+                    choice = choices[x]
 
                     if choice == 0:
                         unit[e.s.waveImmune] = 1
@@ -643,12 +675,15 @@ def floating_gimmick(estat):
                         unit[e.s.counterSurge] = 1
                     elif choice == 3:
                         unit[e.s.waveBlock] = 1
+                    elif choice == 4:
+                        unit[e.s.explodeImmune] = 1
     
     return estat
 
 def relic_gimmick(estat):
     """
     gives relics curse and pierce if able
+    \n conditional
     """
     r = randinst(46)
     relic_info = settings["game"]["traits"]["gimmicks"]["relic"]
@@ -715,6 +750,7 @@ def relic_gimmick(estat):
 def zombie_gimmick(estat):
     """
     gives zombies without revive burrow/revive, does not use a normal weight system
+    \n conditional
     """               
     r = randinst(49)
     z_info = settings["game"]["traits"]["gimmicks"]["zombie"]
@@ -797,7 +833,8 @@ def zombie_gimmick(estat):
                     
 def alien_gimmick(estat):
     """
-    does the alien shit yo, does give starred aliens the flag
+    does the alien shit yo
+    \n conditional
     """               
     r = randinst(63)
     a_info = settings["game"]["traits"]["gimmicks"]["alien"]
@@ -831,7 +868,6 @@ def alien_gimmick(estat):
         
         for unit_id in range(0,len(estat)):
             #assign random numbers here
-            star = r.randrange(0,100)
             warp_barr = r.randrange(0,100)
             starred_ability = r.randrange(0,100)
             ability_strength = r.randrange(0,100)
@@ -855,9 +891,9 @@ def alien_gimmick(estat):
                 
 
                 done_starred = False
-                if star < starred_freq:
+                if estat[unit_id][e.s.starred_god] == 1:
                     done_starred = True
-                    estat[unit_id][e.s.starred_god] == 1
+                    #estat[unit_id][e.s.starred_god] == 1 #this is done elsewhere now
                     if warp_barr < warp_freq:
                         estat[unit_id] = apply_warp(estat[unit_id],warp_dec,attack_cycle)
 
@@ -877,6 +913,7 @@ def alien_gimmick(estat):
 def angel_gimmick(estat):
     """
     increases angel speed and hp, reduces attack
+    \n conditonal
     """
     a_info = settings["game"]["traits"]["gimmicks"]["angel"]
     do_a = a_info["enabled"]
@@ -924,6 +961,7 @@ def angel_gimmick(estat):
 def aku_gimmick(estat):
     """
     gives shield and ds
+    \n conditional
     """
     r= randinst(93)
     a_info = settings["game"]["traits"]["gimmicks"]["aku"]
@@ -953,7 +991,8 @@ def aku_gimmick(estat):
 
 def gimmick_total(estat):
     """
-    applies all gimmicks conditionally from config
+    applies all gimmicks
+    \n conditional
     """
     do_gimmicks = settings["enemy"]["traits"]["gimmicks"]["enabled"]
     if do_gimmicks: #aside from black before red there was never an order of op before
@@ -975,7 +1014,8 @@ parts of gimmick
 
 def apply_shield(stats):
     """
-    gives shield, nonconditional
+    gives shield
+    \n nonconditional
     """
     kb = stats[e.s.kbs]
     hp = stats[e.s.hp]
@@ -1006,7 +1046,8 @@ def apply_shield(stats):
 
 def apply_death_surge(stats,ds_lvl,has_ability,ds_ab,mini,ds_range):
     """
-    applies aku death surge to stats and returns it, nonconditional
+    applies aku death surge to stats and returns it
+    \n nonconditional
     """
     ds_chance = 100
     if stats[e.s.hp] < 10000:
@@ -1095,7 +1136,8 @@ def apply_death_surge(stats,ds_lvl,has_ability,ds_ab,mini,ds_range):
 
 def apply_warp(stats,warp_dec,attack_cycle):
     """
-    gives warp, nonconditional
+    gives warp
+    \n nonconditional
     """
     #block 80 and above from below 50k hp units
     if warp_dec >= 80 and stats[e.s.hp] < 50000:
@@ -1142,7 +1184,8 @@ def apply_warp(stats,warp_dec,attack_cycle):
 
 def apply_barrier(stats,bar_dec,strong_bar,bar_hp_mult):
     """
-    gives cat barrier, non conditional
+    gives cat barrier
+    \n non conditional
     """
     #block strong barriers from weak enemies
     if stats[e.s.hp] < 50000 and bar_dec > 75:
@@ -1171,7 +1214,8 @@ def apply_barrier(stats,bar_dec,strong_bar,bar_hp_mult):
 
 def apply_ability(stats,chance,duration,ability,ability_strength):
     """
-    applies the normal alien abilities to a stat line, nonconditional
+    applies the normal alien abilities to a stat line
+    \n nonconditional
     """
     count = 0
     while True:
@@ -1311,7 +1355,8 @@ def apply_ability(stats,chance,duration,ability,ability_strength):
 
 def trait_exceptions(estat):
     """
-    applies force traits and exceptions before gimmicks, conditional
+    applies force traits and exceptions before gimmicks
+    \n conditional
     """
     exceptions = settings["enemy"]["exceptions"]
     force = settings["enemy"]["force_traits"]
@@ -1358,6 +1403,7 @@ def trait_exceptions(estat):
 def gimmick_exceptions(estat):
     """
     applies post gimmick exceptions from config
+    \n conditional
     """
     exceptions = settings["enemy"]["exceptions"]
     doge = exceptions["doge"]

@@ -19,8 +19,8 @@ specified_swaps = [                         # control trait swap if swap mode is
     ]
 
 # randomize settings
-keep_trait_amount = true                    # enemies keep their original number of traits (if false, they only get 1 trait)
-always_new_trait = true                     # enemies will never randomize into their base trait
+#keep_trait_amount = true                    # enemies keep their original number of traits (if false, they only get 1 trait) these dont do anything
+#always_new_trait = true                     # enemies will never randomize into their base trait
 
 ################# TRAIT GIMMICKS #################
 
@@ -53,9 +53,10 @@ sage_rework = true                          # nerfs sages effects and gives weir
 enabled = true
 wave_immune_weight = 5                      # chooses 1 ability from a pool at weights given
 surge_immune_weight = 5
+explosion_immune_weight = 3
 counter_surge_weight = 5
 wave_block_weight = 3
-dual_ability_chance = 20  # 1-100
+dual_ability_chance = 40  # 1-100
 
 [traits.gimmicks.relic]
 enabled = true
@@ -147,7 +148,7 @@ ryelo_type_apk = false
 
 
 
-[extras]
+[extras] #everything except extras in this config has been added
 id_swap = false                             # swaps enemy id (ie those guys become doge)
 swap_to_similar_enemy = true                # limits swap to only similar "strength" enemies
 swap_ranges = [

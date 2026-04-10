@@ -4,6 +4,7 @@
 id_swap = false                      # swaps cat ids with devastating consequences
 randomize_abilities = false
 gift_trait_specific_abilities = true # gives anti relics curse immune and the like
+take_trait_specific_abilities = true # removes said abilities from cats that no longer have those traits (uses same proportions)
 zkiller_frequency = 80
 curse_imm_frequency = 100
 shield_pierce_frequency = 20
