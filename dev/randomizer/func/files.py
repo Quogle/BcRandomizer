@@ -231,10 +231,11 @@ def file_reader(file):
                     input = GAME_FILES+each+"\\"+file
                     break
     if not os.path.exists(input): #stop it from attempting to read a file that doesnt exist
+        #print("file \"" + str(input) + "\" does not exist")
         return
 
     if ending in tsv:
-        csv_reader(input,False,"\t")
+        return csv_reader(input,False,"\t")
     elif ending in num_csv:
         return csv_reader(input)
     elif ending in non_num_csv:
@@ -256,7 +257,7 @@ def file_writer(file,info):
     end = end_check[-1]
 
     if end in tsv:
-        pass
+        csv_writer(DOWNLOAD_LOCAL + file,info,"\t")
     elif end in non_num_csv: #theyre separated but Im not sure if theres actually a reason to
         csv_writer(DOWNLOAD_LOCAL + file,info)
     elif end in num_csv:
@@ -288,7 +289,8 @@ def csv_reader(file_path,force_num=True,splitter=","):
     #shove first line in dict
     if first_line_unreadable:
         global first_line_csv
-        first_line_csv[file_path] = first_line
+        file_names = file_path.split("\\")
+        first_line_csv[file_names[-1]] = first_line
     else:
         file.seek(0)
     
@@ -302,9 +304,12 @@ def csv_reader(file_path,force_num=True,splitter=","):
         if next_line == "":
             break
         line_string = ""
-        for x in next_line:
-            if x in csv_characters:
-                line_string += x
+        if force_num:
+            for x in next_line:
+                if x in csv_characters:
+                    line_string += x
+        else:
+            line_string = next_line
         line_array = line_string.split(splitter)
         for x in range(0,len(line_array)):
             try:
@@ -320,7 +325,7 @@ def csv_reader(file_path,force_num=True,splitter=","):
     return output
 
 #writes 2d array info to path, attatches first line before if file is in first_line_csv
-def csv_writer(path,info):
+def csv_writer(path,info,character=","):
     # make initial file string first line if in csv dict
     global first_line_csv
     split_path = path.split("\\")
@@ -332,26 +337,7 @@ def csv_writer(path,info):
         line_string = ""
         for x in line:
             line_string += str(x)
-            line_string += ","
-        line_string = line_string[:-1] + "\n"
-        file_string += line_string
-    file = open(path,"w",encoding="utf-8")
-    file.write(file_string)
-    file.close()
-
-def tsv_writer(path,info):
-    # make initial file string first line if in csv dict
-    global first_line_csv
-    split_path = path.split("\\")
-    file_string = ""
-    if split_path[-1] in first_line_csv:
-        file_string = first_line_csv[split_path[-1]]
-
-    for line in info:
-        line_string = ""
-        for x in line:
-            line_string += str(x)
-            line_string += "\t"
+            line_string += character
         line_string = line_string[:-1] + "\n"
         file_string += line_string
     file = open(path,"w",encoding="utf-8")
