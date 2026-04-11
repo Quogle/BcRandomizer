@@ -29,3 +29,14 @@ This project uses [TBCML](https://codeberg.org/fieryhenry/tbcml) by fieryhenry, 
 
 ### APK Art
 • JustAnAmpharos
+
+
+
+who writes a readme like this its too formal for me
+how to use:
+    put an apk in the same directory as main
+    edit cat, enemy, and game configs in \configs (please dont edit the defaults)
+    run main, the first time its run it will take a few minutes
+    your apk appears in \moddedAPKS
+
+you can also manually put files in dl and run makeapk after having main successfully once

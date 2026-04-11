@@ -17,8 +17,6 @@ replace_icon()
 #randomizer code
 #encrypt dl here
 
-#randomize_combos()
-
 #input("Press Enter to continue...")
 
 create_download_local()
