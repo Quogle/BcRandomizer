@@ -2,12 +2,15 @@ import tomllib
 import random
 import os
 import shutil
+import dev.randomizer.func.files as f
 
 CONFIGS = "configs\\"
 DEFAULTS = "defaults\\"
 CAT_CONFIG = "cat config.toml"
 ENEMY_CONFIG = "enemy config.toml"
 GAME_CONFIG = "game config.toml"
+ENEMY_INFO = "enemy_info.csv"
+CAT_INFO = "cat_info.csv"
 VALID_WORDS = ["none","swap","randomize"]
 SPELLCHECK = [["white","traitless"],["true","yes"],["false","no"]]
 
@@ -43,6 +46,7 @@ def turn_string_array_to_array(string):
     decrease_depth = False
     pop_posit = False
     increment_posit = False
+    string = string.replace("][","],[") #fixes when people forget to add commas
     for x in range(0,len(string)):
         st = string[x]
 
@@ -238,16 +242,50 @@ def get_config(path):
 
 
 
+#enemy and cat info funcs
+def get_unit_info():
+    """
+    reads cat and enemy info
+    """
+    #open files
+    default_enemy = f.csv_reader(CONFIGS + DEFAULTS + ENEMY_INFO)
+    if not os.path.exists(CONFIGS + ENEMY_INFO):
+        shutil.copy(CONFIGS+DEFAULTS+ENEMY_INFO,CONFIGS+ENEMY_INFO)
+    user_enemy = f.csv_reader(CONFIGS+ENEMY_INFO)
+
+    #overlay user on default
+    while len(default_enemy) < len(user_enemy):
+        default_enemy.append([])
+    for x in range(0,len(user_enemy)):
+        while len(default_enemy[x]) < len(user_enemy[x]):
+            default_enemy[x].append(0)
+        for y in range(0,len(user_enemy[x])):
+            default_enemy[x][y] = user_enemy[x][y]
+    
+
+    return [default_enemy,[]] #there should be cat info in here aswell
+
+
+
+
+
+
+
+
 
 
 #gets the {cats,enemy,game} settings dict
 def get_settings_dict():
+    info = get_unit_info()
     config = {
         "cat":get_config(CAT_CONFIG),
         "enemy":get_config(ENEMY_CONFIG),
-        "game":get_config(GAME_CONFIG)
+        "game":get_config(GAME_CONFIG),
+        "enemy_info":info[0],
+        "cat_info":info[1],
     }
     return config
+
 
 
 

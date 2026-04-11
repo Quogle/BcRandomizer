@@ -16,11 +16,14 @@ mode = "randomize"
 # swap settings
 specified_swaps = [                         # control trait swap if swap mode is selected, otherwise ignored
     ["red","black"],                                        # trait swaps in the format ["from_trait", "to_trait"], ie ["red", "black"] (red enemies all become black)
+    ["white","black"]
     ]
 
 # randomize settings
 #keep_trait_amount = true                    # enemies keep their original number of traits (if false, they only get 1 trait) these dont do anything
 #always_new_trait = true                     # enemies will never randomize into their base trait
+give_traitless_enemies_traits = true        # gives things like enemy bases a trait
+
 
 ################# TRAIT GIMMICKS #################
 

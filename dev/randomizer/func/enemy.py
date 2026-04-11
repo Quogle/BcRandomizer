@@ -1,6 +1,7 @@
 
 import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
+import dev.randomizer.enums.unit_info as info
 from dev.randomizer.func.core import randinst
 from dev.randomizer.parse_config import settings
 import dev.randomizer.func.files as f
@@ -508,21 +509,98 @@ def do_traits(stats):
 
 def starred_god(stats):
     """
-    applies starred and god status to enemies
+    applies starred and god status to enemies, uses all 3 gods
     \n conditional
     """
     r = randinst(204)
+    rando_mode = settings["enemy"]["traits"]["mode"]
     star_freq = settings["enemy"]["traits"]["gimmicks"]["alien"]["starred_frequency"]
     rando_god = settings["enemy"]["extras"]["randomize_god"]
+    no_itf_crystals = settings["game"]["gameplay"]["remove_itf_crystals"]
+    no_cotc_crystals = settings["game"]["gameplay"]["remove_cotc_crystals"]
+    enemy_info = settings["enemy_info"]
+    do_star = True
+    if rando_mode == "none": #block it from giving star if no traits are changed
+        do_star = False
+
+    #get info arrays
+    eoc_enemy = []
+    itf_enemy = []
+    cotc_enemy = []
+    itf_allowed = []
+    for unit_id in range(0,len(enemy_info)):
+        if enemy_info[unit_id][info.e.in_eoc] == 1:
+            eoc_enemy.append(unit_id)
+        if enemy_info[unit_id][info.e.in_itf] == 1:
+            itf_enemy.append(unit_id)
+        if enemy_info[unit_id][info.e.in_cotc] == 1:
+            cotc_enemy.append(unit_id)
+        if enemy_info[unit_id][info.e.allowed_alien_in_itf] == 1:
+            itf_allowed.append(unit_id)
+    #get units that can be god
+    god_allowed = []
+    for unit_id in range(0,len(enemy_info)):
+        if unit_id in eoc_enemy or unit_id in itf_enemy or unit_id in cotc_enemy: #should probably block early sol
+            pass
+        else:
+            if enemy_info[unit_id][info.e.collab] == 0 and enemy_info[unit_id][info.e.cake] == 0: #I feel like there are better conditions
+                god_allowed.append(unit_id)
 
     for unit_id in range(0,len(stats)):
         star = r.randrange(0,100)
         if stats[unit_id][e.t.alien] == 1 and star < star_freq:
-            #add something to block eoc and itf enemies
-            stats[unit_id][e.s.starred_god] = 1
+            if unit_id in eoc_enemy:
+                pass
+            elif unit_id in itf_enemy:
+                pass
+            elif unit_id in cotc_enemy and not no_cotc_crystals:
+                pass
+            elif do_star:
+                stats[unit_id][e.s.starred_god] = 1
     
+    if rando_god and len(god_allowed) > 3:
+        god1 = god_allowed[r.randrange(0,len(god_allowed))]
+        god_allowed = god_allowed.remove(god1)
+        god2 = god_allowed[r.randrange(0,len(god_allowed))]
+        god_allowed = god_allowed.remove(god2)
+        god3 = god_allowed[r.randrange(0,len(god_allowed))]
+        stats[god1][e.s.starred_god] = 2
+        stats[god2][e.s.starred_god] = 3
+        stats[god3][e.s.starred_god] = 4
     #add god rando here
     return stats
+
+def traitless_get_traits(stats):
+    """
+    gives a trait to all traitless enemies
+    \n conditional
+    """
+    r = randinst(107)
+    metals_removed = settings["game"]["gameplay"]["remove_metals"]
+    do_self = settings["enemy"]["traits"]["give_traitless_enemies_traits"]
+    if not do_self:
+        return stats
+
+    trait_list = []
+    for trait in e.t:
+        if trait != e.t.metal:
+            trait_list.append(trait)
+    if not metals_removed:
+        trait_list.append(e.t.metal)
+    
+    for unit_id in range(2,len(stats)): #dont do it to the dummy enemies
+        new_trait = trait_list[r.randrange(0,len(trait_list))]
+        trait_count = 0
+        for trait in e.t:
+            if stats[unit_id][trait] == 1:
+                trait_count += 1
+        if trait_count == 0:
+            stats[unit_id][new_trait] = 1
+    
+    return stats
+
+
+    
 
 """
 trait gimmicks
