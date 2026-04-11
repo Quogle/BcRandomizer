@@ -698,11 +698,16 @@ class map_data(csv):
         s.drop4_rate = 15
         s.drop4_id = 16
         s.drop4_count = 17
+        s.drop5_rate = 18
+        s.drop5_id = 19
+        s.drop5_count = 20
 
         
 
 
     def establish_data(s):
+        if s.array == None:
+            return
         first = s.array[0]
         le = len(first)
         if le>0:
@@ -719,8 +724,11 @@ class map_data(csv):
     
     def establish_grid(s):
         grid = []
-        for x in range(2,len(s.array)):
-            grid.append(s.array[x])
+        if s.array != None:
+            for x in range(2,len(s.array)):
+                if s.array[x] == [0]:
+                    break
+                grid.append(s.array[x])
         s.stages = grid
     
     def submit(s):

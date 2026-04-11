@@ -60,7 +60,7 @@ randomize_effects = true                                # randomize combo effect
 max_uber_count = 1                                      # How many ubers/lr can be in a catcombo (1-5)
 allow_legend_rares = false                              # Whether legend rares can be in combos (will use max_uber_count)
 
-[catcombo.blacklist]                                   # units blacklisted from appearing in combos
+[catcombo.blacklist]                                    # units blacklisted from appearing in combos
 collab = true                                           # dissallow units only obtained through collaborations
 version_exclusive = true                                # dissallow units exclusive to non english versions of the game
 unobtainable = true                                     # dissallow normally unobtainable units ( iron wall, conjures )
