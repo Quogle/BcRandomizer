@@ -1,5 +1,7 @@
 import tomllib
 import random
+import os
+import shutil
 
 CONFIGS = "configs\\"
 DEFAULTS = "defaults\\"
@@ -226,6 +228,8 @@ def get_config(path):
     """
     calls for both default and non default version of a file and then turns them into a single dictionary and returns it
     """
+    if not os.path.exists(CONFIGS + path):
+        shutil.copy(CONFIGS + DEFAULTS + path,CONFIGS + path)
     default = parse_file(CONFIGS+DEFAULTS+path)
     new = parse_file(CONFIGS+path)
     path_list = overwrite_default_path_list(default,new)
