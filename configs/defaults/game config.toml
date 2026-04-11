@@ -107,6 +107,7 @@ cheap_catamin = true
 units_3x_sell = true
 free_orb_removal = true
 mission_collab_special_tf_drop = false          #current doesnt work
+guarantee_advent_drops = true
 
 [qol.stage_changes]
 seasonals_in_sol = true                         # adds monthly and certain collab units to sol

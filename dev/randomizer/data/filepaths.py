@@ -13,15 +13,17 @@ DATA_LOCAL = LOCAL_FILES + "DataLocal\\"
 
 #file names
 EOC_TREASURE_DATA = "treasureData0.csv"
-ITF_TREASURE_DATA = "treasueData1.csv"
-COTC1_TREASURE_DATA = "treasueData2_0.csv"
-COTC2_TREASURE_DATA = "treasueData2_1.csv"
-COTC3_TREASURE_DATA = "treasueData2_2.csv"
+ITF_TREASURE_DATA = "treasureData1.csv"
+COTC1_TREASURE_DATA = "treasureData2_0.csv"
+COTC2_TREASURE_DATA = "treasureData2_1.csv"
+COTC3_TREASURE_DATA = "treasureData2_2.csv"
 
 MAPSTAGEDATA = "MapStageData"
 STAGE_SCHEM = "stage"
 ENEMY_STATS = "t_unit.csv"
 SHOP_FILE = "itemShopData.tsv"
+ORB_NP_AMOUNT_FILE = "equipmentgrade.csv"
+
 
 
 GAUNTLET_MLETTER = "A"

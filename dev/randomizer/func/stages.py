@@ -216,7 +216,7 @@ def buff_cotc_enemies_in_stage(file_path,mag_boost,stats):
     remove_cotc_crystals = settings["game"]["gameplay"]["remove_cotc_crystals"]
     to_buff_ids = [360,361,362,363,364,365,366,375,377,388,417,418]
     stage = f.stage_sche(file_path)
-    if stage.array == None: #this is what breaks it out when the stage does exist
+    if not stage.exists: #this is what breaks it out when the stage does exist
         return False
     did_something = False
     for enemy in stage.enemies:

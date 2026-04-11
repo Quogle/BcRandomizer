@@ -15,7 +15,7 @@ def remove_itf_crystals():
     for x in range(tres.pos.treasure_effects,tres.pos.treasure_effects+tres.pos.treasure_count):
         if treasures[x][tres.pos.treasure_effect_id] == tres.id.itf_crystal:
             treasures[x][tres.pos.treasure_effect_id] = -1
-    f.file_writer(treasures)
+    f.file_writer(ITF_TREASURE_DATA,treasures)
 
 def remove_cotc_crystals():
     """
@@ -28,7 +28,7 @@ def remove_cotc_crystals():
         for x in range(tres.pos.treasure_effects,tres.pos.treasure_effects+tres.pos.treasure_count):
             if treasures[x][tres.pos.treasure_effect_id] == tres.id.cotc_crystal:
                 treasures[x][tres.pos.treasure_effect_id] = -1
-        f.file_writer(treasures)
+        f.file_writer(each,treasures)
 
 def condense_god():
     """
@@ -43,7 +43,7 @@ def condense_god():
             if treasures[line_id][tres.pos.treasure_effect_id] in god_ids:
                 treasures[line_id][tres.pos.treasure_effect_id] = tres.id.god1_mask
                 treasures[line_id][tres.pos.apply_only_this_chapter] = 1
-        f.file_writer(treasures)
+        f.file_writer(chapter,treasures)
 
 def buff_shop():
     """
@@ -162,6 +162,7 @@ def buff_shop():
 def behemoth_cube_buff():
     """
     increases the drop rates of culling stages
+    \n conditional
     """
     do_buff = settings["game"]["qol"]["behemoth_cube_buff"]
     if do_buff:
@@ -254,17 +255,89 @@ def behemoth_cube_buff():
             jin[x][yellow_rate_pos] = 100
         
         for x in range(0,len(gap)):
-            gap_map[x] = gap[x]
-            ash_map[x] = ash[x]
-            jin_map[x] = jin[x]
+            gap_map.stages[x] = gap[x]
+            ash_map.stages[x] = ash[x]
+            jin_map.stages[x] = jin[x]
         gap_map.submit()
         ash_map.submit()
         jin_map.submit()
 
-        #should I edit the in forest type stages and enigma?
+        #enigma
+        enigma_1 = f.map_data(MAPSTAGEDATA + ENIGMA_MLETTER + "_060.csv")
+        enigma_2 = f.map_data(MAPSTAGEDATA + ENIGMA_MLETTER + "_061.csv")
+        enigma_3 = f.map_data(MAPSTAGEDATA + ENIGMA_MLETTER + "_062.csv")
+        enigma_4 = f.map_data(MAPSTAGEDATA + ENIGMA_MLETTER + "_066.csv")
         
+        #edit 1 separate
+        enigma_1.stages[0][empt.drop1_count] = 3 #purple from 2
+        enigma_1.stages[1][empt.drop1_count] = 3 #red from 2
+
+        for x in range(0,4):
+            enigma_2.stages[x][8] = -4
+            enigma_3.stages[x][8] = -4
+            enigma_4.stages[x][8] = -4
+            while len(enigma_2.stages[x]) > 9:
+                enigma_2.stages[x].pop()
+            while len(enigma_3.stages[x]) > 9:
+                enigma_3.stages[x].pop()
+            while len(enigma_4.stages[x]) > 9:
+                enigma_4.stages[x].pop()
+
+        #now edit them all
+        for x in range(0,4):
+            enigma_2.stages[x][empt.drop1_count] = 4
+            enigma_3.stages[x][empt.drop1_count] = 5
+            enigma_4.stages[x][empt.drop1_count] = 6
+        enigma_3.stages[4][empt.drop1_count] = 2
+        enigma_4.stages[4][empt.drop1_count] = 3
+        enigma_4.stages[4][empt.drop2_count] = 3
+
+        enigma_1.submit()
+        enigma_2.submit()
+        enigma_3.submit()
+        enigma_4.submit()
+        #should I edit the in forest type stages
+
+def buff_advent_drops():
+    """
+    makes advents 100% drop
+    \n conditional
+    """
+    do_buff = settings["game"]["qol"]["guarantee_advent_drops"]
+    if do_buff:
+        file_name_start = MAPSTAGEDATA + EVENT_STAGE_MLETTER + "_"
+        current_map = 0
+        while True:
+            file_name_end = "00" + str(current_map) + ".csv"
+            current_map += 1
+            this_map = f.map_data(file_name_start + file_name_end[-7:])
+
+            #loop exit condition
+            if not this_map.exists:
+                break
+            
+            if len(this_map.stages) == 1:
+                drop_id = this_map.stages[0][this_map.drop1_id]
+                if drop_id >= 1000 and drop_id < 2000:
+                    if this_map.stages[0][this_map.drop1_rate] == 30:
+                        this_map.stages[0][this_map.drop1_rate] = 100
+                        this_map.submit()
         
-        
+def free_orb_removal():
+    """
+    makes it free to remove orbs
+    \n conditional
+    """
+    do_buff = settings["game"]["qol"]["free_orb_removal"]
+    if do_buff:
+        #this is a csv with non numerical info
+        orb_file = f.file_reader(ORB_NP_AMOUNT_FILE,True)
+        for each in orb_file:
+            each[2] = 0
+        f.file_writer(ORB_NP_AMOUNT_FILE,orb_file)
+
+
+
 
         
 

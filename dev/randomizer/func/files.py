@@ -197,7 +197,7 @@ def copy_many_directory_files_to_single(directory_from,directory_to):
 File Readers
 """
 
-def file_reader(file):
+def file_reader(file,force_numercial = False):
     """
     returns 2d array from file, use only file name to check if in dl first
     """
@@ -237,7 +237,7 @@ def file_reader(file):
     if ending in tsv:
         return csv_reader(input,False,"\t")
     elif ending in num_csv:
-        return csv_reader(input)
+        return csv_reader(input,not force_numercial)
     elif ending in non_num_csv:
         return csv_reader(input,False)
     elif ending in skip:
@@ -282,7 +282,7 @@ def csv_reader(file_path,force_num=True,splitter=","):
     first_line_array = first_line.split(splitter)
     first_line_unreadable = False
     try:
-        int(first_line_array[0])
+        int(first_line_array[0].replace("\ufeff",""))
     except:
         first_line_unreadable = True
     
@@ -303,13 +303,18 @@ def csv_reader(file_path,force_num=True,splitter=","):
         next_line = file.readline()
         if next_line == "":
             break
+        #remove anything after //
+        if next_line.find("//") != -1:
+            next_line = next_line[:next_line.find("//")]
+        #strip of all non numerical characters if force num
         line_string = ""
         if force_num:
             for x in next_line:
                 if x in csv_characters:
                     line_string += x
         else:
-            line_string = next_line
+            line_string = next_line.replace("\n","") #make sure to remove the \n character
+        #process it into array
         line_array = line_string.split(splitter)
         for x in range(0,len(line_array)):
             try:
@@ -319,6 +324,8 @@ def csv_reader(file_path,force_num=True,splitter=","):
             except:
                 if force_num:
                     line_array[x] = 0
+                    if x == len(line_array)-1: #stop it from adding values on trailing commas
+                        line_array.pop()
         output.append(line_array)
     file.close()
     
@@ -529,6 +536,9 @@ class csv():
     def __init__(self,file_name):
         self.file_name = file_name
         self.array = file_reader(file_name)
+        self.exists = True
+        if self.array == None:
+            self.exists = False
 
     
     def write_csv(self):
@@ -585,9 +595,6 @@ class stage_sche(csv):
         s.establish_grid()
 
 
-
-
-
     def establish_first_line(s):
         size = 0
         if s.array != None: #prevent it from trying to read data if stage doesnt naturally exist
@@ -635,7 +642,9 @@ class stage_sche(csv):
     def establish_grid(s):
         enemy = []
         if s.array != None:
-            for x in range(2,len(s.array)):
+            for x in range(s.number_of_starting_lines,len(s.array)):
+                if s.array[x] == []: #break if empty line
+                    break
                 enemy.append(s.array[x])
         s.enemies = enemy
 
@@ -664,6 +673,7 @@ class stage_sche(csv):
         ])
         for each in s.enemies:
             s.array.append(each)
+        
         s.write_csv()
 
 class map_data(csv):
@@ -725,25 +735,28 @@ class map_data(csv):
     def establish_grid(s):
         grid = []
         if s.array != None:
-            for x in range(2,len(s.array)):
-                if s.array[x] == [0]:
-                    break
-                grid.append(s.array[x])
+            empty_line = False
+            for x in range(2,len(s.array)): #idk if any maps dont have 2 lines but if they do this needs to be changed to be like stage class
+                if s.array[x] == [] or empty_line:
+                    empty_line = True
+                else:
+                    grid.append(s.array[x])
         s.stages = grid
     
     def submit(s):
-        array = []
-        array.append([
+        s.array = []
+        s.array.append([
             s.map_background,
             s.normal_reward_id,
             s.score_reward_id,
             s.visible_key,
             s.unlock_key
         ])
-        array.append([s.map_pattern])
+        s.array.append([s.map_pattern])
         for each in s.stages:
-            array.append(each)
-        s.write_csv(s.file_name,array)
+            s.array.append(each)
+
+        s.write_csv()
 
 
 
