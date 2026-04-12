@@ -26,8 +26,11 @@ COTC2_TREASURE_DATA = "treasureData2_1.csv"
 COTC3_TREASURE_DATA = "treasureData2_2.csv"
 
 MAPSTAGEDATA = "MapStageData"
+MAIN_STORY_MAPSTAGEDATA = "stageNormal"
 STAGE_SCHEM = "stage"
 ENEMY_STATS = "t_unit.csv"
+UNITBUY = "unitbuy.csv"
+DROP_CHARA = "drop_chara.csv"
 SHOP_FILE = "itemShopData.tsv"
 ORB_NP_AMOUNT_FILE = "equipmentgrade.csv"
 
@@ -52,6 +55,9 @@ EVENT_STAGE_MLETTER = "S"
 COLLOSEUM_MLETTER = "SR"
 HALL_OF_INITIATES_MLETTER = "T"
 TOWER_MLETTER = "V"
+EOC_MLETTER = "0"
+ITF_MLETTER = "1"
+COTC_MLETTER = "2"
 #some of this is probably wrong
 
 EXTRA_STAGE_SLETTER = "EX"

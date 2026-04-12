@@ -100,10 +100,10 @@ class randinst():
         self.index += amount
         if amount == 1:
             self.index += self.current_shift
-        if self.index >= self.length and self.user_specified:
+        while self.index >= self.length: #uses a while loop to do this so progressively larger step amounts do actually have an effect
+            self.index -= self.length
             self.index += self.shifter.step()
             self.current_shift = self.shifter.step()
-        self.index = self.index % self.length
         return int(self.string[self.index])
     
     #shifts the index by a large amount

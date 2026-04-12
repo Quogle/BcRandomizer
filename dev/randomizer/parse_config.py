@@ -240,6 +240,69 @@ def get_config(path):
     this_config = turn_path_list_into_dict(path_list)
     return this_config
 
+#copied from files 4/11/26, has a broken first line csv
+def csv_reader(file_path,force_num=True,splitter=","):
+    """
+    returns int 2d array of csv at path
+    \n now capable of reading non numerical csv if force_num is false
+    \n can also read from tsv if splitter is \\t
+    """
+    file = open(file_path,"r",encoding="utf-8")
+    
+
+    #check if first line integerable
+    first_line = file.readline()
+    first_line_array = first_line.split(splitter)
+    first_line_unreadable = False
+    try:
+        int(first_line_array[0].replace("\ufeff",""))
+    except:
+        first_line_unreadable = True
+    
+    #shove first line in dict
+    if first_line_unreadable:
+        first_line_csv = {}
+        file_names = file_path.split("\\")
+        first_line_csv[file_names[-1]] = first_line
+    else:
+        file.seek(0)
+    
+    #read csv
+    output = []
+    csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-","."]
+    if splitter not in csv_characters:
+        csv_characters.append(splitter)
+    while True:
+        next_line = file.readline()
+        if next_line == "":
+            break
+        #remove anything after //
+        if next_line.find("//") != -1:
+            next_line = next_line[:next_line.find("//")]
+        #strip of all non numerical characters if force num
+        line_string = ""
+        if force_num:
+            for x in next_line:
+                if x in csv_characters:
+                    line_string += x
+        else:
+            line_string = next_line.replace("\n","") #make sure to remove the \n character
+        #process it into array
+        line_array = line_string.split(splitter)
+        for x in range(0,len(line_array)):
+            try:
+                line_array[x] = float(line_array[x])
+                if int(line_array[x]) == line_array[x]:
+                    line_array[x] = int(line_array[x])
+            except:
+                if force_num:
+                    line_array[x] = 0
+                    if x == len(line_array)-1: #stop it from adding values on trailing commas
+                        line_array.pop()
+        output.append(line_array)
+    file.close()
+    
+    return output
 
 
 #enemy and cat info funcs
@@ -248,10 +311,10 @@ def get_unit_info():
     reads cat and enemy info
     """
     #open files
-    default_enemy = f.csv_reader(CONFIGS + DEFAULTS + ENEMY_INFO)
+    default_enemy = csv_reader(CONFIGS + DEFAULTS + ENEMY_INFO)
     if not os.path.exists(CONFIGS + ENEMY_INFO):
         shutil.copy(CONFIGS+DEFAULTS+ENEMY_INFO,CONFIGS+ENEMY_INFO)
-    user_enemy = f.csv_reader(CONFIGS+ENEMY_INFO)
+    user_enemy = csv_reader(CONFIGS+ENEMY_INFO)
 
     #overlay user on default
     while len(default_enemy) < len(user_enemy):

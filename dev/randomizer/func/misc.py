@@ -3,7 +3,10 @@ from dev.randomizer.parse_config import settings
 from dev.randomizer.data.filepaths import *
 import dev.randomizer.enums.treasure as tres
 import dev.randomizer.enums.item as item
+import dev.randomizer.enums.unitbuy as ub
+from dev.randomizer.func.core import randinst
 import copy
+import os
 
 
 def remove_itf_crystals():
@@ -336,18 +339,221 @@ def free_orb_removal():
             each[2] = 0
         f.file_writer(ORB_NP_AMOUNT_FILE,orb_file)
 
+def randomize_whats_boss():
+    """
+    randomizes what counts as boss in ALL stages
+    \n conditional
+    """
+    do_self = settings["game"]["funny"]["randomize_boss"]
+    if do_self:
+        #get all stages
+        all_files = os.listdir(DATA_LOCAL)
+        stage_files = []
+        exclude_fifth = [".","_"]
+        for file in all_files:
+            if STAGE_SCHEM in file and file[5] not in exclude_fifth and MAIN_STORY_MAPSTAGEDATA not in file:
+                stage_files.append(file)
+        stage_files.sort()
+
+        #create position array
+        identifiers = [
+            "", #this is eoc stages lmao
+            EXTRA_STAGE_SLETTER,
+            AKU_REALMS_SLETTER,
+            CATCLAW_SLETTER,
+            LABYRINTH_SLETTER,
+            GAUNTLET_SLETTER,
+            CATAMIN_SLETTER,
+            COLLAB_SLETTER,
+            COLLAB_GAUNTLET_SLETTER,
+            ENIGMA_SLETTER,
+            CHALLENGE_SLETTER,
+            SOL_SLETTER,
+            UL_SLETTER,
+            ZL_SLETTER,
+            BEHEMOTH_SLETTER,
+            RANKING_EVENT_SLETTER,
+            EVENT_STAGE_SLETTER,
+            COLLOSEUM_SLETTER,
+            HALL_OF_INITIATES_SLETTER,
+            TOWER_SLETTER,
+            ITF_SLETTER,
+            COTC_SLETTER,
+        ]
+        indenty_shift = []
+        for each in identifiers:
+            indenty_shift.append(0)
+
+        numbers_to_remove = [0,1,2,3,4,5,6,7,8,9,"_"]
+        for file in stage_files:
+            this_file = file.replace(STAGE_SCHEM,"")
+            this_file = this_file.replace(".csv","")
+            for x in numbers_to_remove:
+                this_file = this_file.replace(str(x),"")
+            index = 0
+            try:
+                index = identifiers.index(this_file)
+                indenty_shift[index] += 1
+            except:
+                pass
+            change_boss(file,index*1000 + indenty_shift[index])
+
+def add_unit_drops():
+    """
+    master function for adding units as drops and missions
+    \n conditional
+    """
+    add_units_to_sol()
+    add_grouped_units()
+    add_collab_tf_drops()
 
 
 
-        
+def add_units_to_sol():
+    """
+    adds given units to sol
+    \n conditional, minor function
+    """
+    add_seasonals = settings["game"]["qol"]["stage_change"]["seasonals_in_sol"]
+    add_collab = settings["game"]["qol"]["stage_changes"]["collabs_in_sol_advents"]
+    collab_advent_tf = settings["game"]["qol"]["stage_changes"]["collab_tf_as_advents"]
+    do_mission = settings["game"]["qol"]["stage_changes"]["mission_collab_special_tf_drop"]
+
+    #change unitbuy
+    if add_collab:
+        degacha_given_units()
+
+    sol_units = []
+    if add_seasonals:
+        sol_units.append([63,24,7]) #sportsday in winning back
+        sol_units.append([63,35,0,1]) #rampage tf in greeter at the gates
+        sol_units.append([70,17,1]) #salaryman in prison sentence
+        sol_units.append([70,33,1,1]) #ritual tf in swap of sacrifice
+        sol_units.append([74,7,7]) #reindeer in frontier spirit
+        sol_units.append([74,12,7,1]) #xmas pudding tf in shrimp frontier
+        sol_units.append([79,39,2]) #adult in drunken backrub
+        sol_units.append([79,8,4,1]) #prisoner tf in juvenile killer
+        sol_units.append([80,5,2]) #evil in wanted night
+        sol_units.append([80,18,4,1]) #gentlemen tf in liars fate
+        sol_units.append([81,4,4]) #doll in twin peaks
+        sol_units.append([81,28,4,1]) #doll tf in darkweb
+        sol_units.append([100,14,4]) #maiden in gates of aphrodite
+        sol_units.append([100,28,0,1]) #maiden tf in renewed conflict
+        sol_units.append([104,3,6]) #koi in seaweed shallows
+        sol_units.append([104,39,0,1]) #koi tf in narrow docks
+        sol_units.append([109,21,0]) #madam bride in the red carpet
+        sol_units.append([109,43,5,1]) #madam bride tf in heavens oasis
+        sol_units.append([122,15,3]) #vacation queen in apple bobbing ocean
+        sol_units.append([122,40,1,1]) #call center tf in dial up dreams
+        sol_units.append([128,28,3]) #vengeful in thorny dialogue
+        sol_units.append([128,37,1,1]) #kite tf in seabreeze salon
+        sol_units.append([132,23,1]) #kung fu in angry fighting
+        sol_units.append([132,26,2,1]) #kung fu tf in warriors dawn
+        sol_units.append([176,22,0]) #marshmallow in feast of betrayal
+        sol_units.append([227,35,5]) #pumpcat in the haunted 1ldk
+        sol_units.append([244,22,3]) #gift of cats
+        sol_units.append([282,40,4]) #awa odori in the holy exploit
+        sol_units.append([303,23,5]) #delivery in scent of gore fish
+        sol_units.append([329,29,5]) #eggy in lord of the abyss
+        sol_units.append([343,27,0]) #slug cat in at least Im a cat
+        sol_units.append([127,32,5,1]) #bomber tf in the spy who pet me, maybe this should be moved to a later razor stage
+    if add_collab:
+        sol_units.append([184,1,0]) #mint in nyandalucia
+        sol_units.append([121,3,7]) #merc in salty is seawater
+        sol_units.append([191,5,4]) #titi in wandering traveler
+        sol_units.append([28,8,1]) #capsule in fluffy dark weapon
+        sol_units.append([120,17,0]) #healer in sin and punishment
+        sol_units.append([26,18,3]) #punt in king of freedom
+        sol_units.append([131,20,4]) #neneko in subtle curfew
+        sol_units.append([228,35,1]) #neneko witchy in rickety coaster
+        sol_units.append([276,37,2]) #neneko summer in deep sea dying
+        sol_units.append([314,27,3]) #neneko new years in beautiful finale
+        sol_units.append([332,35,4]) #neneko easter in seductive chicken room
+        sol_units.append([589,43,0]) #neneko valentine in eat the weak
+    
+    #add units to sol
+    current_save_id = 1000
+    for unit in sol_units:
+        current_save_id -= 1
+        drop_id = -1
+        if len(unit) == 4:
+            drop_id = unit[0] + 10001
+        else:
+            result = get_drop_id(unit[0],current_save_id)
+            drop_id = result[0]
+        file_start = MAPSTAGEDATA + SOL_MLETTER + "_"
+        file_end = "00" + str(unit[1]) + ".csv"
+        this_map = f.map_data(file_start + file_end[-7:])
+        this_map.stages[unit[2]] = drop_id
+        this_map.submit()
+
+def add_grouped_units():
+    """
+    clumps grouped units onto the same save id
+    \n conditional, minor function
+    """
+    add_collab = settings["game"]["qol"]["stage_changes"]["collabs_in_sol_advents"]
+
+    #attatch grouped units together
+    grouped = []
+    if add_collab:
+        grouped.append([287,67]) #golfer gives lil gau
+        grouped.append([324,111]) #zamboney gives nono
+        grouped.append([442,390,391,392]) #vendor gives power pro
+        grouped.append([507,293,299]) #supercat gives kyubey and madoka
+        grouped.append([382,565,566]) #glass gives tan/dango
+        grouped.append([531,751]) #bear gives yahiko
+        grouped.append([528,26]) #russian gives punt
+        grouped.append([521,173]) #medusa gives mola
+        grouped.append([553,68]) #bakery gives judgement
+        grouped.append([78,65]) #space gives racism cow
+        grouped.append([88,28]) #jump rope gives capsule
+        grouped.append([201,635]) #drumpcorps gives million dollar
+        grouped.append([636,645,654,662,667,684,688,694]) #bcat gives all brainwashed
+        get_drop_id(629,600,True) #set bcat to having a drop id
+    
+    for each in grouped:
+        result = get_drop_id(each[0])
+        for x in range(1,len(each)):
+            get_drop_id(each[x],result[1],True,True) #add all of them tied to each[0]s save id with no drop id
+    
+def add_collab_tf_drops():
+    """
+    adds collab tf as either missions on drops
+    \n conditional, minor function
+    """
+    add_seasonals = settings["game"]["qol"]["stage_change"]["seasonals_in_sol"]
+    add_collab = settings["game"]["qol"]["stage_changes"]["collabs_in_sol_advents"]
+    collab_advent_tf = settings["game"]["qol"]["stage_changes"]["collab_tf_as_advents"]
+    do_mission = settings["game"]["qol"]["stage_changes"]["mission_collab_special_tf_drop"]
+    if add_collab: #need to figure out how to make disabling catfruit tfs work
+        units = []
+        units.append([120,199,0]) #healer tf in river archeon (hannya)
+        units.append([121,196,0]) #merc tf in new testament (clionel)
+        units.append([191,195,0]) #titi tf in perfect cyclone revenge
+        units.append([67,201,0]) #lil gau in honey drip (queen bee)
+        units.append([111,205,0]) #nono tf in prisoners progress (daboo)
+        units.append([26,381,0]) #punt tf in divine daughter (papuu)
+        units.append([173,296,0]) #mola tf in heaven and hell (okame)
+        units.append([68,375,0]) #judgement tf in babies first (doremi)
+        #not adding power pro for now
+        if do_mission:
+            pass #Ill have to figure out how to do missions
+        elif collab_advent_tf:
+            pass
 
 
 
-        
 
 
-            
-            
+
+
+
+
+
+
+
+
 
 
 
@@ -355,9 +561,117 @@ def free_orb_removal():
 
 # still need zombie witch swap
 
+def change_boss(stage_name,stepby):
+    """
+    part of randomize whats boss, takes a stage file name and a randomizer shift and randomizes its boss and submits it
+    \n nonconditional
+    """
+    r = randinst(100)
+    r.step(stepby)
+    stage = f.stage_sche(stage_name)
+    number_of_bosses = 0
+    for enemy in stage.enemies:
+        try:
+            if enemy[stage.boss] == 1:
+                number_of_bosses += 1
+                enemy[stage.boss] = 0
+        except:
+            print(enemy,end="\t")
+            print(stage_name)
+    boss_lines = []
+    for x in range(0,number_of_bosses):
+        attempt_count = 0
+        while attempt_count < 150:
+            attempt_count += 1
+            new_line = r.randrange(0,len(stage.enemies))
+            if new_line not in boss_lines:
+                boss_lines.append(new_line)
+                break
+    for each in boss_lines:
+        stage.enemies[each][stage.boss] = 1
+    
+    if len(boss_lines) > 0:
+        stage.submit()
 
+def degacha_given_units():
+    """
+    degachas in unitbuy all the given units
+    \n nonconditional
+    """
+    unitbuy = f.file_reader(UNITBUY)
+    units = [
+        131, #neneko
+        228, #witchy neneko
+        276, #summer neneko
+        314, #new years neneko
+        332, #easter neneko
+        589, #valentine neneko
+        120, #healer
+        121, #merc
+        191, #titi
+        67,  #lil gau
+        111, #nono
+        390, #aoi
+        391, #mizuki
+        392, #hijiri
+        293, #kyubey
+        565, #tan
+        566, #dango
+        751, #lil yahiko
+        26,  #punt
+        173, #mola
+        65,  #racism cow
+        28,  #capsule
+        184, #mint
+        635, #million dollar
+        68,  #judgement
+        629, #bcat
+        636, #btank
+        645, #baxe
+        654, #bgross
+        662, #bcow
+        667, #bbird
+        684, #bfish
+        688, #bdrag
+        694, #btitan
+    ]
+    for each in units:
+        unitbuy[each][ub.ub.unlock_type] = 0
+    f.file_writer(UNITBUY,unitbuy)
 
-
+def get_drop_id(unit_id,save_id=1000,set_save_id=False,dont_use_valid_drop_id=False):
+    """
+    gets [drop_id,save_id] from drop chara, will make if doesnt exist
+    \n specify save id to make it use it, specify invalidity true to make it not a real drop
+    """
+    drop_chara = f.file_reader(DROP_CHARA)
+    relevant_line = -1
+    for line in range(0,len(drop_chara)):
+        if drop_chara[line][2] == unit_id:
+            relevant_line = line
+    
+    if relevant_line != -1 and drop_chara[relevant_line][0] != -1: #it already exists
+        return [drop_chara[relevant_line][0],drop_chara[relevant_line][1]]
+    if relevant_line == -1:
+        relevant_line = len(drop_chara)
+        drop_chara.append([-1,save_id,unit_id])
+    if drop_chara[relevant_line][0] == -1:
+        valid_drop_ids = []
+        for x in range(1000,1200):
+            valid_drop_ids.append(x)
+        for line in drop_chara:
+            if drop_chara[line][0] in valid_drop_ids:
+                valid_drop_ids.remove(drop_chara[line][0])
+        drop_chara[relevant_line][0] = valid_drop_ids[0]
+    if set_save_id:
+        drop_chara[relevant_line][1] = save_id
+    
+    #kill its id if its supposed to be invalid
+    if dont_use_valid_drop_id:
+        drop_chara[relevant_line][0] = -1
+    
+    f.file_writer(DROP_CHARA,drop_chara)
+    return [drop_chara[relevant_line][0],drop_chara[relevant_line][1]]
 
 
 

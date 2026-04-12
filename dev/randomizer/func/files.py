@@ -548,9 +548,15 @@ class csv():
 
 
 class stage_sche(csv):
-    def __init__(s, file_name,number_of_starting_lines=2):
+    def __init__(s, file_name):
         super().__init__(file_name)
-        s.number_of_starting_lines = number_of_starting_lines
+        s.number_of_starting_lines = 2
+        if s.array != None:
+            if s.array[1][0] > 2000: #figure out if its got 2 starting lines by seeing if first entry on second row is stage length worthy
+                pass
+            else:
+                s.number_of_starting_lines = 1
+        
         #line 1
         s.base_id = 1
         s.no_continues = 0
@@ -643,7 +649,7 @@ class stage_sche(csv):
         enemy = []
         if s.array != None:
             for x in range(s.number_of_starting_lines,len(s.array)):
-                if s.array[x] == []: #break if empty line
+                if len(s.array[x]) < 2: #break if empty line
                     break
                 enemy.append(s.array[x])
         s.enemies = enemy

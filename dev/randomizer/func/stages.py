@@ -74,7 +74,7 @@ def buff_itf_aliens():
             for stage in range(0,48):
                 mag_mult = mag_base - (chapter*2) - (int(stage/mag_red_at))
                 stage_end = "0" + str(stage) + ".csv"
-                this_stage = f.stage_sche(itf_path_start + itf_chapters[chapter] + "_" + stage_end[-6:],1)
+                this_stage = f.stage_sche(itf_path_start + itf_chapters[chapter] + "_" + stage_end[-6:])
                 for each in this_stage.enemies:
                     enemy_id = each[this_stage.enemy_id]
                     if vanilla_enemy_array[enemy_id][e.t.alien] == 1:
@@ -107,7 +107,7 @@ def buff_cotc_aliens():
                     if stage >= each:
                         mag_mult -= 1
                 stage_end = "0" + str(stage) + ".csv"
-                this_stage = f.stage_sche(cotc_path_start + cotc_chapters[chapter] + "_" + stage_end[-6:],1)
+                this_stage = f.stage_sche(cotc_path_start + cotc_chapters[chapter] + "_" + stage_end[-6:])
                 for each in this_stage.enemies:
                     enemy_id = each[this_stage.enemy_id]
                     if vanilla_enemy_array[enemy_id][e.s.starred_god] == 1:
