@@ -653,3 +653,4 @@ FodyWeavers.xsd
 *dev/workspace
 *.test.py
 *configs/**.toml
+*configs/**.csv
