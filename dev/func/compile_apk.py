@@ -38,6 +38,7 @@ def compile():
     
     print("DECOMPILED:", DECOMPILED)
     print("OUTPUT:", OUTPUT)
+    
     """Build APK from the decompiled folder."""
     print("Compiling APK...")
     subprocess.run([
