@@ -29,6 +29,15 @@ WORKSPACE.mkdir(exist_ok=True)
 MODDED_APKS.mkdir(exist_ok=True)
 
 def compile():
+
+    print("JAVA_EXE:", JAVA_EXE)
+    print("JAVA EXISTS:", Path(JAVA_EXE).exists())
+    
+    print("APKEDITOR:", APKEDITOR)
+    print("APKEDITOR EXISTS:", Path(APKEDITOR).exists())
+    
+    print("DECOMPILED:", DECOMPILED)
+    print("OUTPUT:", OUTPUT)
     """Build APK from the decompiled folder."""
     print("Compiling APK...")
     subprocess.run([
