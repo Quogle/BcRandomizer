@@ -250,21 +250,23 @@ def get_cat_stats(vanilla=False):
             units[x] = units[egg_id]
     
     #now lengthen all units to egg length using egg values
-    egg_length = len(units[egg_id])
+    egg_length = len(units[egg_id][0])
     for x in range(0,len(units)):
-        while len(units[x]) < egg_length:
-            units[x].append(units[egg_id][len(units[x])])
+        for y in range(0,len(units[x])):
+            while len(units[x][y]) < egg_length:
+                units[x][y].append(units[egg_id][0][len(units[x][y])])
     
     #now find the longest length
     max_length = 0
     for x in units:
-        if len(x) > max_length:
-            max_length = len(x)
+        if len(x[0]) > max_length:
+            max_length = len(x[0])
     
     #now slap 0s on everything until theyre that length
     for x in range(0,len(units)):
-        while len(units[x]) < max_length:
-            units[x].append(0)
+        for y in range(0,len(units[x])):
+            while len(units[x][y]) < max_length:
+                units[x][y].append(0)
     
     return units
 
