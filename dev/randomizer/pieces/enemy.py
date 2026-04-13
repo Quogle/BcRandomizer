@@ -7,7 +7,7 @@ from dev.randomizer.parse_config import settings
 import dev.randomizer.func.game_files as f
 import copy
 from dev.randomizer.func.misc import *
-
+from dev.randomizer.data.filepaths import *
 
 
 
@@ -484,7 +484,7 @@ def get_randomization_map(stats):
         
 def do_traits(stats):
     """
-    applies trait map to stats, also applied trait exceptions
+    applies trait map to stats
     """
     enemy_map = create_enemy_trait_map(stats)
     if len(enemy_map) > 0:
@@ -504,7 +504,6 @@ def do_traits(stats):
 
         #set new stats as stats
         stats = new_stats
-    stats = trait_exceptions(stats) #applies the forced traits
     return stats
 
 def starred_god(stats):
@@ -599,8 +598,49 @@ def traitless_get_traits(stats):
     
     return stats
 
-
+def itf_alien_blocker(stats):
+    """
+    blocks itf enemies from getting alien, maybe allow an option to include eoc
+    \n conditional
+    """
+    rando_mode = settings["enemy"]["traits"]["mode"]
+    no_itf_crystals = settings["game"]["gameplay"]["remove_itf_crystals"]
+    remove_metals = settings["game"]["gameplay"]["remove_metals"]
+    global vanilla_enemy_array
+    itf_enemy = []
+    enemy_info = settings["enemy_info"]
+    for x in range(0,len(enemy_info)):
+        if enemy_info[x][info.e.in_itf] == 1 and enemy_info[x][info.e.allowed_alien_in_itf] == 0:
+            itf_enemy.append(x)
+    if not no_itf_crystals and rando_mode == "randomize":
+        r = randinst(103)
+        for unit_id in range(0,len(stats)):
+            current_trait_order = []
+            temp_tl = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
+            for x in range(0,len(temp_tl)):
+                current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+            if remove_metals:
+                current_trait_order.remove(e.t.metal)
+            if stats[unit_id][e.t.alien] == 1 and unit_id in itf_enemy:
+                index = 0
+                while current_trait_order[index] == e.t.alien or vanilla_enemy_array[unit_id][current_trait_order[index]] == 1:
+                    index += 1
+                stats[unit_id][e.t.alien] = 0
+                stats[unit_id][current_trait_order[index]] = 1
     
+    return stats
+
+def trait_changer_total(stats):
+    """
+    master function for changing traits
+    \n conditional
+    """
+    stats = do_traits(stats)
+    stats = traitless_get_traits(stats)
+    stats = itf_alien_blocker(stats)
+    stats = starred_god(stats)
+    stats = trait_exceptions(stats)
+    return stats
 
 """
 trait gimmicks
@@ -1509,7 +1549,7 @@ def gimmick_exceptions(estat):
 
     if doge:
         if not remove_crystals:
-            estat[2][e.s.attack] = 1
+            estat[2][e.s.attack] = 4
         estat[2][e.s.area] = 1
         estat[2][e.s.attackOnce] = 1
         estat[2][e.s.selfDestruct] = 2
@@ -1618,7 +1658,7 @@ id swap
 
 
 #the array straight from t_unit
-vanilla_enemy_array = f.read_vanilla_enemy_stats()
+vanilla_enemy_array = f.file_reader(DATA_LOCAL + ENEMY_STATS)
 
 #stat array with the before everything reworks applied to it
 base_enemy_array = make_base_enemy(vanilla_enemy_array)
