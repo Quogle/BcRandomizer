@@ -83,14 +83,13 @@ def interpret_csv_type_file(file,separator=",",force_num=True):
     """
     reads through lines in the file and returns an array
     """
-    file = open()
     array_to_return = []
     while True:
         line = file.readline()
         if line == "":
             break
         #remove everything commented out
-        comment = line.find()
+        comment = line.find("\\")
         if comment != -1:
             line = line[:comment]
         #force num and remove \n and stupid chara
