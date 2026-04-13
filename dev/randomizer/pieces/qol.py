@@ -5,6 +5,7 @@ import dev.randomizer.enums.treasure as tres
 import dev.randomizer.enums.item as item
 import dev.randomizer.enums.unitbuy as ub
 from dev.randomizer.func.random import randinst
+from dev.randomizer.func.misc import *
 import copy
 import os
 
@@ -407,6 +408,346 @@ def add_unit_drops():
     add_units_to_sol()
     add_grouped_units()
     add_collab_tf_drops()
+
+def orb_stage_buff():
+    """
+    buffs the drops from orb stages (not barons)
+    \n conditional
+    """
+    qol = settings["game"]["qol"]["stage_changes"]
+    buff_isle = qol["orb_stage_buff"]
+    add_relic_aku = qol["relic_aku_in_island"]
+    trait_ability_orbs = qol["orb_stage_has_strong_massive_resist"]
+    ability_orbs = qol["orb_stage_has_ability_orb"]
+    did_anything = buff_isle or trait_ability_orbs or ability_orbs or add_relic_aku
+    if not did_anything:#block it from opening the maps if its not gonna change anything
+        return
+    
+    island_traits = ["red","floating","black","angel","alien","zombie","metal"]
+    total_traits = ["red","floating","black","angel","alien","zombie","metal","aku","relic"]
+
+    #get map location info
+    dummy_map = f.map_data()
+    m = {}
+    location_data = {}
+    start_id = 9
+    for x in range(0,len(island_traits)):
+        location_data[island_traits[x]] = {}
+        for y in range(0,3):
+            location_data[island_traits[x]][str(y)] = start_id + x + y
+    location_data["aku"] = {
+        "0":63,
+        "1":64,
+        "2":65,
+    }
+    location_data["relic"] = {
+        "0":67,
+        "1":68,
+        "2":69,
+    }
+
+    #open all map and stages and put them in dict
+    for x in range(0,len(total_traits)):
+        m[total_traits[x]] = {}
+        for y in range(0,3):
+            m[total_traits[x]][str(y)] = {"m":None,"s":None}
+    for each in m:
+        for x in range(0,3):
+            first_file_name = MAPSTAGEDATA + ENIGMA_MLETTER + "_" + stringize_number(location_data[each][str(x)],3) + ".csv"
+            second_file_name = STAGE_SCHEM + ENIGMA_SLETTER + stringize_number(location_data[each][str(x)],3) + "_00.csv" #theyre all first stage
+            m[each][str(x)]["m"] = f.map_data(first_file_name)
+            m[each][str(x)]["s"] = f.stage_sche(second_file_name)
+    
+    #now theyre ripe for editing
+    #set all stages to 8 drops for now
+    for each in m:
+        for x in range(0,3):
+            this_map = m[each][str(x)]["m"]
+            while len(this_map.stages[0]) > this_map.music2+1: #kill all drop info
+                this_map.stages[0].pop()
+            while len(this_map.stages[0]) < this_map.drop8_count: #now extend all to 8 drops
+                this_map.stages[0].append(0)
+            this_map.stages[0][this_map.drop_scheme] = -4 #set drop scheme to -4
+    
+
+    #now to set drop id for all stages
+    for x in range(0,len(island_traits)-1): #dont do metal here
+        current_shift = 10*x
+        current_ab_shift = 15*x
+        if x >= 3:
+            current_shift += 5
+        this_trait = m[island_traits[x]]
+        first_stage = this_trait["0"]["m"].stages[0]
+        second_stage = this_trait["1"]["m"].stages[0]
+        third_stage = this_trait["2"]["m"].stages[0]
+        #ive decided not to put ability orbs on these so they actually dont need 8 drop ids
+        #maybe in the future with more ability orbs increase # of drops allowed and make these more refined
+        #first stage drops
+        first_stage[dummy_map.drop1_id] = item.drop_id.orb_red_atk_d + current_shift
+        first_stage[dummy_map.drop2_id] = item.drop_id.orb_red_def_d + current_shift
+        first_stage[dummy_map.drop3_id] = item.drop_id.orb_red_atk_c + current_shift
+        first_stage[dummy_map.drop4_id] = item.drop_id.orb_red_def_c + current_shift
+        first_stage[dummy_map.drop5_id] = item.drop_id.orb_red_massive_d + current_ab_shift
+        first_stage[dummy_map.drop6_id] = item.drop_id.orb_red_resist_d + current_ab_shift
+        first_stage[dummy_map.drop7_id] = item.drop_id.orb_red_strong_d + current_ab_shift
+
+        #second stage drops
+        second_stage[dummy_map.drop1_id] = item.drop_id.orb_red_atk_c + current_shift
+        second_stage[dummy_map.drop2_id] = item.drop_id.orb_red_def_c + current_shift
+        second_stage[dummy_map.drop3_id] = item.drop_id.orb_red_atk_b + current_shift
+        second_stage[dummy_map.drop4_id] = item.drop_id.orb_red_def_b + current_shift
+        second_stage[dummy_map.drop5_id] = item.drop_id.orb_red_massive_d + current_ab_shift
+        second_stage[dummy_map.drop6_id] = item.drop_id.orb_red_resist_d + current_ab_shift
+        second_stage[dummy_map.drop7_id] = item.drop_id.orb_red_strong_d + current_ab_shift
+
+        #third stage drops
+        third_stage[dummy_map.drop1_id] = item.drop_id.orb_red_atk_c + current_shift
+        third_stage[dummy_map.drop2_id] = item.drop_id.orb_red_def_c + current_shift
+        third_stage[dummy_map.drop3_id] = item.drop_id.orb_red_atk_b + current_shift
+        third_stage[dummy_map.drop4_id] = item.drop_id.orb_red_def_b + current_shift
+        third_stage[dummy_map.drop5_id] = item.drop_id.orb_red_massive_c + current_ab_shift
+        third_stage[dummy_map.drop6_id] = item.drop_id.orb_red_resist_c + current_ab_shift
+        third_stage[dummy_map.drop7_id] = item.drop_id.orb_red_strong_c + current_ab_shift
+    #set drop id for aku relic
+    last_two = ["aku","relic"]
+    for x in range(0,len(last_two)):
+        this_trait = m[last_two[x]]
+        first_stage = this_trait["0"]["m"].stages[0]
+        second_stage = this_trait["1"]["m"].stages[0]
+        third_stage = this_trait["2"]["m"].stages[0]
+
+        #current shift
+        current_shift = x*25
+        #first stage
+        first_stage[dummy_map.drop1_id] = item.drop_id.orb_aku_atk_d + current_shift
+        first_stage[dummy_map.drop2_id] = item.drop_id.orb_aku_def_d + current_shift
+        first_stage[dummy_map.drop3_id] = item.drop_id.orb_aku_atk_c + current_shift
+        first_stage[dummy_map.drop4_id] = item.drop_id.orb_aku_def_c + current_shift
+        first_stage[dummy_map.drop5_id] = item.drop_id.orb_aku_massive_d + current_shift
+        first_stage[dummy_map.drop6_id] = item.drop_id.orb_aku_resist_d + current_shift
+        first_stage[dummy_map.drop7_id] = item.drop_id.orb_aku_strong_d + current_shift
+        #second stage
+        second_stage[dummy_map.drop1_id] = item.drop_id.orb_aku_atk_c + current_shift
+        second_stage[dummy_map.drop2_id] = item.drop_id.orb_aku_def_c + current_shift
+        second_stage[dummy_map.drop3_id] = item.drop_id.orb_aku_atk_b + current_shift
+        second_stage[dummy_map.drop4_id] = item.drop_id.orb_aku_def_b + current_shift
+        second_stage[dummy_map.drop5_id] = item.drop_id.orb_aku_massive_d + current_shift
+        second_stage[dummy_map.drop6_id] = item.drop_id.orb_aku_resist_d + current_shift
+        second_stage[dummy_map.drop7_id] = item.drop_id.orb_aku_strong_d + current_shift
+        #third stage
+        third_stage[dummy_map.drop1_id] = item.drop_id.orb_aku_atk_c + current_shift
+        third_stage[dummy_map.drop2_id] = item.drop_id.orb_aku_def_c + current_shift
+        third_stage[dummy_map.drop3_id] = item.drop_id.orb_aku_atk_b + current_shift
+        third_stage[dummy_map.drop4_id] = item.drop_id.orb_aku_def_b + current_shift
+        third_stage[dummy_map.drop5_id] = item.drop_id.orb_aku_massive_c + current_shift
+        third_stage[dummy_map.drop6_id] = item.drop_id.orb_aku_resist_c + current_shift
+        third_stage[dummy_map.drop7_id] = item.drop_id.orb_aku_strong_c + current_shift
+
+        
+    # now do rates and counts
+    metalless = island_traits + last_two
+    for each in metalless:
+        this_trait = m[each]
+        first_stage = this_trait["0"]["m"].stages[0]
+        second_stage = this_trait["1"]["m"].stages[0]
+        third_stage = this_trait["2"]["m"].stages[0]
+
+        s1_lower = 200
+        s1_upper = 200
+        s1_a = 30
+        s1_lower_count = 2
+        s1_upper_count = 1
+        s1_a_count = 1
+
+        s2_lower = 350
+        s2_upper = 50
+        s2_a = 50
+        s2_lower_count = 1
+        s2_upper_count = 1
+        s2_a_count = 1
+
+
+        s3_lower = 100
+        s3_upper = 300
+        s3_a = 50
+        s3_lower_count = 2
+        s3_upper_count = 1
+        s3_a_count = 1
+
+
+        if trait_ability_orbs:
+            s1_a_count = 2
+            s2_a_count = 2
+            s3_a_count = 2
+
+        
+        #first stage
+        first_stage[dummy_map.drop1_rate] = s1_lower
+        first_stage[dummy_map.drop2_rate] = s1_lower
+        first_stage[dummy_map.drop3_rate] = s1_upper
+        first_stage[dummy_map.drop4_rate] = s1_upper
+        first_stage[dummy_map.drop5_rate] = s1_a
+        first_stage[dummy_map.drop6_rate] = s1_a
+        first_stage[dummy_map.drop7_rate] = s1_a
+        first_stage[dummy_map.drop1_count] = s1_lower_count
+        first_stage[dummy_map.drop2_count] = s1_lower_count
+        first_stage[dummy_map.drop3_count] = s1_upper_count
+        first_stage[dummy_map.drop4_count] = s1_upper_count
+        first_stage[dummy_map.drop5_count] = s1_a_count
+        first_stage[dummy_map.drop6_count] = s1_a_count
+        first_stage[dummy_map.drop7_count] = s1_a_count
+
+        #second stage
+        second_stage[dummy_map.drop1_rate] = s2_lower
+        second_stage[dummy_map.drop2_rate] = s2_lower
+        second_stage[dummy_map.drop3_rate] = s2_upper
+        second_stage[dummy_map.drop4_rate] = s2_upper
+        second_stage[dummy_map.drop5_rate] = s2_a
+        second_stage[dummy_map.drop6_rate] = s2_a
+        second_stage[dummy_map.drop7_rate] = s2_a
+        second_stage[dummy_map.drop1_count] = s2_lower_count
+        second_stage[dummy_map.drop2_count] = s2_lower_count
+        second_stage[dummy_map.drop3_count] = s2_upper_count
+        second_stage[dummy_map.drop4_count] = s2_upper_count
+        second_stage[dummy_map.drop5_count] = s2_a_count
+        second_stage[dummy_map.drop6_count] = s2_a_count
+        second_stage[dummy_map.drop7_count] = s2_a_count
+
+        #third stage
+        third_stage[dummy_map.drop1_rate] = s3_lower
+        third_stage[dummy_map.drop2_rate] = s3_lower
+        third_stage[dummy_map.drop3_rate] = s3_upper
+        third_stage[dummy_map.drop4_rate] = s3_upper
+        third_stage[dummy_map.drop5_rate] = s3_a
+        third_stage[dummy_map.drop6_rate] = s3_a
+        third_stage[dummy_map.drop7_rate] = s3_a
+        third_stage[dummy_map.drop1_count] = s3_lower_count
+        third_stage[dummy_map.drop2_count] = s3_lower_count
+        third_stage[dummy_map.drop3_count] = s3_upper_count
+        third_stage[dummy_map.drop4_count] = s3_upper_count
+        third_stage[dummy_map.drop5_count] = s3_a_count
+        third_stage[dummy_map.drop6_count] = s3_a_count
+        third_stage[dummy_map.drop7_count] = s3_a_count
+
+    #metal
+    first_stage = m["metal"]["0"]["m"].stages[0]
+    second_stage = m["metal"]["1"]["m"].stages[0]
+    third_stage = m["metal"]["2"]["m"].stages[0]
+
+
+    first_stage[dummy_map.drop1_id] = item.drop_id.orb_metal_def_d
+    first_stage[dummy_map.drop1_rate] = 500
+    first_stage[dummy_map.drop1_count] = 2
+
+    second_stage[dummy_map.drop1_id] = item.drop_id.orb_metal_def_c
+    second_stage[dummy_map.drop1_rate] = 500
+    second_stage[dummy_map.drop1_count] = 2
+
+    third_stage[dummy_map.drop1_id] = item.drop_id.orb_metal_def_b
+    third_stage[dummy_map.drop1_rate] = 500
+    third_stage[dummy_map.drop1_count] = 2
+    
+    if ability_orbs: #can have 7 per stage as of now, only uses 6
+        first_stage[dummy_map.drop2_id] = item.drop_id.orb_resist_knockback_d
+        first_stage[dummy_map.drop3_id] = item.drop_id.orb_resist_slow_d
+        first_stage[dummy_map.drop4_id] = item.drop_id.orb_resist_freeze_d
+        first_stage[dummy_map.drop5_id] = item.drop_id.orb_resist_weaken_d
+        first_stage[dummy_map.drop6_id] = item.drop_id.orb_resist_curse_d
+        first_stage[dummy_map.drop7_id] = item.drop_id.orb_counter_surge_d
+
+        second_stage[dummy_map.drop2_id] = item.drop_id.orb_shortened_cooldown_d
+        second_stage[dummy_map.drop3_id] = item.drop_id.orb_cost_down_d
+        second_stage[dummy_map.drop4_id] = item.drop_id.orb_death_surge_d
+        second_stage[dummy_map.drop5_id] = item.drop_id.orb_berserker_d
+        second_stage[dummy_map.drop6_id] = item.drop_id.orb_cannon_recharge_d
+        second_stage[dummy_map.drop7_id] = item.drop_id.orb_bounty_up_d
+
+        third_stage[dummy_map.drop2_id] = item.drop_id.orb_resist_wave_d
+        third_stage[dummy_map.drop3_id] = item.drop_id.orb_resist_toxic_d
+        third_stage[dummy_map.drop4_id] = item.drop_id.orb_resist_surge_d
+        third_stage[dummy_map.drop5_id] = item.drop_id.orb_resist_explosion_d
+        third_stage[dummy_map.drop6_id] = item.drop_id.orb_cash_back_d
+        third_stage[dummy_map.drop7_id] = item.drop_id.orb_dodge_attack_d
+
+
+        #rates
+        first_stage[dummy_map.drop2_rate] = 200
+        first_stage[dummy_map.drop3_rate] = 200
+        first_stage[dummy_map.drop4_rate] = 200
+        first_stage[dummy_map.drop5_rate] = 200
+        first_stage[dummy_map.drop6_rate] = 200
+        first_stage[dummy_map.drop7_rate] = 200
+
+        second_stage[dummy_map.drop2_rate] = 200
+        second_stage[dummy_map.drop3_rate] = 200
+        second_stage[dummy_map.drop4_rate] = 250
+        second_stage[dummy_map.drop5_rate] = 200
+        second_stage[dummy_map.drop6_rate] = 200
+        second_stage[dummy_map.drop7_rate] = 200
+
+        third_stage[dummy_map.drop2_rate] = 150
+        third_stage[dummy_map.drop3_rate] = 150
+        third_stage[dummy_map.drop4_rate] = 200
+        third_stage[dummy_map.drop5_rate] = 200
+        third_stage[dummy_map.drop6_rate] = 200
+        third_stage[dummy_map.drop7_rate] = 200
+
+        #counts
+        first_stage[dummy_map.drop2_count] = 4
+        first_stage[dummy_map.drop3_count] = 4
+        first_stage[dummy_map.drop4_count] = 4
+        first_stage[dummy_map.drop5_count] = 4
+        first_stage[dummy_map.drop6_count] = 4
+        first_stage[dummy_map.drop7_count] = 4
+
+        second_stage[dummy_map.drop2_count] = 4
+        second_stage[dummy_map.drop3_count] = 4
+        second_stage[dummy_map.drop4_count] = 4
+        second_stage[dummy_map.drop5_count] = 4
+        second_stage[dummy_map.drop6_count] = 4
+        second_stage[dummy_map.drop7_count] = 4
+
+        third_stage[dummy_map.drop2_count] = 4
+        third_stage[dummy_map.drop3_count] = 4
+        third_stage[dummy_map.drop4_count] = 4
+        third_stage[dummy_map.drop5_count] = 4
+        third_stage[dummy_map.drop6_count] = 4
+        third_stage[dummy_map.drop7_count] = 4
+
+    for each in m:
+        for zeach in m[each]:
+            m[each][zeach]["m"].submit()
+    
+    #get new island stages array
+    island = []
+    traits_to_do = island_traits
+    if add_relic_aku:
+        traits_to_do = total_traits
+    for x in range(0,3):
+        for trait in traits_to_do:
+            this_map = m[trait][str(x)]["m"]
+            island.append(this_map.stages[0])
+    
+    #set array as new island stages
+    island_map = f.map_data(MAPSTAGEDATA + GAUNTLET_MLETTER + "_055.csv")
+    island_map.stages = island
+    for each in island_map.stages: #fix the reduced xp of enigma vs island
+        each[dummy_map.xp] = 5700
+    island_map.submit()
+
+    #set new stages
+    if add_relic_aku:
+        trait_count = len(total_traits)
+        for trait_id in range(0,len(total_traits)):
+            for x in range(0,3):
+                this_stage = m[total_traits[trait_id]][str(x)]["s"]
+                stage_name = STAGE_SCHEM + GAUNTLET_SLETTER + stringize_number(55,3) + "_" + stringize_number(x*trait_count+trait_id,2) + ".csv"
+                this_stage.submit_as_new_stage(stage_name)
+        
+        #have to figure out what else is required to submit stages
+
+
+
 
 
 

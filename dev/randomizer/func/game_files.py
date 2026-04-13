@@ -136,16 +136,19 @@ def burrow_animation_maker():
 
 """ these are the functions used for getting game files """
 
-def file_reader(file):
+def file_reader(file,force_separator=None):
     """
     returns 2d array from file
     \n filename and not path will return the downloadlocal version of the file if it exist
+    \n if second input it will be used as separator
     """
     non_num_csv = ["imgcut","mamodel","maanim"]
     num_csv = ["csv"]
     tsv = ["tsv"]
     skip = ["json","png","preset"] #json and preset seem the same and can prolly be split
-    
+    do_unusual_sep = False
+    if force_separator != None:
+        do_unusual_sep = True
     #get csv or tsv
     check_ending = file.split(".")
     ending = check_ending[-1]
@@ -175,7 +178,9 @@ def file_reader(file):
         #print("file \"" + str(input) + "\" does not exist")
         return
 
-    if ending in tsv:
+    if do_unusual_sep:
+        return fh.array_type_file_reader(input,force_separator,False,True) #currently for files with fuckass |
+    elif ending in tsv:
         return fh.array_type_file_reader(input,"\t",False)
     elif ending in num_csv:
         return fh.array_type_file_reader(input,",")
@@ -186,9 +191,10 @@ def file_reader(file):
     else:
         return fh.array_type_file_reader(input,",",False) #current default to non numercial csv
 
-def file_writer(file,info):
+def file_writer(file,info,force_separator=None):
     """
     writes file to dl
+    \n if given force separator it uses that
     """
     non_num_csv = ["imgcut","mamodel","maanim"]
     num_csv = ["csv"]
@@ -196,8 +202,13 @@ def file_writer(file,info):
     skip = ["json","png","preset"] #json and preset seem the same and can prolly be split
     end_check = file.split(".")
     end = end_check[-1]
+    do_sep = False
+    if force_separator != None:
+        do_sep = True
 
-    if end in tsv:
+    if do_sep:
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,force_separator) #fuckass |
+    elif end in tsv:
         fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,"\t")
     elif end in non_num_csv: #theyre separated but Im not sure if theres actually a reason to
         fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info)
@@ -293,7 +304,10 @@ def get_talents(vanilla=False):
 class csv():
     def __init__(self,file_name):
         self.file_name = file_name
-        self.array = file_reader(file_name)
+        if file_name != None:
+            self.array = file_reader(file_name)
+        else:
+            self.array = None
         self.exists = True
         if self.array == None:
             self.exists = False
@@ -301,9 +315,12 @@ class csv():
     
     def write_csv(self):
         file_writer(self.file_name,self.array)
+    
+    
+
 
 class stage_sche(csv):
-    def __init__(s, file_name):
+    def __init__(s,file_name=None):
         super().__init__(file_name)
         s.number_of_starting_lines = 2
         if s.array != None:
@@ -437,8 +454,64 @@ class stage_sche(csv):
         
         s.write_csv()
 
+    def submit_as_new_stage(s,file_name):
+        s.old_file_name = s.file_name
+        s.file_name = file_name
+        s.submit()
+        #idk what to change for modded stages
+        old_info = s.parse_stage_name(s.old_file_name)
+        new_info = s.parse_stage_name(s.file_name)
+        s.copy_files_from([new_info[0],old_info[0]],[new_info[1],old_info[1]],[new_info[2],[old_info[2]]])
+        
+
+
+    def copy_files_from(s,sletter=[],map_number=[],stage_number=[],directory=DATA_LOCAL,stage_name=None):
+        """ the first entry in each array is the new, second is old """
+        mapsn_imgcut = MAPSN + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + sletter[0].lower() + MAPSN_END_IMGCUT
+        new_mapsn_imgcut = MAPSN + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + sletter[1].lower() + MAPSN_END_IMGCUT
+        mapsn_png = MAPNAME + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + sletter[0].lower() + MAPSN_END_PNG
+        new_mapsn_png = MAPNAME + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + sletter[1].lower() + MAPSN_END_PNG
+        shutil.copy(directory + IMAGEDATALOCAL + mapsn_imgcut,new_mapsn_imgcut)
+        shutil.copy(directory + MAPLOCAL + mapsn_png,new_mapsn_png)
+        
+        #add stage name to stage name
+        stage_name = STAGENAME + sletter[1] + STAGENAME_END
+        new_stage_name = STAGENAME + sletter[0] + STAGENAME_END
+        stage_name_array = file_reader(new_stage_name,"|")
+        while map_number[0] > len(stage_name_array) + 1:
+            stage_name_array.append([])
+        while stage_number[0] > len(stage_name_array[map_number[0]]) + 1:
+            stage_name_array[map_number[0]].append("")
+        if stage_name == None:
+            old_stage_name_array = file_reader(stage_name,"|")
+            stage_name = old_stage_name_array[map_number[1]][stage_number[1]]
+        stage_name_array[map_number[0]][stage_number[0]] = stage_name
+        file_writer(new_stage_name,stage_name_array,"|")
+        
+    def parse_stage_name(s,stage_name=""):
+        """
+        returns [sletter,mnumber,snumber]
+        \n does not work on eoc stages
+        """
+        numbers = ["0","1","2","3","4","5","6","7","8","9"]
+        stage_name = stage_name.replace("stage","")
+        stage_name = stage_name.replace(".csv","")
+        stage_parts = stage_name.split("_")
+        map_string = ""
+        for x in stage_parts[0]:
+            if x in numbers:
+                map_string += x
+        stage_number = int(stage_parts[-1])
+        map_number = int(map_string)
+        sletter = stage_parts[0].replace(map_string,"")
+        return [sletter,map_number,stage_number]
+
+
+
+
+
 class map_data(csv):
-    def __init__(s, file_name):
+    def __init__(s, file_name=None):
         super().__init__(file_name)
         s.map_background = 0
         s.normal_reward_id = 0 #never did check if this was what it was
@@ -472,6 +545,15 @@ class map_data(csv):
         s.drop5_rate = 18
         s.drop5_id = 19
         s.drop5_count = 20
+        s.drop6_rate = 21
+        s.drop6_id = 22
+        s.drop6_count = 23
+        s.drop7_rate = 24
+        s.drop7_id = 25
+        s.drop7_count = 26
+        s.drop8_rate = 27
+        s.drop8_id = 28
+        s.drop8_count = 29
 
         
 
@@ -491,14 +573,14 @@ class map_data(csv):
             s.visible_key = first[3]
         if le>4:
             s.unlock_key = first[4]
-        s.map_background = s.array[1][0]
+        s.map_pattern = s.array[1][0]
     
     def establish_grid(s):
         grid = []
         if s.array != None:
             empty_line = False
             for x in range(2,len(s.array)): #idk if any maps dont have 2 lines but if they do this needs to be changed to be like stage class
-                if s.array[x] == [] or empty_line:
+                if len(s.array[x]) < 4 or empty_line:
                     empty_line = True
                 else:
                     grid.append(s.array[x])
@@ -519,6 +601,6 @@ class map_data(csv):
 
         s.write_csv()
 
-
-
-
+    def submit_as_new_map(s,file_name,copy_from=None):
+        s.file_name = file_name
+        s.submit()

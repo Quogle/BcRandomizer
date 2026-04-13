@@ -62,7 +62,14 @@ def copy_many_directory_files_to_single(directory_from,directory_to):
     for x in range(0,len(files)):
         shutil.copy(files[x],new_files[x])
 
-
+def copy_file_to_download_local(file_path,filename=None):
+    """
+    copies file from path into download local
+    """
+    if filename == None:
+        split_paths = file_path.split("\\")
+        filename = split_paths[-1]
+    shutil.copy(file_path,DOWNLOAD_LOCAL + filename)
 
 
 """
@@ -89,7 +96,7 @@ def interpret_csv_type_file(file,separator=",",force_num=True):
         if line == "":
             break
         #remove everything commented out
-        comment = line.find("\\")
+        comment = line.find("/")
         if comment != -1:
             line = line[:comment]
         #force num and remove \n and stupid chara
@@ -109,6 +116,8 @@ def interpret_csv_type_file(file,separator=",",force_num=True):
                 except:
                     if x != len(line_array)-1: #prevent it from adding values on trailing commas
                         line_array[x] = 0
+                    else:
+                        line_array.pop()
         array_to_return.append(line_array)
     return array_to_return
 
@@ -158,7 +167,7 @@ def array_to_array_type_file_writer(file_path,info,separator=","):
     for line in info:
         line_string = ""
         for entry in line:
-            line_string += entry + separator
+            line_string += str(entry) + separator
         file_string += line_string[:-1] + "\n"
     #write to file
     file = open(file_path,"w",encoding="utf-8")
