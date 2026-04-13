@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parents[2]
+JAVA_EXE = BASE / "dev" / "dependencies" / "jdk-21" / "bin" / "java.exe"
 
 APKEDITOR = BASE / "dev" / "dependencies" / "apkeditor.jar"
 
@@ -30,7 +31,7 @@ def decompile(apk_path: Path):
         shutil.rmtree(DECOMPILED)
 
     subprocess.run([
-        "java",
+        str(JAVA_EXE),
         "-jar",
         str(APKEDITOR),
         "d",

@@ -4,6 +4,7 @@ import shutil
 from configs.internal_config import GAME_VERSION, MOD_VERSION
 
 BASE = Path(__file__).resolve().parents[2]
+JAVA_EXE = BASE / "dev" / "dependencies" / "jdk-21" / "bin" / "java.exe"
 
 WORKSPACE = BASE / "dev" / "workspace"
 MODDED_APKS = BASE / "moddedAPKS"
@@ -31,7 +32,7 @@ def compile():
     """Build APK from the decompiled folder."""
     print("Compiling APK...")
     subprocess.run([
-        "java",
+        str(JAVA_EXE),
         "-jar",
         str(APKEDITOR),
         "b",
