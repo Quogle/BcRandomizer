@@ -1,22 +1,7 @@
-import copy
-import os
-import shutil
 import math
-from PIL import Image
 from dev.randomizer.parse_config import seed
 
 
-
-#steps the string number by 1, maintains length, can be specified to give a certain length
-def number_string_stepper(number,string_length=-1):
-    """
-    turns 001 into 002 
-    """
-    if string_length==-1:
-        string_length = len(number)
-    number = str(int(number)+1)
-    number_string = "0"*(string_length-len(number)) + number
-    return number_string
 
 #shortens a string to length by taking every Nth character in the string
 def ratio_shorten_string(string,length):

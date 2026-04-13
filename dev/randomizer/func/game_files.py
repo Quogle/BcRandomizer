@@ -1,20 +1,16 @@
-import copy
 import os
 import shutil
-from PIL import Image
+import dev.randomizer.func.file_handler as fh
+from dev.randomizer.data.filepaths import *
+import dev.randomizer.func.misc as misc
 import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
-from dev.randomizer.func.core import number_string_stepper
-from dev.randomizer.data.filepaths import *
 
 
 
 
 
-#add those with info on first line to this dictionary
-first_line_csv = {}
-
-
+"""these functions really need not exist like this, Im just gonna remake them eventually"""
 
 #removes all burrow files in the directory given
 def burrow_animation_killer(randomizer_directory):
@@ -37,12 +33,13 @@ def burrow_animation_killer(randomizer_directory):
 
 #places burrow animations for zombies given in directory given, needs to be updated to not use absolute path
 def burrow_animation_getter(dummy_stats,randomizer_directory):
+    """deliberately broken"""
     animation_directory = "C:\\Users\\tad\\game_files\\added_to_each_instance\\animations\\"
     append00 = "_e_zombie00.maanim"
     append01 = "_e_zombie01.maanim"
     append02 = "_e_zombie02.maanim"
 
-
+    """
     for x in range(2,len(dummy_stats)):
         if dummy_stats[x][e.s.zombie] != 0:
             enemy_number = x-2
@@ -58,7 +55,8 @@ def burrow_animation_getter(dummy_stats,randomizer_directory):
                 shutil.copyfile(animation_directory + enemy_number_string + append01,randomizer_directory + "\\" + enemy_number_string + append01)
             if os.path.exists(animation_directory + enemy_number_string + append02):
                 shutil.copyfile(animation_directory + enemy_number_string + append02,randomizer_directory + "\\" + enemy_number_string + append02)
-
+    """
+                
 #currently makes burrow animations for all enemies and stores them in an absolute path
 def burrow_animation_maker():
     burrow_down_append = "0,12,-1,0,0,\n"
@@ -136,75 +134,18 @@ def burrow_animation_maker():
             current_count = str(count_integer)
 
 
+""" these are the functions used for getting game files """
 
-"""
-Directory Management
-"""
-
-#returns a list of all file paths in a directory, returns full paths if given full path
-def recursive_directory_content_getter(directory):
-    '''
-    returns all files in a given directory, paths are full if given full path
-    '''
-    #returns path array if directory was a folder, if directory is file fails and returns the file path in an array
-    try:
-        current_dir_paths = os.listdir(directory)
-    except:
-        return [directory]
-    
-
-    output = []
-    #search searches all paths further
-    for each in current_dir_paths:
-        dug_deeper = recursive_directory_content_getter(directory + "\\" + each)
-        for each2 in dug_deeper:
-            output.append(each2)
-    #all entries in array are full paths
-    return output
-
-#I still gotta see if folders in download local work (it would make this pointless) 
-def copy_many_directory_files_to_single(directory_from,directory_to):
-    '''
-    copies all files under first directory to the second
-    '''
-    files = recursive_directory_content_getter(directory_from)
-
-    #gets a list of the files names
-    file_names = []
-    for each in files:
-        current = each.split("\\")
-        file_names.append(current[-1])
-    
-    #puts destination directory in front of file names
-    new_files = []
-    for each in file_names:
-        new_files.append(directory_to + "\\" + each)
-    
-    #copies from files to new files
-    for x in range(0,len(files)):
-        shutil.copy(files[x],new_files[x])
-
-
-
-
-
-
-
-
-
-
-"""
-File Readers
-"""
-
-def file_reader(file,force_numercial = False):
+def file_reader(file):
     """
-    returns 2d array from file, use only file name to check if in dl first
+    returns 2d array from file
+    \n filename and not path will return the downloadlocal version of the file if it exist
     """
     non_num_csv = ["imgcut","mamodel","maanim"]
     num_csv = ["csv"]
     tsv = ["tsv"]
     skip = ["json","png","preset"] #json and preset seem the same and can prolly be split
+    
     #get csv or tsv
     check_ending = file.split(".")
     ending = check_ending[-1]
@@ -235,16 +176,16 @@ def file_reader(file,force_numercial = False):
         return
 
     if ending in tsv:
-        return csv_reader(input,False,"\t")
+        return fh.array_type_file_reader(input,"\t",False)
     elif ending in num_csv:
-        return csv_reader(input,not force_numercial)
+        return fh.array_type_file_reader(input,",")
     elif ending in non_num_csv:
-        return csv_reader(input,False)
+        return fh.array_type_file_reader(input,",",False)
     elif ending in skip:
         pass
     else:
-        return csv_reader(input,False) #current default to non numercial csv
-    
+        return fh.array_type_file_reader(input,",",False) #current default to non numercial csv
+
 def file_writer(file,info):
     """
     writes file to dl
@@ -257,236 +198,76 @@ def file_writer(file,info):
     end = end_check[-1]
 
     if end in tsv:
-        csv_writer(DOWNLOAD_LOCAL + file,info,"\t")
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,"\t")
     elif end in non_num_csv: #theyre separated but Im not sure if theres actually a reason to
-        csv_writer(DOWNLOAD_LOCAL + file,info)
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info)
     elif end in num_csv:
-        csv_writer(DOWNLOAD_LOCAL + file,info)
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info)
     elif end in skip:
         pass
     else:
-        csv_writer(DOWNLOAD_LOCAL + file,info)
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info) #defaults to a csv
 
-#reads 2d array from path, cut and pastes first line if file is in first_line_csv
-def csv_reader(file_path,force_num=True,splitter=","):
+def get_cat_stats(vanilla=False):
     """
-    returns int 2d array of csv at path
-    \n now capable of reading non numerical csv if force_num is false
-    \n can also read from tsv if splitter is \\t
+    gets a length normalized version of cat array
     """
-    file = open(file_path,"r",encoding="utf-8")
-    
-
-    #check if first line integerable
-    first_line = file.readline()
-    first_line_array = first_line.split(splitter)
-    first_line_unreadable = False
-    try:
-        int(first_line_array[0].replace("\ufeff",""))
-    except:
-        first_line_unreadable = True
-    
-    #shove first line in dict
-    if first_line_unreadable:
-        global first_line_csv
-        file_names = file_path.split("\\")
-        first_line_csv[file_names[-1]] = first_line
-    else:
-        file.seek(0)
-    
-    #read csv
-    output = []
-    csv_characters = ["0","1","2","3","4","5","6","7","8","9",",","-","."]
-    if splitter not in csv_characters:
-        csv_characters.append(splitter)
-    while True:
-        next_line = file.readline()
-        if next_line == "":
-            break
-        #remove anything after //
-        if next_line.find("//") != -1:
-            next_line = next_line[:next_line.find("//")]
-        #strip of all non numerical characters if force num
-        line_string = ""
-        if force_num:
-            for x in next_line:
-                if x in csv_characters:
-                    line_string += x
-        else:
-            line_string = next_line.replace("\n","") #make sure to remove the \n character
-        #process it into array
-        line_array = line_string.split(splitter)
-        for x in range(0,len(line_array)):
-            try:
-                line_array[x] = float(line_array[x])
-                if int(line_array[x]) == line_array[x]:
-                    line_array[x] = int(line_array[x])
-            except:
-                if force_num:
-                    line_array[x] = 0
-                    if x == len(line_array)-1: #stop it from adding values on trailing commas
-                        line_array.pop()
-        output.append(line_array)
-    file.close()
-    
-    return output
-
-#writes 2d array info to path, attatches first line before if file is in first_line_csv
-def csv_writer(path,info,character=","):
-    # make initial file string first line if in csv dict
-    global first_line_csv
-    split_path = path.split("\\")
-    file_string = ""
-    if split_path[-1] in first_line_csv:
-        file_string = first_line_csv[split_path[-1]]
-
-    for line in info:
-        line_string = ""
-        for x in line:
-            line_string += str(x)
-            line_string += character
-        line_string = line_string[:-1] + "\n"
-        file_string += line_string
-    file = open(path,"w",encoding="utf-8")
-    file.write(file_string)
-    file.close()
-
-
-#maanim reader/writer you need to use these if you are not writing to a file of the same name as was read from
-#gets the maanim as an array first line is first entry, tries making all entries integers
-def maanim_reader(path):
-    output = []
-    file = open(path,"r",encoding = "utf-8")
-    output.append(file.readline())
-    while True:
-        next_line = file.readline()
-        if next_line == "":
-            break
-        line_array = next_line.split(",")
-        for x in range(0,len(line_array)):
-            try:
-                line_array[x] = int(line_array[x])
-            except:
-                pass
-        output.append(line_array)
-    file.close()
-    return output
-
-#writer maanim
-def maanim_writer(path,info):
-    file_string = info[0]
-    for x in range(1,len(info)):
-        line_string = ""
-        for y in info[x]:
-            line_string += str(y)
-            line_string += ","
-        line_string = line_string[:-1]
-        if "\n" not in line_string:
-            line_string += "\n"
-        file_string += line_string
-    file = open(path,"w",encoding="utf-8")
-    file.write(file_string)
-    file.close()
-
-
-
-
-
-
-
-# returns the 2d enemy stats array
-def read_vanilla_enemy_stats():
-    """
-    returns the 2d enemys stats array
-    """
-    path = LOCAL_FILES + "DataLocal\\t_unit.csv"
-    return csv_reader(path)
-
-# returns the 3d cat stats array
-def read_vanilla_cat_stats():
-    """
-    returns the 3d cat stats array
-    """
-    directory = LOCAL_FILES + "DataLocal\\unit"
-    ending = ".csv"
-    current_unit = "000"
+    egg_id = 757
+    file_name_start = "unit"
+    if vanilla:
+        file_name_start = DATA_LOCAL + "unit"
     units = []
-    while len(current_unit) < 4:
-
-        current_unit = number_string_stepper(current_unit,3)
-        path = directory + current_unit + ending
-        unit = 0 #puts a 0 instead of the unit array if unit file not found (helps fix if a random unit csv is missing)
-        if os.path.exists(path):
-            unit = csv_reader(path)
+    for x in range(1,1000):
+        unit = []
+        file_path = file_name_start + misc.stringize_number(x,3) + ".csv"
+        if not os.path.exists(file_path):
+            unit = 0 #if unit doesnt exist slap a zero
+        else:
+            unit = file_reader(file_path)
         units.append(unit)
     
-
-    #reads backwards through the array removing all 0 
+    #remove trailing zeros
     while True:
-        if 0 == units[-1]:
+        if units[-1] == 0:
             units.pop()
         else:
             break
     
-    #now replaces all remaining instances of 0 with basic cat
+    #replace all missing units with egg
     for x in range(0,len(units)):
-        if 0 == units[x]:
-            units[x] = units[0]
+        if units[x] == 0:
+            units[x] = units[egg_id]
     
-    #find the longest array
+    #now lengthen all units to egg length using egg values
+    egg_length = len(units[egg_id])
+    for x in range(0,len(units)):
+        while len(units[x]) < egg_length:
+            units[x].append(units[egg_id][len(units[x])])
+    
+    #now find the longest length
     max_length = 0
-    for unit in units:
-        if len(unit[0]) > max_length:
-            max_length = len(unit[0])
+    for x in units:
+        if len(x) > max_length:
+            max_length = len(x)
     
-
-    #now lengthen them
-    egg_id = 757
-    egg_length = len(units[egg_id][0])
-    for unit_id in range(0,len(units)):
-        for form_id in range(0,len(units[unit_id])):
-            current_length = len(units[unit_id][form_id])
-            while current_length < egg_length:
-                units[unit_id][form_id].append(units[egg_id][0][current_length])
-                current_length += 1
-            while current_length < max_length:
-                units[unit_id][form_id].append(0)
-                current_length += 1
-
+    #now slap 0s on everything until theyre that length
+    for x in range(0,len(units)):
+        while len(units[x]) < max_length:
+            units[x].append(0)
+    
     return units
 
-def read_vanilla_unitbuy():
-    """
-    returns the 2d unitbuy stats array
-    """
-    path = LOCAL_FILES + "DataLocal\\unitbuy.csv"
-    return csv_reader(path)
 
-def write_enemy_stats_to_dl(estat):
-    """
-    writes input stats to downloadlocal t_unit
-    """
-    path = WORKSPACE + "DownloadLocal\\t_unit.csv"
-    csv_writer(path,estat)
 
-def write_cat_stats_to_dl(cstat):
+def get_talents(vanilla=False):
     """
-    writes input stats to downloadlocal cat files
+    gets and process talent file
+    \n each line is 2 ints followed by an array of each talent
     """
-    directory = WORKSPACE + "DownloadLocal\\unit"
-    ending = ".csv"
-    for x in range(0,len(cstat)):
-        #using number step to set the string increases it to the correct number
-        number = number_string_stepper(x,3)
-        path = directory + number + ending
-        csv_writer(path,cstat[x])
-
-def read_vanilla_talents():
-    """
-    returns a 3d array of talents, first two in each unit are integers
-    """
-    path = LOCAL_FILES + "DataLocal\\SkillAcquisition.csv"
-    base = csv_reader(path)
+    path = TALENT_FILE
+    if vanilla:
+        path = DATA_LOCAL + TALENT_FILE
+    base = file_reader(path)
     talents = []
     for each in base:
         line = []
@@ -499,38 +280,15 @@ def read_vanilla_talents():
                 talent.append(each[pos+x])
             pos += c.tpos.length
         talents.append(line)
-    
     return talents
 
 
 
 
 
-"""
-Image Files
-needs cat_sprite_killer() prolly
-"""
-
-#kills all enemy sprites in directory
-def enemy_sprite_killer(directory):
-    sprite_enemy_append_string = "_e.png"
-    for unit_id in range(0,1000):
-        sprite_string = "000" + str(unit_id)
-        sprite_string = "\\" + sprite_string[-3:] + sprite_enemy_append_string
-        if os.path.exists(directory + sprite_string):
-            os.remove(directory + sprite_string)
 
 
-
-
-
-
-
-
-
-"""
-classes for things
-"""
+""" classes for opening specific file types nicely """
 
 class csv():
     def __init__(self,file_name):
@@ -543,9 +301,6 @@ class csv():
     
     def write_csv(self):
         file_writer(self.file_name,self.array)
-
-
-
 
 class stage_sche(csv):
     def __init__(s, file_name):
@@ -763,6 +518,7 @@ class map_data(csv):
             s.array.append(each)
 
         s.write_csv()
+
 
 
 
