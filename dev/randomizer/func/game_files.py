@@ -163,20 +163,9 @@ def file_reader(file,force_separator=None):
         if os.path.exists(DOWNLOAD_LOCAL+file):
             input = DOWNLOAD_LOCAL + file
         else:
-            subfolders = []
-            locals = os.listdir(LOCAL_FILES)
-            servers = os.listdir(SERVER_FILES)
-            for each in locals:
-                subfolders.append("local\\" + each)
-            for each in servers:
-                subfolders.append("server\\" + each)
-            for each in subfolders:
-                if os.path.exists(GAME_FILES+each+"\\"+file):
-                    input = GAME_FILES+each+"\\"+file
-                    break
-    if not os.path.exists(input): #stop it from attempting to read a file that doesnt exist
-        #print("file \"" + str(input) + "\" does not exist")
-        return
+            input = fh.search_for_file(file)
+    if input == None or not os.path.exists(input): #stop it from trying to read a file that doesnt exist
+        return None 
 
     if do_unusual_sep:
         return fh.array_type_file_reader(input,force_separator,False,True) #currently for files with fuckass |
@@ -467,14 +456,15 @@ class stage_sche(csv):
         
 
 
-    def copy_files_from(s,sletter=[],map_number=[],stage_number=[],directory=DATA_LOCAL,stage_name=None):
+    def copy_files_from(s,sletter=[],map_number=[],stage_number=[],modded=False,stage_name=None):
         """ the first entry in each array is the new, second is old """
         mapsn_imgcut = MAPSN + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + sletter[0].lower() + MAPSN_END_IMGCUT
         new_mapsn_imgcut = MAPSN + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + sletter[1].lower() + MAPSN_END_IMGCUT
         mapsn_png = MAPNAME + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + sletter[0].lower() + MAPSN_END_PNG
         new_mapsn_png = MAPNAME + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + sletter[1].lower() + MAPSN_END_PNG
-        shutil.copy(directory + IMAGEDATALOCAL + mapsn_imgcut,new_mapsn_imgcut)
-        shutil.copy(directory + MAPLOCAL + mapsn_png,new_mapsn_png)
+        
+        shutil.copy(fh.search_for_file(mapsn_imgcut,modded),new_mapsn_imgcut)
+        shutil.copy(fh.search_for_file(mapsn_png,modded),new_mapsn_png)
         
         #add stage name to stage name
         stage_name = STAGENAME + sletter[1] + STAGENAME_END

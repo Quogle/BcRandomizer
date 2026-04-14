@@ -175,6 +175,27 @@ def array_to_array_type_file_writer(file_path,info,separator=","):
     file.close()
 
 
+def search_for_file(file_name,modded=False):
+    """
+    searches local then server files for the file
+    \n returns none if not found in either
+    """
+    local_dir = LOCAL_FILES
+    server_dir = SERVER_FILES
+    if modded:
+        local_dir = None #this will be set when I get around to finishing that
+
+    local_folders = os.listdir(LOCAL_FILES)
+    for each in local_folders:
+        if os.path.exists(LOCAL_FILES + each + "\\" + file_name):
+            return LOCAL_FILES + each + "\\" + file_name
+    server_folders = os.listdir(SERVER_FILES)
+    for each in server_folders:
+        if os.path.exists(SERVER_FILES + each + "\\" + file_name):
+            return SERVER_FILES + each + "\\" + file_name
+    print("failed to find file: " + file_name)
+    return None
+    
 
 
 

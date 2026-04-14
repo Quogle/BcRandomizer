@@ -19,3 +19,10 @@ compile()
 zipalign()
 sign()
 print("apk is ready\n\n")
+
+
+
+
+
+
+
