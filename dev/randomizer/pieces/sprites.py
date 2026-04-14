@@ -4,6 +4,7 @@ import dev.randomizer.enums.enemy as e
 from dev.randomizer.data.filepaths import *
 from dev.randomizer.func.random import randinst
 from dev.randomizer.parse_config import settings
+from dev.randomizer.func.misc import *
 import os
 import shutil
 from PIL import Image
@@ -35,7 +36,7 @@ def get_enemy_traits(stats):
         for trait_id in range(0,len(number_traits)):
             if stats[unit_id][number_traits[trait_id]] == 1:
                 units_traits.append(text_traits[trait_id])
-        trait_array.append(trait_array)
+        trait_array.append(units_traits)
     
     return trait_array
 
@@ -49,7 +50,7 @@ def get_new_enemy_traits(new_stats,old_stats):
     for unit_id in range(0,len(old_traits)): #assuming old stats is short or the same length
         for trait in old_traits[unit_id]:
             if trait in new_traits[unit_id]:
-                new_traits.remove(trait)
+                new_traits[unit_id].remove(trait)
     
     return new_traits
 
@@ -57,7 +58,7 @@ def dual_sprite_maker(unit_id,trait1,trait2):
     """
     makes sprite, will attempt to make them look like 1 trait if one of the two traits is missing a sprite
     """
-    file_ending = "\\" + str(unit_id) + "_e.png"
+    file_ending = "\\" + stringize_number(unit_id,3) + "_e.png"
     internal = ""
     #get part 1
     if os.path.exists(PART_1_SPRITES + trait1 + file_ending):
@@ -83,7 +84,7 @@ def dual_sprite_maker(unit_id,trait1,trait2):
 
     #combine parts
     part_1.alpha_composite(part_2)
-    part_1.save(DOWNLOAD_LOCAL)
+    part_1.save(DOWNLOAD_LOCAL + stringize_number(unit_id,3) + "_e.png")
     part_1.close()
     part_2.close()
 
@@ -91,7 +92,7 @@ def single_sprite_getter(unit_id,trait):
     """
     copies enemies with a single trait to downloadlocal
     """
-    file_ending = "\\" + str(unit_id) + "_e.png"
+    file_ending = "\\" + stringize_number(unit_id,3) + "_e.png"
     if os.path.exists(SINGLE_TRAIT_SPRITE_PATH + trait + file_ending):
         shutil.copy(SINGLE_TRAIT_SPRITE_PATH + trait + file_ending,DOWNLOAD_LOCAL)
 
@@ -118,11 +119,10 @@ def get_sprites(kill_previous=False):
     """
     r = randinst(106)
     new_stats = f.file_reader(ENEMY_STATS)
-    old_stats = f.csv_reader(DATA_LOCAL + ENEMY_STATS)
+    old_stats = f.file_reader(DATA_LOCAL + ENEMY_STATS)
     if kill_previous:
         for x in range(0,len(new_stats)):
-            file_end = "000" + str(x) + "_e.png"
-            file_name = DOWNLOAD_LOCAL + file_end[-9:]
+            file_name = DOWNLOAD_LOCAL + stringize_number(x,3) + "_e.png"
             if os.path.exists(file_name):
                 os.remove(file_name)
     
@@ -132,11 +132,10 @@ def get_sprites(kill_previous=False):
     #get images
     for unit_id in range(0,len(current_traits)):
         sprite_rando_dec = r.randrange(0,2)
-
         if len(current_traits[unit_id]) == 1: #it can actually just try to find it if theres only 1 trait
-            single_sprite_getter(unit_id,current_traits[unit_id][0])
+            single_sprite_getter(unit_id-2,current_traits[unit_id][0])
         elif len(current_traits[unit_id]) == 2: 
-            dual_sprite_maker(unit_id,current_traits[1-sprite_rando_dec],current_traits[sprite_rando_dec])
+            dual_sprite_maker(unit_id-2,current_traits[unit_id][1-sprite_rando_dec],current_traits[unit_id][sprite_rando_dec])
     
     sprite_exceptions(current_traits)
 

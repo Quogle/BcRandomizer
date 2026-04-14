@@ -68,18 +68,7 @@ def randomize_abilities(estat):
 
 
 
-
-
-def make_base_enemy(estat):
-    """
-    makes the non vanilla base enemy stats array to work off of
-    \n conditional
-    """
-    new_stats = copy.deepcopy(estat)
-    new_stats = early_enemy_balance(new_stats)
-    return new_stats
-
-def early_enemy_balance(estat):
+def early_enemy_changer(estat):
     """
     buff metal hp if metal removed
     give metals new traits and remove metal trait
@@ -367,7 +356,9 @@ def get_swap(stats):
     """
     r = randinst(200)
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
-    traits = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
+    traits = []
+    for each in e.t:
+        traits.append(int(each))
     text_traits = ["black","red","white","floating","relic","zombie","alien","angel","aku","metal"]
     
     #gets set ones from config
@@ -420,10 +411,10 @@ def get_swap(stats):
     #kill metals only if not in specified swap
     if remove_metals:
         index = 0
-        if current_trait_order[0] == e.t.metal:
+        if current_trait_order[0] == int(e.t.metal):
             index = 1
         for x in range(0,len(missing_to)):
-            if missing_to[x] == e.t.metal:
+            if missing_to[x] == int(e.t.metal):
                 missing_to[x] = current_trait_order[index]
     
     #combine user specified swaps with generated swaps
@@ -444,7 +435,10 @@ def get_randomization_map(stats):
     \n conditional
     """
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
-    trait_list = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
+    trait_list = []
+    for each in e.t:
+        trait_list.append(int(each))
+    
     r = randinst(200)
     map_to_return = []
     for unit_id in range(0,len(stats)):
@@ -470,16 +464,15 @@ def get_randomization_map(stats):
         
         if remove_metals: #change metals to the first trait a unit wont receive
             index = len(has_traits)
-            if to_traits[index] == e.t.metal:
+            if to_traits[index] == int(e.t.metal):
                 index += 1
             if index >= len(to_traits):
                 index = 0
             for each in range(0,len(to_traits)):
-                if to_traits[each] == e.t.metal:
+                if to_traits[each] == int(e.t.metal):
                     to_traits[each] = to_traits[index]
         
         map_to_return.append([from_traits,to_traits])
-    
     return map_to_return
         
 def do_traits(stats):
@@ -499,7 +492,7 @@ def do_traits(stats):
             for trait in range(0,len(enemy_map[unit_id][0])):
                 old_trait = enemy_map[unit_id][0][trait]
                 new_trait = enemy_map[unit_id][1][trait]
-                if new_stats[unit_id][old_trait] == 1:
+                if stats[unit_id][old_trait] == 1:
                     new_stats[unit_id][new_trait] = 1
 
         #set new stats as stats
@@ -559,9 +552,9 @@ def starred_god(stats):
     
     if rando_god and len(god_allowed) > 3:
         god1 = god_allowed[r.randrange(0,len(god_allowed))]
-        god_allowed = god_allowed.remove(god1)
+        god_allowed.remove(god1)
         god2 = god_allowed[r.randrange(0,len(god_allowed))]
-        god_allowed = god_allowed.remove(god2)
+        god_allowed.remove(god2)
         god3 = god_allowed[r.randrange(0,len(god_allowed))]
         stats[god1][e.s.starred_god] = 2
         stats[god2][e.s.starred_god] = 3
@@ -583,10 +576,11 @@ def traitless_get_traits(stats):
     trait_list = []
     for trait in e.t:
         if trait != e.t.metal:
-            trait_list.append(trait)
+            trait_list.append(int(trait))
     if not metals_removed:
-        trait_list.append(e.t.metal)
-    
+        trait_list.append(int(e.t.metal))
+
+
     for unit_id in range(2,len(stats)): #dont do it to the dummy enemies
         new_trait = trait_list[r.randrange(0,len(trait_list))]
         trait_count = 0
@@ -603,10 +597,10 @@ def itf_alien_blocker(stats):
     blocks itf enemies from getting alien, maybe allow an option to include eoc
     \n conditional
     """
+    vanilla_enemy_array = f.file_reader(DATA_LOCAL + ENEMY_STATS)
     rando_mode = settings["enemy"]["traits"]["mode"]
     no_itf_crystals = settings["game"]["gameplay"]["remove_itf_crystals"]
     remove_metals = settings["game"]["gameplay"]["remove_metals"]
-    global vanilla_enemy_array
     itf_enemy = []
     enemy_info = settings["enemy_info"]
     for x in range(0,len(enemy_info)):
@@ -616,25 +610,76 @@ def itf_alien_blocker(stats):
         r = randinst(103)
         for unit_id in range(0,len(stats)):
             current_trait_order = []
-            temp_tl = [e.t.black,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
+            temp_tl = []
+            for each in e.t:
+                temp_tl.append(int(each))
+            
             for x in range(0,len(temp_tl)):
                 current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
             if remove_metals:
                 current_trait_order.remove(e.t.metal)
             if stats[unit_id][e.t.alien] == 1 and unit_id in itf_enemy:
                 index = 0
-                while current_trait_order[index] == e.t.alien or vanilla_enemy_array[unit_id][current_trait_order[index]] == 1:
+                while current_trait_order[index] == int(e.t.alien) or vanilla_enemy_array[unit_id][current_trait_order[index]] == 1:
                     index += 1
                 stats[unit_id][e.t.alien] = 0
                 stats[unit_id][current_trait_order[index]] = 1
     
     return stats
 
+def trait_exceptions(estat):
+    """
+    applies force traits and exceptions before gimmicks
+    \n conditional
+    """
+    exceptions = settings["enemy"]["exceptions"]
+    force = settings["enemy"]["force_traits"]
+    johnny = exceptions["johnny"]
+    poultrio = exceptions["poultrio"]
+    doge = force["tad_type_apk"]
+    squirrel = force["dab_type_apk"]
+    bluck = force["amph_type_apk"]
+    red_face = force["ryelo_type_apk"]
+    nu_metal = settings["game"]["gameplay"]["remove_metals"]
+    traits = []
+    for each in e.t:
+        traits.append(int(each))
+    if nu_metal:
+        try:
+            traits.remove(e.t.metal)
+        except:
+            pass
+    
+    for trait in traits:
+        if johnny:
+            estat[523][trait] = 1
+        if poultrio:
+            estat[771][trait] = 1
+        if doge:
+            estat[2][trait] = 0
+        if squirrel:
+            estat[17][trait] = 0
+        if bluck:
+            estat[38][trait] = 0
+        if red_face:
+            estat[19][trait] = 0
+    
+    if doge:
+        estat[2][e.t.alien] = 1
+    if squirrel:
+        estat[17][e.t.angel] = 1
+    if bluck:
+        estat[38][e.t.aku] = 1
+    if red_face:
+        estat[19][e.t.alien] = 1
+    return estat
+
 def trait_changer_total(stats):
     """
     master function for changing traits
     \n conditional
     """
+
     stats = do_traits(stats)
     stats = traitless_get_traits(stats)
     stats = itf_alien_blocker(stats)
@@ -651,7 +696,7 @@ def black_gimmick(estat):
     does all the black kb speed shit, interprets config and has defaults of +3 and 1.5x
     \n conditional
     """
-    black_info = settings["game"]["traits"]["gimmicks"]["black"]
+    black_info = settings["enemy"]["traits"]["gimmicks"]["black"]
     if black_info["enabled"]:
         speed_info = black_info["speed_boost"]
         round_down = black_info["rounds_down"]
@@ -673,7 +718,7 @@ def black_gimmick(estat):
                 for each in speed_buff:
                     if current_speed <= each[0] and not boosted:
                         # if mult, get mult and do rounding
-                        if "x" in each[1]:
+                        if "x" in str(each[1]):
                             speed_mult = each[1].replace("x","")
                             try:
                                 speed_mult = float(speed_mult)
@@ -719,7 +764,7 @@ def red_gimmick(estat):
     applies red speed and kb down, default x0.8 sp and x0.5 kb
     \n conditional
     """
-    red_info = settings["game"]["traits"]["gimmicks"]["red"]
+    red_info = settings["enemy"]["traits"]["gimmicks"]["red"]
     do_red = red_info["enabled"]
     speed_mult = red_info["speed_mult"]
     kb_mult = red_info["kb_mult"]
@@ -758,7 +803,7 @@ def white_gimmick(estat):
     gives whites sage, does nothing else
     \n conditional
     """
-    white_info = settings["game"]["traits"]["gimmicks"]["white"]
+    white_info = settings["enemy"]["traits"]["gimmicks"]["white"]
     do_white = white_info["enabled"]
     white_sages = white_info["whites_are_sage"]
 
@@ -776,7 +821,7 @@ def floating_gimmick(estat):
     \n conditional
     """
     r = randinst(47)
-    floating_info = settings["game"]["traits"]["gimmicks"]["white"]
+    floating_info = settings["enemy"]["traits"]["gimmicks"]["floating"]
     do_floating = floating_info["enabled"]
     wi_weight = floating_info["wave_immune_weight"]
     si_weight = floating_info["surge_immune_weight"]
@@ -821,7 +866,7 @@ def relic_gimmick(estat):
     \n conditional
     """
     r = randinst(46)
-    relic_info = settings["game"]["traits"]["gimmicks"]["relic"]
+    relic_info = settings["enemy"]["traits"]["gimmicks"]["relic"]
     do_relic = relic_info["enabled"]
     get_curse = relic_info["get_curse"]
     get_pierce = relic_info["get_weak_pierce"]
@@ -888,7 +933,7 @@ def zombie_gimmick(estat):
     \n conditional
     """               
     r = randinst(49)
-    z_info = settings["game"]["traits"]["gimmicks"]["zombie"]
+    z_info = settings["enemy"]["traits"]["gimmicks"]["zombie"]
     do_z = z_info["enabled"]
     z_balance = z_info["balanced"]
     grant_rev = z_info["grant_revive"]
@@ -972,7 +1017,7 @@ def alien_gimmick(estat):
     \n conditional
     """               
     r = randinst(63)
-    a_info = settings["game"]["traits"]["gimmicks"]["alien"]
+    a_info = settings["enemy"]["traits"]["gimmicks"]["alien"]
     do_a = a_info["enabled"]
     freeze_weight = a_info["freeze_weight"]
     slow_weight = a_info["slow_weight"]
@@ -1050,7 +1095,7 @@ def angel_gimmick(estat):
     increases angel speed and hp, reduces attack
     \n conditonal
     """
-    a_info = settings["game"]["traits"]["gimmicks"]["angel"]
+    a_info = settings["enemy"]["traits"]["gimmicks"]["angel"]
     do_a = a_info["enabled"]
     balance = a_info["balanced"]
     speed_mult = a_info["speed_mult"]
@@ -1099,7 +1144,7 @@ def aku_gimmick(estat):
     \n conditional
     """
     r= randinst(93)
-    a_info = settings["game"]["traits"]["gimmicks"]["aku"]
+    a_info = settings["enemy"]["traits"]["gimmicks"]["aku"]
     do_a = a_info["enabled"]
     shield_freq = a_info["shield_frequency"]
     death_freq = a_info["death_frequency"]
@@ -1486,55 +1531,6 @@ def apply_ability(stats,chance,duration,ability,ability_strength):
 
     return stats
 
-
-
-def trait_exceptions(estat):
-    """
-    applies force traits and exceptions before gimmicks
-    \n conditional
-    """
-    exceptions = settings["enemy"]["exceptions"]
-    force = settings["enemy"]["force_traits"]
-    johnny = exceptions["johnny"]
-    poultrio = exceptions["poultrio"]
-    doge = force["tad_type_apk"]
-    squirrel = force["dab_type_apk"]
-    bluck = force["amph_type_apk"]
-    red_face = force["ryelo_type_apk"]
-    nu_metal = settings["game"]["gameplay"]["remove_metals"]
-
-    traits = [t for t in e.t]
-    if nu_metal:
-        try:
-            traits.remove(e.t.metal)
-        except:
-            pass
-    
-    for trait in traits:
-        if johnny:
-            estat[523][trait] = 1
-        if poultrio:
-            estat[771][trait] = 1
-        if doge:
-            estat[2][trait] = 0
-        if squirrel:
-            estat[17][trait] = 0
-        if bluck:
-            estat[38][trait] = 0
-        if red_face:
-            estat[19][trait] = 0
-    
-    if doge:
-        estat[2][e.t.alien] = 1
-    if squirrel:
-        estat[17][e.t.angel] = 1
-    if bluck:
-        estat[38][e.t.aku] = 1
-    if red_face:
-        estat[19][e.t.alien] = 1
-    
-    return estat
-
 def gimmick_exceptions(estat):
     """
     applies post gimmick exceptions from config
@@ -1546,8 +1542,8 @@ def gimmick_exceptions(estat):
     squirrel = exceptions["squirrel"]
     red_face = settings["enemy"]["force_traits"]["ryelo_type_apk"]
     remove_crystals = settings["game"]["gameplay"]["remove_itf_crystals"]
-
-    if doge:
+    vanilla_enemy_array = f.file_reader(DATA_LOCAL + ENEMY_STATS)
+    if doge and estat[2][e.t.alien] == 1:
         if not remove_crystals:
             estat[2][e.s.attack] = 4
         estat[2][e.s.area] = 1
@@ -1654,6 +1650,29 @@ id swap
 
 """
 
+def total_enemy():
+    """
+    makes the whole enemy array from vanilla stats
+    \n conditional, still missing ability swap, id swap, and modded enemies
+    """
+    extras = settings["enemy"]["extras"]
+    #rand_ab = extras["randomize_abilities"]
+    rand_ab_only_base = extras["randomize_only_base_abilities"]
+
+
+    vanilla = f.file_reader(DATA_LOCAL + ENEMY_STATS)
+    base = early_enemy_changer(copy.deepcopy(vanilla))
+    from_here = copy.deepcopy(base) #only these first two should need to be kept seperate
+    #apply early modded enemies here
+    if rand_ab_only_base:
+        pass #do randomize abil here
+    from_here = trait_changer_total(from_here)
+    from_here = gimmick_total(from_here)
+    if not rand_ab_only_base:
+        pass
+    #id swap
+    #apply late modded here
+    f.file_writer(ENEMY_STATS,from_here)
 
 
 
