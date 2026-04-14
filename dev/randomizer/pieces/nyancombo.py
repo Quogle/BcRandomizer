@@ -2,8 +2,6 @@ from pathlib import Path
 import json
 from dev.randomizer.parse_config import settings
 from dev.randomizer.func.random import randinst
-from dev.randomizer.pieces.unit import vanilla_cat_array
-from dev.randomizer.pieces.unit import vanilla_unitbuy_array
 import dev.randomizer.func.game_files as f
 from dev.randomizer.data.filepaths import *
 from dev.randomizer.enums.unitbuy import ub
@@ -37,7 +35,7 @@ LEGEND_RARE = 5
 def randomize_combos():
     cfg = config_settings()
     r = randinst(16)
-
+    vanilla_cat_array = f.get_cat_stats(True)
     # Decide which units are allowed
     disallowed = set()
     if cfg["blacklist_collab"]:
@@ -126,7 +124,8 @@ def randomize_combos():
 
 
 def all_units_down(r, combos):
- 
+    vanilla_cat_array = f.get_cat_stats(True)
+    
     # id for cat combo
     next_id = 20000
 
@@ -157,8 +156,9 @@ def all_units_down(r, combos):
     print(f"Added {len(vanilla_cat_array)} 'DOWN' combos.")
 
 def is_uber_lr(unit_id, cfg):
+    vanilla_unitbuy = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
     # Return True if the unit counts toward the uber/lr limit
-    rarity = vanilla_unitbuy_array[unit_id][ub.rarity]
+    rarity = vanilla_unitbuy[unit_id][ub.rarity]
     if rarity == UBER_RARE:
         return True
     if rarity == LEGEND_RARE and cfg["allow_legend_rares"]:

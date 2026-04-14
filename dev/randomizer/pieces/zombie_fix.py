@@ -2,9 +2,7 @@ from pathlib import Path
 import json
 from dev.randomizer.parse_config import settings
 from dev.randomizer.func.random import randinst as randinst
-from dev.randomizer.func.unit import vanilla_cat_array
-from dev.randomizer.func.unit import vanilla_unitbuy_array
-import dev.randomizer.func.files as f
+import dev.randomizer.func.game_files as f
 from dev.randomizer.data.filepaths import *
 import dev.randomizer.enums.cats as c
 import dev.randomizer.enums.enemy as e
@@ -14,7 +12,9 @@ import dev.randomizer.enums.enemy as e
 BASE = Path(__file__).resolve().parents[2]
 
 def fix_zombie():
-    
+    vanilla_cat_array = f.get_cat_stats(True)
+
+
     img015 = f.file_reader("img015.imgcut")
     img015[331][0] = 211
     img015[331][1] = 698

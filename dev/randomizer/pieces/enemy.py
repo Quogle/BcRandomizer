@@ -1657,10 +1657,3 @@ id swap
 
 
 
-#the array straight from t_unit
-vanilla_enemy_array = f.file_reader(DATA_LOCAL + ENEMY_STATS)
-
-#stat array with the before everything reworks applied to it
-base_enemy_array = make_base_enemy(vanilla_enemy_array)
-
-

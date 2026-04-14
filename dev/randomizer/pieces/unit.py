@@ -468,13 +468,4 @@ def do_trait_randomization(stats):
 
 
 
-#the 3d array straight from the files
-vanilla_cat_array = f.get_cat_stats(True)
-
-vanilla_unitbuy_array = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
-
-#the 3d array with the before everything reworks applied to it
-base_cat_array = make_base_cat(vanilla_cat_array)
-
-
 

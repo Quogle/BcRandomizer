@@ -5,7 +5,6 @@ import dev.randomizer.enums.cats as c
 import dev.randomizer.func.game_files as f
 import dev.randomizer.func.random as random
 from dev.randomizer.data.filepaths import *
-from dev.randomizer.pieces.enemy import vanilla_enemy_array
 import os
 
 
@@ -61,11 +60,8 @@ def buff_itf_aliens():
     do_a = settings["game"]["gameplay"]["preserve_alien_mags_main_chapters"]
     remove_itf_crystals = settings["game"]["gameplay"]["remove_itf_crystals"]
     if do_a:
-        if os.path.exists(DOWNLOAD_LOCAL + ENEMY_STATS):
-            new_stats = f.csv_reader(DOWNLOAD_LOCAL + ENEMY_STATS)
-        else:
-            new_stats = vanilla_enemy_array
-        
+        vanilla_enemy_array = f.file_reader(DATA_LOCAL + ENEMY_STATS)
+        new_stats = f.file_reader(ENEMY_STATS)
         itf_path_start = STAGE_SCHEM + ITF_SLETTER + "0"
         itf_chapters = ["4","5","6"]
         mag_base = 7
@@ -88,14 +84,12 @@ def buff_cotc_aliens():
     increases mags of ex aliens, will attempt to read from file to determine what to buff
     conditional, post enemies written to file
     """
+    
     do_a = settings["game"]["gameplay"]["preserve_alien_mags_main_chapters"]
     remove_cotc_crystals = settings["game"]["gameplay"]["remove_cotc_crystals"]
     if do_a:
-        if os.path.exists(DOWNLOAD_LOCAL + ENEMY_STATS):
-            new_stats = f.csv_reader(DOWNLOAD_LOCAL + ENEMY_STATS)
-        else:
-            new_stats = vanilla_enemy_array
-        
+        vanilla_enemy_array = f.file_reader(DATA_LOCAL + ENEMY_STATS)
+        new_stats = f.file_reader(ENEMY_STATS)
         cotc_path_start = STAGE_SCHEM + COTC_SLETTER + "0"
         cotc_chapters = ["7","8","9"]
         mag_base = 16
