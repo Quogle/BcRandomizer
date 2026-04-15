@@ -1,6 +1,7 @@
 import dev.randomizer.enums.cats as c
 import dev.randomizer.func.game_files as f
 from dev.randomizer.func.random import randinst
+from dev.randomizer.func.misc import *
 from dev.randomizer.parse_config import settings
 from dev.randomizer.data.filepaths import *
 import copy
@@ -333,76 +334,87 @@ def get_swaps(stats):
     
     return map_to_return
     
-def get_cat_randomization_map(stats):
+def get_cat_randomization_map(stats,talents):
     """
-    creates map based on input array
+    creates map based on input array, [old trait,new trait] for each form in each unit
+    \n conditional
     """
     r = randinst(201)
-    remove_metals = settings["game"]["gameplay"]["remove_metals"] #this isnt done here anymore
+    remove_metals = settings["game"]["gameplay"]["remove_metals"]
     trait_per_whole_unit = settings["cat"]["unit"]["traits"]["trait_per_whole_unit"]
-    try_new_trait = settings["cat"]["unit"]["traits"]["try_new_trait"] #this can be mimmicked by just not using the shift when applying map
-    all_traits = [c.t.black,c.t.red,c.t.white,c.t.floating,c.t.relic,c.t.zombie,c.t.alien,c.t.angel,c.t.aku,c.t.metal]
-
-    map_to_return = [] #maybe initialize it with a bunch of values if theres a file with no forms
+    try_new_trait = settings["cat"]["unit"]["traits"]["try_new_trait"]
+    all_traits = []
+    for trait in c.t:
+        all_traits.append(int(trait))
+    map_to_return = []
     for unit_id in range(0,len(stats)):
-        units_map = []
-        if trait_per_whole_unit:
-            #establish units working trait order
+        unit_map = []
+        for form_id in range(0,5): #establish current trait order 5 times regardless of whether per form or not
             current_trait_order = []
             temp_tl = copy.deepcopy(all_traits)
             for x in range(0,len(temp_tl)):
                 current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
-            
-            has_traits = []
-            for trait in current_trait_order:
-                for form_id in stats[unit_id]:
-                    if stats[unit_id][form_id][trait] == 1 and trait not in has_traits:
-                        has_traits.append(trait)
-            
-            traits_had = len(has_traits)
-            #finish traits
-            for trait in current_trait_order:
-                if trait not in has_traits:
-                    has_traits.append(trait)
-            
-            shift = r.randrange(1,len(current_trait_order)-1)
-            if try_new_trait:
-                shift = traits_had
-            
-            form_map = create_form_map(has_traits,shift,traits_had,remove_metals)
-            for form_id in range(0,len(stats[unit_id])):
-                units_map.append(form_map)
+            shift = r.randrange(0,len(all_traits)-1)
+            #get units talents if there are any
+            unit_talents = []
+            for each in talents:
+                if each[c.tpos.unit_id] == unit_id:
+                    unit_talents = each
 
-        else: #trait per form
-            #run 5 times for future proof
-            for form_id in range(0,5):
-                current_trait_order = []
-                temp_tl = copy.deepcopy(current_trait_order)
-                for x in range(0,len(temp_tl)):
-                    current_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
-                shift = r.randrange(1,len(current_trait_order)-1)
+            if trait_per_whole_unit:
+                if form_id == 4: #only run on last form id if whole unit
+                    #get has traits
+                    has_traits = multi_form_total_has_traits(current_trait_order,stats[unit_id],unit_talents)
+                    if try_new_trait: #stop it from needlessly rotating and allow metal to work
+                        shift = len(has_traits) % len(all_traits)
+                        
+                    old_traits = fill_out_trait_list(current_trait_order,has_traits)
+                    new_traits = copy.deepcopy(old_traits)
+                    #if no metals replace metal with the first trait a unit wont get
+                    if remove_metals:
+                        index = shift
+                        if new_traits[index] == int(c.t.metal):
+                            index = (index + 1) % len(all_traits)
+                        new_traits[new_traits.index(c.t.metal)] = new_traits(index)
+                    
+                    #now rotate new traits by shift
+                    for x in range(shift):
+                        new_traits.append(new_traits.pop(0))
+                    
+                    #now slap it on unit map a number of times
+                    for x in range(0,len(stats[unit_id])):
+                        unit_map.append([old_traits,new_traits])
+
+            else: #trait per form
                 if len(stats[unit_id]) > form_id:
-                    has_traits = []
-                    for trait in current_trait_order:
-                        if stats[unit_id][form_id][trait] == 1:
-                            has_traits.append(trait)
+                    #get whether or not talents count this form
+                    form_talents = []
+                    if form_id >= 2:
+                        form_talents = unit_talents
+                    #get has traits
+                    has_traits = single_form_total_has_traits(current_trait_order,stats[unit_id][form_id],form_talents)
+                    if try_new_trait: #stop it from needlessly rotating and allow metal to work
+                        shift = len(has_traits) % len(all_traits)
                     
-                    traits_had = len(has_traits)
-                    #finish hastraits
-                    for trait in current_trait_order:
-                        if trait not in has_traits:
-                            has_traits.append(trait)
+                    old_traits = fill_out_trait_list(current_trait_order,has_traits)
+                    new_traits = copy.deepcopy(old_traits)
+                    if remove_metals:
+                        index = shift
+                        if new_traits[index] == int(c.t.metal):
+                            index = (index + 1) % len(all_traits)
+                        new_traits[new_traits.index(c.t.metal)] = new_traits(index)
                     
-                    if try_new_trait:
-                        shift = traits_had
+                    #now rotate new traits by shift
+                    for x in range(shift):
+                        new_traits.append(new_traits.pop(0))
                     
-                    form_map = create_form_map(has_traits,shift,traits_had,remove_metals)
-                    units_map.append(form_map)
-
-        map_to_return.append(units_map)
+                    #now slap in unit map
+                    unit_map.append([old_traits,new_traits])
+        #slap unit map into total map
+        map_to_return.append(unit_map)
     return map_to_return
                     
-def get_map(stats):
+def get_map(stats,talents):
     """
     gets map from stats, conditional
     """
@@ -411,9 +423,8 @@ def get_map(stats):
     if mode == "swap":
         cat_map = get_swaps(stats)
     if mode == "randomize":
-        cat_map = get_cat_randomization_map(stats)
+        cat_map = get_cat_randomization_map(stats,talents)
     return cat_map
-
 
 def create_form_map(traits,shift,traits_had,remove_metals):
     new_traits = copy.deepcopy(traits)
@@ -430,7 +441,7 @@ def create_form_map(traits,shift,traits_had,remove_metals):
     form_map = [traits,new_traits]
     return form_map
 
-def apply_map(stats,map):
+def apply_map_to_stats(stats,map):
     """
     applies a map to unit array
     """
@@ -453,16 +464,186 @@ def apply_map(stats,map):
     
     return new_stats
 
-def do_trait_randomization(stats):
+def apply_map_to_talents(talents,stats,map):
     """
-    generates trait map from stats and applies it to stats
+    takes a map and applies it and all talent edits to it
+    \n conditional
     """
-    cat_map = get_map(stats)
-    new_stats = apply_map(stats,cat_map)
-    return new_stats
+
 
 #need one for giving/taking zkill curse and shield and barrier but idk how I intend to do that rn since talents
 
+
+
+
+
+"""
+minor parts
+"""
+
+def get_units_has_talent_traits(units_talents):
+    """
+    gets the traits a unit has in talents, returns an empty array if no talents
+    """
+    try:
+        len(units_talents)
+        traits = []
+        trait_sum = units_talents[c.tpos.type_id]
+        if trait_sum > 0:
+            if trait_sum >= c.tv.sum_aku:
+                trait_sum = trait_sum % c.tv.sum_aku
+                traits.append(int(c.t.aku))
+            if trait_sum >= c.tv.sum_witch: #this is just here to make the math work
+                trait_sum = trait_sum % c.tv.sum_witch
+                #traits.append(int(c.t.witch))
+            if trait_sum >= c.tv.sum_white:
+                trait_sum = trait_sum % c.tv.sum_white
+                traits.append(int(c.t.white))
+            if trait_sum >= c.tv.sum_relic:
+                trait_sum = trait_sum % c.tv.sum_relic
+                traits.append(int(c.t.relic))
+            if trait_sum >= c.tv.sum_zombie:
+                trait_sum = trait_sum % c.tv.sum_zombie
+                traits.append(int(c.t.zombie))
+            if trait_sum >= c.tv.sum_alien:
+                trait_sum = trait_sum % c.tv.sum_alien
+                traits.append(int(c.t.alien))
+            if trait_sum >= c.tv.sum_angel:
+                trait_sum = trait_sum % c.tv.sum_angel
+                traits.append(int(c.t.angel))
+            if trait_sum >= c.tv.sum_metal:
+                trait_sum = trait_sum % c.tv.sum_metal
+                traits.append(int(c.t.metal))
+            if trait_sum >= c.tv.sum_black:
+                trait_sum = trait_sum % c.tv.sum_black
+                traits.append(int(c.t.black))
+            if trait_sum >= c.tv.sum_floating:
+                trait_sum = trait_sum % c.tv.sum_floating
+                traits.append(int(c.t.floating))
+            if trait_sum >= c.tv.sum_red:
+                trait_sum = trait_sum % c.tv.sum_red
+                traits.append(int(c.t.red))
+
+        #now get arrays of same index same traits for talent ids
+        normal_trait_list_objects = [c.t.black,c.t.red,c.t.white,c.t.floating,c.t.relic,c.t.zombie,c.t.alien,c.t.angel,c.t.aku,c.t.metal]
+        talent_trait_list_objects = [c.tv.black,c.tv.red,c.tv.white,c.tv.floating,c.tv.relic,c.tv.zombie,c.tv.alien,c.tv.angel,c.tv.aku,c.tv.metal]
+        talent_trait_list = []
+        normal_trait_list = []
+        for trait in talent_trait_list_objects:
+            talent_trait_list.append(int(trait))
+        for trait in normal_trait_list_objects:
+            normal_trait_list.append(int(trait))
+        #if talent is a trait get its position and shove the value from normal traits into traits
+        for x in range(2,len(units_talents)):
+            talent_id = units_talents[x][c.tpos.ability_id]
+            if talent_id in talent_trait_list:
+                traits.append(normal_trait_list[talent_trait_list.index(talent_id)])
+        
+        return []
+    except:
+        return []
+
+def get_trait_ordered_traits(trait_order,traits):
+    """
+    takes an array with potential duplicates in a set order and gets the non duplicated trait ordered version
+    """
+    new_traits = []
+    for each in trait_order:
+        if each in traits:
+            new_traits.append(each)
+    return new_traits
+
+def fill_out_trait_list(current_trait_order,trait_list):
+    """
+    fills out trait list with the remaining traits
+    """
+    for each in current_trait_order:
+        if each not in trait_list:
+            trait_list.append(each)
+    return trait_list
+
+def single_form_has_non_talent_traits(current_trait_order,form_stats):
+    """
+    returns has traits for a single form
+    """
+    has_traits = []
+    for trait in current_trait_order:
+        if form_stats[trait] == 1:
+            has_traits.append(trait)
+    return has_traits
+
+def all_form_has_traits(current_trait_order,unit_stats):
+    """
+    returns a potentially duplicated has traits
+    """
+    has_traits = []
+    for form in unit_stats:
+        for trait in current_trait_order:
+            if form[trait] == 1:
+                has_traits.append(trait)
+    return has_traits
+
+def single_form_total_has_traits(trait_order,form_stats,talents):
+    """
+    gets the has traits a single form has including talents
+    """
+    base_traits = single_form_has_non_talent_traits(trait_order,form_stats)
+    talent_traits = get_units_has_talent_traits(talents)
+    has_traits = get_trait_ordered_traits(trait_order,base_traits + talent_traits)
+    return has_traits
+
+def multi_form_total_has_traits(trait_order,unit_stats,talents):
+    """
+    returns the multiform has traits that includes talents
+    """
+    base_traits = all_form_has_traits(trait_order,unit_stats)
+    talent_traits = get_units_has_talent_traits(talents)
+    has_traits = get_trait_ordered_traits(trait_order,base_traits + talent_traits)
+    return has_traits
+
+def give_and_take_trait_abilities(stats,vanilla_stats):
+    """
+    removes zkill from ex zombie targetters for instance
+    """
+    r = randinst(106)
+    give = settings["unit"]["give_trait_specific_abilities"]
+    take = settings["unit"]["take_trait_specific_abilities"]
+    zkill = settings["unit"]["zkiller_frequency"]
+    curse = settings["unit"]["curse_imm_frequency"]
+    shield = settings["unit"]["shield_pierce_frequency"]
+    strong_sp_threshold = 20 #as a % of how many units get it, currently changes divisor from 600f to be 100% down to 300f
+    for unit_id in range(0,len(stats)):
+        for form_id in range(0,5):
+            zk = r.randrange(0,100)
+            ci = r.randrange(0,100)
+            sp = r.randrange(0,100)
+            sp_strength = r.randrange(0,100)
+            if len(stats[unit_id]) > form_id:
+                if give:
+                    if zk < zkill: #grant zkill
+                        if stats[unit_id][form_id][c.t.zombie] == 1 and vanilla_stats[unit_id][form_id][c.t.zombie] == 0:
+                            stats[unit_id][form_id][c.s.zombie_killer] = 1
+                    if ci < curse:
+                        if stats[unit_id][form_id][c.t.relic] == 1 and vanilla_stats[unit_id][form_id][c.t.relic] == 0:
+                            stats[unit_id][form_id][c.s.curse_immune] = 1
+                    if sp < shield:
+                        if stats[unit_id][form_id][c.t.aku] == 1 and vanilla_stats[unit_id][form_id][c.t.aku] == 0:
+                            attack_cycle = stats[unit_id][form_id][c.s.tba] + stats[unit_id][form_id][c.s.preatk] #just realized this way of getting atk cyc fails on multi hit
+                            divisor = 600
+                            if sp_strength < strong_sp_threshold:
+                                divisor = 300
+                            stats[unit_id][form_id][c.s.shield_pierce_chance] = clamp_value(1+attack_cycle/divisor)
+                if take:
+                    if zk < zkill: #grant zkill
+                        if stats[unit_id][form_id][c.t.zombie] == 0 and vanilla_stats[unit_id][form_id][c.t.zombie] == 1:
+                            stats[unit_id][form_id][c.s.zombie_killer] = 0
+                    if ci < curse:
+                        if stats[unit_id][form_id][c.t.relic] == 0 and vanilla_stats[unit_id][form_id][c.t.relic] == 1:
+                            stats[unit_id][form_id][c.s.curse_immune] = 0
+                    if sp < shield:
+                        if stats[unit_id][form_id][c.t.aku] == 0 and vanilla_stats[unit_id][form_id][c.t.aku] == 1:
+                            stats[unit_id][form_id][c.s.shield_pierce_chance] = 0
+    return stats
 
 
 
