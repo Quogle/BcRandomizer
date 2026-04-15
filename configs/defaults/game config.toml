@@ -103,7 +103,7 @@ cheaper_items = true
 leadership_in_shop = true
 ototo_helper_in_shop = true
 cheap_catamin = true
-units_3x_sell = true
+unit_sell_increase = true                      # triples xp sell, doubles np sell
 free_orb_removal = true
 guarantee_advent_drops = true
 
