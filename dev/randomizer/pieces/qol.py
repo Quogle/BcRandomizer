@@ -400,6 +400,7 @@ def randomize_whats_boss():
                 pass
             change_boss(file,index*1000 + indenty_shift[index])
 
+#one part is not finished below
 def add_unit_drops():
     """
     master function for adding units as drops and missions
@@ -409,6 +410,7 @@ def add_unit_drops():
     add_grouped_units()
     add_collab_tf_drops()
 
+#not done
 def orb_stage_buff():
     """
     buffs the drops from orb stages (not barons)
@@ -746,8 +748,60 @@ def orb_stage_buff():
         
         #have to figure out what else is required to submit stages
 
+def unit_buy_triple():
+    """
+    triples the xp sell value of units, doubles np
+    \n conditional
+    """
+    do_self = settings["game"]["qol"]["unit_sell_increase"]
+    if not do_self: #this is good enough
+        return
+    unitbuy = f.file_reader(UNITBUY_FILE)
+    for each in unitbuy:
+        each[ub.ub.selling_xp] = int(3*each[ub.ub.selling_xp])
+        each[ub.ub.np_selling_amount] = int(2*each[ub.ub.np_selling_amount])
+    f.file_writer(UNITBUY_FILE,unitbuy)
 
+#not sure where else to put this, I think this is done?
+def param_editor():
+    """
+    applies all changes needed for configs settings
+    \n conditional
+    \n currently only behemoth and sage
+    """
+    remove_behemoth = settings["game"]["gameplay"]["remove_behemoths"]
+    preserve_zombies = settings["game"]["gameplay"]["preserve_old_zombies"] #apparently collosus slayer isnt in this file
+    rework_sage = settings["enemy"]["traits"]["gimmicks"]["white"]["sage_rework"]
+    BEHEMOTH_STAT_NAME = "battle_super_beast_hunter" #works for both atk and def
+    BEHEMOTH_STAT_NEW_VALUE = 1000 #not sure what to do, its 20k on old randomize
+    SAGE_NAME = "battle_super_sage"
+    SAGE_KB_NAME = "battle_super_sage_knockback"
+    SAGE_SLAYER_NAME = "battle_super_sage_hunter"
+    SAGE_SLAYER_KB_NAME = "battle_super_sage_hunter_knockback"
+    SAGE_SLAYER_DAMAGE_NAME = "battle_super_sage_hunter_damage"
+    SAGE_ALL_STAT = 30
+    SAGE_KB_STAT = 150
+    SAGE_SLAYER_ALL_STAT = SAGE_ALL_STAT
+    SAGE_SLAYER_KB_STAT = SAGE_SLAYER_ALL_STAT
+    SAGE_SLAYER_DAMAGE_STAT = 1000
 
+    param = f.file_reader(PARAM_FILE)
+    for each in param:
+        if remove_behemoth:
+            if BEHEMOTH_STAT_NAME in each[0]:
+                each[1] = BEHEMOTH_STAT_NEW_VALUE
+        if rework_sage:
+            if SAGE_SLAYER_DAMAGE_NAME in each[0]: #this is the most specific name
+                each[1] = SAGE_SLAYER_DAMAGE_STAT
+            elif SAGE_SLAYER_KB_NAME in each[0]:
+                each[1] = SAGE_SLAYER_KB_STAT
+            elif SAGE_SLAYER_NAME in each[0]:
+                each[1] = SAGE_SLAYER_ALL_STAT
+            elif SAGE_KB_NAME in each[0]:
+                each[1] = SAGE_KB_STAT
+            elif SAGE_NAME in each[0]:
+                each[1] = SAGE_ALL_STAT
+    f.file_writer(PARAM_FILE,param)
 
 
 
@@ -988,7 +1042,8 @@ def add_grouped_units():
         result = get_drop_id(each[0])
         for x in range(1,len(each)):
             get_drop_id(each[x],result[1],True,True) #add all of them tied to each[0]s save id with no drop id
-    
+
+#not done 
 def add_collab_tf_drops():
     """
     adds collab tf as either missions on drops

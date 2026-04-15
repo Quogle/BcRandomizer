@@ -2,9 +2,11 @@ from dev.randomizer.func.random import randinst
 from dev.randomizer.parse_config import settings
 import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
+import dev.randomizer.enums.item as item
 import dev.randomizer.func.game_files as f
 import dev.randomizer.func.random as random
 from dev.randomizer.data.filepaths import *
+from dev.randomizer.func.misc import *
 import os
 
 
@@ -185,8 +187,63 @@ def buff_cotc_aliens_in_sol_ul():
                     break
                 stage_number += 1
         
+def buff_material():
+    """
+    increases material stage drop counts
+    \n conditional
+    """
+    do_buff = settings["game"]["qol"]["stage_changes"]["material_stage_buff"]
+    if not do_buff:
+        return
+    map_name_start = MAPSTAGEDATA + EVENT_STAGE_MLETTER + "_"
+    cavern = f.map_data(map_name_start + stringize_number(150) + ".csv")
+    island = f.map_data(map_name_start + stringize_number(151) + ".csv")
+    strait = f.map_data(map_name_start + stringize_number(152) + ".csv")
+    dummy = f.map_data()
 
+    #shorten all stages to number of drops
+    for each in cavern.stages:
+        while len(each) > dummy.drop2_count:
+            each.pop()
+    for each in island.stages:
+        while len(each) > dummy.drop2_count:
+            each.pop()
+    for each in strait.stages:
+        while len(each) > dummy.drop3_count:
+            each.pop()
+    
+    #now set all stage drop ids, rate, and count
+    for x in range(0,3):
+        cavern.stages[x][dummy.drop1_id] = item.drop_id.bricks
+        cavern.stages[x][dummy.drop2_id] = item.drop_id.meteorite
+        cavern.stages[x][dummy.drop1_rate] = 100
+        cavern.stages[x][dummy.drop2_rate] = 100
+        cavern.stages[x][dummy.drop_scheme] = -4
+        cavern.stages[x][dummy.drop1_count] = int(2*(x+1))
+        cavern.stages[x][dummy.drop2_count] = int(2*(x+1))
 
+        island.stages[x][dummy.drop1_id] = item.drop_id.coal
+        island.stages[x][dummy.drop2_id] = item.drop_id.beast_bones
+        island.stages[x][dummy.drop1_rate] = 100
+        island.stages[x][dummy.drop2_rate] = 100
+        island.stages[x][dummy.drop_scheme] = -4
+        island.stages[x][dummy.drop1_count] = int(2*(x+1))
+        island.stages[x][dummy.drop2_count] = int(2*(x+1))
+
+        strait.stages[x][dummy.drop1_id] = item.drop_id.feathers
+        strait.stages[x][dummy.drop2_id] = item.drop_id.gold
+        strait.stages[x][dummy.drop3_id] = item.drop_id.sprockets
+        strait.stages[x][dummy.drop1_rate] = 100
+        strait.stages[x][dummy.drop2_rate] = 100
+        strait.stages[x][dummy.drop3_rate] = 100
+        strait.stages[x][dummy.drop_scheme] = -4
+        strait.stages[x][dummy.drop1_count] = int(2*(x+1))
+        strait.stages[x][dummy.drop2_count] = int(2*(x+1))
+        strait.stages[x][dummy.drop3_count] = int(2*(x+1))
+    
+    cavern.submit()
+    island.submit()
+    strait.submit()
 
 
 

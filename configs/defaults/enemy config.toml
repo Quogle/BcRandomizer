@@ -50,7 +50,7 @@ rounds_down = true
 [traits.gimmicks.white]
 enabled = true
 whites_are_sage = true                      # sages all get white
-sage_rework = true                          # nerfs sages effects and gives weird kb interactions
+sage_rework = true                          # nerfs sages effects and gives weird kb interactions, recommended if whites sage
 
 [traits.gimmicks.floating]
 enabled = true
