@@ -35,7 +35,7 @@ merc = true
 capsule = true
 racism_cow = true
 reaper = true
-million_dollar = true
+million_dollar = true#still unsure on how Im doing this one
 cop = true
 paladin = true
 cat_clan = true
@@ -90,52 +90,52 @@ unit_count_weights = { "1" = 10, "2" = 25, "3" = 35, "4" = 20, "5" = 10 }
 ################# QUALITY OF LIFE CHANGES #################
 
 [qol]
-catfruit_changes = true
-buff_normal_catfruit = true
-xp_buffs = true
-behemoth_cube_buff = true
+behemoth_cube_buff = true#
 enigma_buff = true
 weekday_specials = true                         # replaces weekday stages with special tf stages
 weekend_lils = true                             # replaces weekend stage with lil ticket farming stages
-xp_stage_item_farming = true
-shop_buff = true
-cheaper_items = true
-leadership_in_shop = true
-ototo_helper_in_shop = true
-cheap_catamin = true
-unit_sell_increase = true                      # triples xp sell, doubles np sell
-free_orb_removal = true
-guarantee_advent_drops = true
+xp_stage_item_farming = true#do I still even want this
+shop_buff = true#
+cheaper_items = true#
+leadership_in_shop = true#
+ototo_helper_in_shop = true#
+cheap_catamin = true#
+unit_sell_increase = true#                     # triples xp sell, doubles np sell
+free_orb_removal = true#
+guarantee_advent_drops = true#
 
 
 [qol.stage_changes]
-seasonals_in_sol = true                         # adds monthly to sol
-collabs_in_sol_advents = true                   # adds a limited selection of collab units to certain sol stages and advents (also changes nenekos/brainwashed to be stage drops)
-collab_tf_as_advents = true                     # adds ^ true forms to advents (kills xp drop)
+seasonals_in_sol = true#                         # adds monthly to sol
+collabs_in_sol_advents = true#                   # adds a limited selection of collab units to certain sol stages and advents (also changes nenekos/brainwashed to be stage drops)
+collab_tf_as_advents = true#                     # adds ^ true forms to advents (kills xp drop)
 mission_collab_special_tf_drop = true   #not added        # overwrites advent collab tf to instead add the true forms as missions
-split_normal_catfruit_stages = true             # readds the old last cat fruit stages and makes them always give jubilee, also makes first stage give more seeds but less fruit
-jubilee_always_epic = true                      # jubilee always drops epic fruit
-gstrange_buff = true
-growing_aku_buff = true
-growing_epic_buff = true
+buff_normal_catfruit_catamins = true#            # buffs catamin catfruit stages, 2seeds stage1, 1fruit stage2, 2fruit stage3 with gauranteed jubilee, it has occured to me now that Ive coded it that these are no longer in the game
+split_normal_catfruit_stages = true#             # adds old third stages that always gives 2 fruit and jubilee
+jubilee_always_epic = true#                      # jubilee always drops epic fruit
+gstrange_buff = true#                            # first stage drops a seed, extra stage seed drop increased to 4
+growing_aku_buff = true#                         # buffs third and fourth growing evil stage drops
+growing_epic_buff = true#                        # makes the extra stage always appear
 sol_xp_buff = true#
-megablitz_buff = true
-colloseum_buff = true
-material_stage_buff = true
+weekend_stage_buff = true#
+megablitz_buff = true#
+colloseum_buff = true#
+merciless_xp_buff = true#
+material_stage_buff = true#
 proving_grounds_buff = true
 hate_metal_hippoe_buff = true#
 siege_buff = true#
 facing_danger_buff = true#
-orb_stage_buff = true                           # increases drops of island and enigma orb stages, using any of the three following options forces this one on
-relic_aku_in_island = true                      # adds relic and aku orb stages to island of hidden treasure
-orb_stage_has_strong_massive_resist = true      # makes it reasonable to get trait targetted ability orbs from non baron orb stages
-orb_stage_has_ability_orb = true                # adds white ability orbs to orb stages (on metal)
+orb_stage_buff = true#almost done                           # increases drops of island and enigma orb stages, using any of the three following options forces this one on
+relic_aku_in_island = true#this is the part that isnt finished                      # adds relic and aku orb stages to island of hidden treasure
+orb_stage_has_strong_massive_resist = true#      # makes it reasonable to get trait targetted ability orbs from non baron orb stages
+orb_stage_has_ability_orb = true#                # adds white ability orbs to orb stages (on metal)
 
 
 
 ################# MISC CHANGES #################
 
 [funny]
-randomize_boss = false                              # randomizes what enemy is boss in every stage
+randomize_boss = false#                              # randomizes what enemy is boss in every stage
 youcan_warning = true
 special_surprise = true

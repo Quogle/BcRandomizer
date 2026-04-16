@@ -203,13 +203,13 @@ def buff_material():
 
     #shorten all stages to number of drops
     for each in cavern.stages:
-        while len(each) > dummy.drop2_count:
+        while len(each) > dummy.drop2_count+1:
             each.pop()
     for each in island.stages:
-        while len(each) > dummy.drop2_count:
+        while len(each) > dummy.drop2_count+1:
             each.pop()
     for each in strait.stages:
-        while len(each) > dummy.drop3_count:
+        while len(each) > dummy.drop3_count+1:
             each.pop()
     
     #now set all stage drop ids, rate, and count
@@ -245,6 +245,96 @@ def buff_material():
     island.submit()
     strait.submit()
 
+def buff_xp_stages():
+    """
+    buffs xp stage weekend stage blitz collo and merci, youre welcome
+    \n conditional
+    """
+    st_cha = settings["game"]["qol"]["stage_changes"]
+    weekend = st_cha["weekend_stage_buff"]
+    megablitz = st_cha["megablitz_buff"]
+    collo = st_cha["colloseum_buff"]
+    merci = st_cha["merciless_xp_buff"]
+    event_start = MAPSTAGEDATA + EVENT_STAGE_MLETTER + "_"
+    catamin_start = MAPSTAGEDATA + CATAMIN_MLETTER + "_"
+    dummy = f.map_data()
+
+    if weekend:
+        weekend_stage_e = f.map_data(event_start + stringize_number(27,3) + ".csv")
+        xp_stage_e = f.map_data(event_start + stringize_number(28,3) + ".csv")
+        xp_stage_c = f.map_data(catamin_start + stringize_number(11,3) + ".csv")
+        maps = [weekend_stage_e,xp_stage_e,xp_stage_c]
+        #edit on all of them
+        for each in maps:
+            #reduce it to 2 drops
+            for stage in each.stages:
+                while len(stage) > dummy.drop2_count+1:
+                    stage.pop()
+                #set to 4 to 1 ratio
+                stage[dummy.drop1_rate] = 20
+                stage[dummy.drop2_rate] = 80
+                stage[dummy.drop_scheme] = -4
+                #do I have to set drop id, prolly not
+            #high xp rewards
+            each.stages[0][dummy.drop1_count] = 30000
+            each.stages[1][dummy.drop1_count] = 40000
+            each.stages[2][dummy.drop1_count] = 60000
+            each.stages[3][dummy.drop1_count] = 80000
+            each.stages[4][dummy.drop1_count] = 100000
+            each.stages[5][dummy.drop1_count] = 140000
+            #low xp rewards
+            each.stages[0][dummy.drop2_count] = 10000
+            each.stages[1][dummy.drop2_count] = 15000
+            each.stages[2][dummy.drop2_count] = 25000
+            each.stages[3][dummy.drop2_count] = 35000
+            each.stages[4][dummy.drop2_count] = 45000
+            each.stages[5][dummy.drop2_count] = 60000
+            #set stage xp drop
+            each.stages[0][dummy.xp] = 20000
+            each.stages[1][dummy.xp] = 40000
+            each.stages[2][dummy.xp] = 60000
+            each.stages[3][dummy.xp] = 80000
+            each.stages[4][dummy.xp] = 100000
+            each.stages[5][dummy.xp] = 120000
+            each.submit()
+    if megablitz:
+        megablitz_e = f.map_data(event_start + stringize_number(59,3) + ".csv")
+        megablitz_c = f.map_data(catamin_start + stringize_number(10,3) + ".csv")
+        maps = [megablitz_e,megablitz_c]
+        #now act on each the same
+        for each in maps:
+            each.stages[0][dummy.drop1_rate] = 15
+            each.stages[0][dummy.drop2_rate] = 40
+            each.stages[0][dummy.xp] = 180000
+            each.submit()
+    if collo:
+        collo_e = f.map_data(event_start + stringize_number(124,3) + ".csv")
+        collo_c = f.map_data(catamin_start + stringize_number(9,3) + ".csv")
+        maps = [collo_e,collo_c]
+        #now act on each the same
+        for each in maps:
+            each.stages[0][dummy.drop1_rate] = 15
+            each.stages[0][dummy.drop2_rate] = 40
+            each.stages[0][dummy.drop1_count] = 1800000
+            each.stages[0][dummy.xp] = 220000
+            each.submit()
+    if merci:
+        merci_e = f.map_data(event_start + stringize_number(155,3) + ".csv")
+        merci_c = f.map_data(catamin_start + stringize_number(8,3) + ".csv")
+        maps = [merci_e,merci_c]
+        #now act on each the same
+        for each in maps:
+            each.stages[0][dummy.drop1_rate] = 15
+            each.stages[0][dummy.drop2_rate] = 50
+            each.stages[0][dummy.drop1_count] = 2500000
+            each.stages[0][dummy.drop2_count] = 1500000
+            each.stages[0][dummy.drop3_count] = 1000000
+            each.stages[0][dummy.xp] = 250000
+            each.submit()
+        
+
+
+        
 
 
 

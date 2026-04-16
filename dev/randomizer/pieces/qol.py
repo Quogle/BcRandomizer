@@ -410,7 +410,6 @@ def add_unit_drops():
     add_grouped_units()
     add_collab_tf_drops()
 
-#not done
 def orb_stage_buff():
     """
     buffs the drops from orb stages (not barons)
@@ -735,6 +734,7 @@ def orb_stage_buff():
     island_map.stages = island
     for each in island_map.stages: #fix the reduced xp of enigma vs island
         each[dummy_map.xp] = 5700
+    island_map.resolve_stage_count()
     island_map.submit()
 
     #set new stages
@@ -803,19 +803,197 @@ def param_editor():
                 each[1] = SAGE_ALL_STAT
     f.file_writer(PARAM_FILE,param)
 
+def buff_normal_catfruit():
+    """
+    adds third tier catfruit stages on the end of catfruit map
+    \n conditional
+    """
+    do_catamin = settings["game"]["qol"]["stage_changes"]["buff_normal_catfruit_catamins"]
+    split_catfruit = settings["game"]["qol"]["stage_changes"]["split_normal_catfruit_stages"]
+    always_epic = settings["game"]["qol"]["stage_changes"]["jubilee_always_epic"]
+    dummy = f.map_data()
+    catfruit_map = f.map_data(MAPSTAGEDATA + EVENT_STAGE_MLETTER + "_" + stringize_number(442,3) + ".csv")
+    if always_epic:
+        make_all_epic_extra_stage()
+    catamaps = []
+    for x in range(0,5):
+        catamaps.append(f.map_data(MAPSTAGEDATA + CATAMIN_MLETTER + "_" + stringize_number(x,3) + ".csv"))
+    #set it so all catamin stages have 1 100% drop
+    for each in catamaps:
+        for x in range(0,len(each.stages)):
+            while len(each.stages[x]) > dummy.drop_scheme + 1:
+                each.stages[x].pop()
+                each.stages[x][dummy.drop_scheme] = 0
+                each.stages[x][dummy.drop1_rate] = 100
+                each.stages[x][dummy.drop1_count] = 2
+    #set drop id of each catamin stage
+    seed = [item.drop_id.yellow_seed,item.drop_id.blue_seed,item.drop_id.red_seed,item.drop_id.purple_seed,item.drop_id.green_seed]
+    fruits = [item.drop_id.yellow_fruit,item.drop_id.blue_fruit,item.drop_id.red_fruit,item.drop_id.purple_fruit,item.drop_id.green_fruit,]
+    for x in range(0,len(catamaps)):
+        catamaps[x].stages[0][dummy.drop1_id] = seed[x]
+        catamaps[x].stages[1][dummy.drop1_id] = fruits[x]
+        catamaps[x].stages[2][dummy.drop1_id] = fruits[x]
+        catamaps[x].stages[1][dummy.drop1_count] = 1
+    #now submit them if worthy
+    if do_catamin:
+        for each in catamaps:
+            each.submit()
+    if split_catfruit:
+        catfruit_map.stages.append(catamaps[4].stages[2])
+        catfruit_map.stages.append(catamaps[3].stages[2])
+        catfruit_map.stages.append(catamaps[2].stages[2])
+        catfruit_map.stages.append(catamaps[1].stages[2])
+        catfruit_map.stages.append(catamaps[0].stages[2])
+        catfruit_map.resolve_stage_count()
+        catfruit_map.submit()
+    #now open the catamin stages to edit them
+    catastages = []
+    for x in range(0,5):
+        this_map = []
+        for y in range(0,3):
+            this_map.append(f.stage_sche(STAGE_SCHEM + CATAMIN_SLETTER + stringize_number(x,3) + "_" + stringize_number(y,2) + ".csv"))
+        catastages.append(this_map)
+    #now set extra stage info
+    for x in range(0,5):
+        catastages[x][0].extra_chance = 10
+        catastages[x][1].extra_chance = 30
+        catastages[x][2].extra_chance = 100
+        if always_epic:
+            for y in range(0,3):
+                catastages[x][y].extra_first_stage = "03"
+                catastages[x][y].extra_last_stage = "03"
+                catastages[x][y].extra_map = "000"
+    #submit them
+    if do_catamin:
+        for x in range(0,5):
+            for y in range(0,3):
+                catastages[x][y].submit()
+    #now paste them into catfruit
+    if split_catfruit:
+        for x in range(0,5):
+            catastages[x][2].submit_as_new_stage(STAGE_SCHEM + EVENT_STAGE_SLETTER + stringize_number(442,3) + "_" + stringize_number(9-x,2) + ".csv")
+    #now fix first stages
+    if always_epic:
+        for x in range(0,5):
+            catastages[x][0].submit_as_new_stage(STAGE_SCHEM + EVENT_STAGE_SLETTER + stringize_number(442,3) + "_" + stringize_number(4-x,2) + ".csv")
 
+def buff_gstange():
+    """
+    buffs growing strange to give 1 seed and then 4 seeds second stage
+    \n conditional
+    """
+    do_self = settings["game"]["qol"]["stage_changes"]["gstrange_buff"]
+    if not do_self:
+        return
+    gstrange_map = f.map_data(MAPSTAGEDATA + EVENT_STAGE_MLETTER + "_" + stringize_number(162,3) + ".csv")
+    gstrange_extra_map = f.map_data(MAPSTAGEDATA + EXTRA_STAGE_MLETTER + "_" + stringize_number(22,3) + ".csv")
+    
+    gstrange_map.stages[0][gstrange_map.drop1_rate] = 100
+    gstrange_map.stages[0][gstrange_map.drop1_id] = item.drop_id.elder_seed
+    gstrange_map.stages[0][gstrange_map.drop1_count] = 1
 
+    for each in gstrange_extra_map.stages: #set seed drop to 4
+        each[gstrange_extra_map.drop2_count] = 4
 
+    gstrange_map.submit()
+    gstrange_extra_map.submit()
 
+def buff_gaku():
+    """
+    buffs third and fourth stage massive, leaves the pre aku realms stages untouched
+    \n conditional
+    """
+    do_self = settings["game"]["qol"]["stage_changes"]["growing_aku_buff"]
+    if not do_self:
+        return
+    gaku_map = f.map_data(MAPSTAGEDATA + EVENT_STAGE_MLETTER + "_" + stringize_number(274,3) + ".csv")
+    gaku_map.stages[2][gaku_map.drop1_count] = 3
+    gaku_map.stages[3][gaku_map.drop1_count] = 10
+    gaku_map.stages[3][gaku_map.drop2_count] = 5
+    gaku_map.submit()
 
+def buff_growing_epic():
+    """
+    makes extra stage always appear
+    \n conditional
+    """
+    do_self = settings["game"]["qol"]["growing_epic_buff"]
+    if not do_self:
+        return
+    gepic = f.stage_sche(STAGE_SCHEM + EVENT_STAGE_SLETTER + stringize_number(222,3) + "_" + stringize_number(0,2) + ".csv")
+    gepic.extra_chance = 100
+    gepic.submit()
 
-
-
-
-
-
-
-
+def buff_proving_grounds():
+    """
+    buffs xp gains, makes catseyes an endless stage
+    \n conditional
+    """
+    do_self = settings["game"]["qol"]["stage_changes"]["proving_grounds_buff"]
+    if not do_self:
+        return
+    #normal buffs
+    main_prov_map = f.map_data(MAPSTAGEDATA + EVENT_STAGE_MLETTER + "_" + stringize_number(250,3) + ".csv")
+    main_prov_map.stages[0][main_prov_map.drop1_count] = 100000
+    main_prov_map.stages[1][main_prov_map.drop1_count] = 300000
+    main_prov_map.stages[2][main_prov_map.drop1_count] = 3
+    main_prov_map.stages[2][main_prov_map.drop2_count] = 3
+    main_prov_map.stages[2][main_prov_map.drop3_count] = 3
+    main_prov_map.stages[2][main_prov_map.drop4_count] = 3
+    main_prov_map.stages[2][main_prov_map.drop5_count] = 3
+    main_prov_map.submit()
+    for x in range(27,35): #this is all the xp proving grounds
+        this_map = f.map_data(MAPSTAGEDATA + EXTRA_STAGE_MLETTER + "_" + stringize_number(x,3) + ".csv")
+        for each in this_map.stages:
+            each[this_map.drop1_count] = int(2*each[this_map.drop1_count])
+        this_map.submit()
+    for x in range(35,39): #this is the catseye ones
+        this_map = f.map_data(MAPSTAGEDATA + EXTRA_STAGE_MLETTER + "_" + stringize_number(x,3) + ".csv")
+        for each in this_map.stages:
+            each[this_map.drop1_count] = 3
+            each[this_map.drop2_count] = 3
+            each[this_map.drop3_count] = 3
+            each[this_map.drop4_count] = 3
+            each[this_map.drop5_count] = 3
+        this_map.submit()
+    #now the endless shenanigans
+    endless_stage_count = 25
+    first_endless_stage = f.stage_sche(STAGE_SCHEM + MODDED_SLETTER + stringize_number(0,3) + "_" + stringize_number(0,2) + ".csv")
+    second_endless_stage = f.stage_sche(STAGE_SCHEM + MODDED_SLETTER + stringize_number(0,3) + "_" + stringize_number(1,2) + ".csv")
+    first_endless_stage.extra_map = "027"
+    second_endless_stage.extra_map = "027"
+    endless_map = f.map_data(MAPSTAGEDATA + EXTRA_STAGE_MLETTER + "_" + stringize_number(27,3) + ".csv")
+    modded_endless_map = f.map_data(MAPSTAGEDATA + MODDED_MLETTER + "_" + stringize_number(0,3) + ".csv")
+    #slap the drops onto map and submit it (I dont intend to make drops increase as time goes on)
+    for x in range(0,endless_stage_count):
+        endless_map.stages.append(modded_endless_map.stages[0])
+        endless_map.stages.append(modded_endless_map.stages[1])
+    endless_map.submit()
+    # prepare stage names
+    stage_name_start = STAGE_SCHEM + EXTRA_STAGE_SLETTER + stringize_number(27,3) + "_"
+    # now create the stages and submit them
+    first_stage_enemies = copy.deepcopy(first_endless_stage.enemies)
+    second_stage_enemies = copy.deepcopy(second_endless_stage.enemies)
+    for x in range(0,endless_stage_count):
+        scalar = int(1+x**1.4)
+        first_endless_stage.enemies = copy.deepcopy(first_stage_enemies)
+        second_endless_stage.enemies = copy.deepcopy(second_stage_enemies)
+        for each in first_endless_stage.enemies:
+            each[first_endless_stage.magnification] = int(each[first_endless_stage.magnification]*scalar)
+        for each in second_endless_stage.enemies:
+            each[second_endless_stage.magnification] = int(each[second_endless_stage.magnification]*scalar)
+        if x == endless_stage_count-1:
+            first_endless_stage.extra_chance = 0
+            second_endless_stage.extra_chance = 0
+        else:
+            first_endless_stage.extra_chance = 100
+            second_endless_stage.extra_chance = 100
+            first_endless_stage.extra_first_stage = stringize_number(2*(x+1),2)
+            second_endless_stage.extra_first_stage = stringize_number(2*(x+1),2)
+            first_endless_stage.extra_last_stage = stringize_number(1+2*(x+1),2)
+            second_endless_stage.extra_last_stage = stringize_number(1+2*(x+1),2)
+        first_endless_stage.submit_as_new_stage(stage_name_start + stringize_number(2*(x+1),2) + ".csv")
+        second_endless_stage.submit_as_new_stage(stage_name_start + stringize_number(1+2*(x+1),2) + ".csv")
 
 
 
@@ -1078,9 +1256,24 @@ def add_collab_tf_drops():
                 this_map.stages[unit[2]][this_map.drop1_id] = drop_id
                 this_map.stages[unit[2]][this_map.drop1_rate] = drop_id
                 this_map.submit()
-
-
-
+    
+def make_all_epic_extra_stage():
+    """
+    makes the all epic extra stage
+    """
+    epic_green_map = f.map_data(MAPSTAGEDATA + EXTRA_STAGE_MLETTER + "_" + stringize_number(0,3) + ".csv")
+    epic_green_stage = f.stage_sche(STAGE_SCHEM + EXTRA_STAGE_SLETTER + stringize_number(0,3) + "_" + stringize_number(2,2) + ".csv")
+    #add the only jubilee line to map data
+    map_data = []
+    for x in range(0,epic_green_map.drop_scheme+1):
+        map_data.append(epic_green_map.stages[2][x])
+    epic_green_map.stages.append(map_data)
+    epic_green_map.stages[3][epic_green_map.drop1_id] = item.drop_id.epic_fruit
+    epic_green_map.stages[3][epic_green_map.drop1_rate] = 100
+    epic_green_map.stages[3][epic_green_map.drop1_count] = 2
+    epic_green_map.resolve_stage_count()
+    epic_green_map.submit()
+    epic_green_stage.submit_as_new_stage(STAGE_SCHEM + EXTRA_STAGE_SLETTER + stringize_number(0,3) + "_" + stringize_number(3,2) + ".csv")
 
 
 

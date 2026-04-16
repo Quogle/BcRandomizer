@@ -7,7 +7,7 @@ apk.extract()
 
 apk.download_server_files()
 # if you want to display download progress do:
-# apk.download_server_files(display=True)
+apk.download_server_files(display=True)
 
 # if you want to download server files even if the files exist do:
 # apk.download_server_files(force=True)

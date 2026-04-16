@@ -5,7 +5,7 @@ from dev.randomizer.data.filepaths import *
 import dev.randomizer.func.misc as misc
 import dev.randomizer.enums.enemy as e
 import dev.randomizer.enums.cats as c
-
+import copy
 
 
 
@@ -363,6 +363,9 @@ class stage_sche(csv):
         s.enemies = []
         s.establish_grid()
 
+        #for submitting new stages
+        s.pull_stage_info_from = s.file_name
+
 
     def establish_first_line(s):
         size = 0
@@ -446,33 +449,46 @@ class stage_sche(csv):
         s.write_csv()
 
     def submit_as_new_stage(s,file_name):
-        s.old_file_name = s.file_name
         s.file_name = file_name
         s.submit()
         #idk what to change for modded stages
-        old_info = s.parse_stage_name(s.old_file_name)
+        old_info = s.parse_stage_name(s.pull_stage_info_from)
         new_info = s.parse_stage_name(s.file_name)
-        s.copy_files_from([new_info[0],old_info[0]],[new_info[1],old_info[1]],[new_info[2],[old_info[2]]])
+        modded = False
+        if old_info[0] == MODDED_SLETTER:
+            modded = True
+        s.copy_files_from([new_info[0],old_info[0]],[new_info[1],old_info[1]],[new_info[2],old_info[2]],modded)
         
 
 
     def copy_files_from(s,sletter=[],map_number=[],stage_number=[],modded=False,stage_name=None):
         """ the first entry in each array is the new, second is old """
-        mapsn_imgcut = MAPSN + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + sletter[0].lower() + MAPSN_END_IMGCUT
-        new_mapsn_imgcut = MAPSN + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + sletter[1].lower() + MAPSN_END_IMGCUT
-        mapsn_png = MAPNAME + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + sletter[0].lower() + MAPSN_END_PNG
-        new_mapsn_png = MAPNAME + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + sletter[1].lower() + MAPSN_END_PNG
+        mletter = ["",""]
+        for each in mletter_to_sletter:
+            if mletter_to_sletter[each] == sletter[0]:
+                mletter[0] = each
+            if mletter_to_sletter[each] == sletter[1]:
+                mletter[1] = each
+        mapsn_imgcut = MAPSN + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + mletter[1].lower() + MAPSN_END_IMGCUT
+        new_mapsn_imgcut = MAPSN + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + mletter[0].lower() + MAPSN_END_IMGCUT
+        mapsn_png = MAPSN + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + mletter[1].lower() + MAPSN_END_PNG
+        new_mapsn_png = MAPSN + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + mletter[0].lower() + MAPSN_END_PNG
         
-        shutil.copy(fh.search_for_file(mapsn_imgcut,modded),new_mapsn_imgcut)
-        shutil.copy(fh.search_for_file(mapsn_png,modded),new_mapsn_png)
-        
+        if mletter[1] != EXTRA_STAGE_MLETTER:
+            fh.copy_file_to_download_local(fh.search_for_file(mapsn_imgcut,modded),new_mapsn_imgcut)
+            fh.copy_file_to_download_local(fh.search_for_file(mapsn_png,modded),new_mapsn_png)
+
+        stagename_sletter = copy.deepcopy(sletter)
+        for x in range(0,len(stagename_sletter)):
+            if stagename_sletter[x] == EXTRA_STAGE_SLETTER:
+                stagename_sletter[x] = EXTRA_STAGE_MLETTER
         #add stage name to stage name
-        stage_name = STAGENAME + sletter[1] + STAGENAME_END
-        new_stage_name = STAGENAME + sletter[0] + STAGENAME_END
+        stage_name = STAGENAME + stagename_sletter[1] + STAGENAME_END
+        new_stage_name = STAGENAME + stagename_sletter[0] + STAGENAME_END
         stage_name_array = file_reader(new_stage_name,"|")
-        while map_number[0] > len(stage_name_array) + 1:
+        while map_number[0] >= len(stage_name_array):
             stage_name_array.append([])
-        while stage_number[0] > len(stage_name_array[map_number[0]]) + 1:
+        while stage_number[0] >= len(stage_name_array[map_number[0]]):
             stage_name_array[map_number[0]].append("")
         if stage_name == None:
             old_stage_name_array = file_reader(stage_name,"|")
@@ -505,13 +521,13 @@ class stage_sche(csv):
 class map_data(csv):
     def __init__(s, file_name=None):
         super().__init__(file_name)
-        s.map_background = 0
+        s.map_background = 9
         s.normal_reward_id = 0 #never did check if this was what it was
         s.score_reward_id = -1
         s.visible_key = -1
         s.unlock_key = -1
 
-        s.map_pattern = 0
+        s.map_pattern = 3
         s.establish_data()
         s.establish_grid()
 
@@ -546,9 +562,6 @@ class map_data(csv):
         s.drop8_rate = 27
         s.drop8_id = 28
         s.drop8_count = 29
-
-        
-
 
     def establish_data(s):
         if s.array == None:
@@ -592,6 +605,10 @@ class map_data(csv):
             s.array.append(each)
 
         s.write_csv()
+
+    def resolve_stage_count(s):
+        pass
+        #Ill do this later
 
     def submit_as_new_map(s,file_name,copy_from=None):
         s.file_name = file_name

@@ -69,6 +69,7 @@ def copy_file_to_download_local(file_path,filename=None):
     if filename == None:
         split_paths = file_path.split("\\")
         filename = split_paths[-1]
+    print("copying " + file_path + " to dl as " + filename)
     shutil.copy(file_path,DOWNLOAD_LOCAL + filename)
 
 
@@ -180,6 +181,7 @@ def search_for_file(file_name,modded=False):
     searches local then server files for the file
     \n returns none if not found in either
     """
+    #print("searching for " + file_name)
     local_dir = LOCAL_FILES
     server_dir = SERVER_FILES
     if modded:
