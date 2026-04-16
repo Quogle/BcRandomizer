@@ -21,6 +21,47 @@ LIMITED = set(data["limited_event"])
 UBER_RARE = 4
 LEGEND_RARE = 5
 
+# 1 form large icon UnitServer//yellow uiXXX_f.png
+# 2 form large icon UnitServer//yellow udiXXX_c.png 
+# 3 form large icon UnitServer//yellow udiXXX_s.png
+# 4 form large icon UnitServer//yellow udiXXX_u.png
+
+# 1 form small icon UnitServer //yellow unfXXX_u00 
+# 2 form small icon UnitServer//yellow uncXXX_u00
+# 3 form small icon UnitServer//yellow unsXXX_u00
+# 4 form small icon UnitServer//yellow uniXXX_u00
+
+# 1 form sprite NumberServer//yellow XXX_f.png
+# 2 form sprite NumberServer//yellow XXX_c.png
+# 3 form sprite NumberServer//yellow XXX_s.png
+# 4 form sprite NumberServer//yellow XXX_u.png
+
+# 1 form imgcut ImageDataServer//lime XXX_f.imgcut
+# 2 form imgcut ImageDataServer//lime XXX_c.imgcut
+# 3 form imgcut ImageDataServer//lime XXX_s.imgcut
+# 4 form imgcut ImageDataServer//lime XXX_u.imgcut
+
+# 1 form mamodel ImageDataServer//lime XXX_f.mamodel
+# 2 form mamodel ImageDataServer//lime XXX_c.mamodel
+# 3 form mamodel ImageDataServer//lime XXX_s.mamodel
+# 4 form mamodel ImageDataServer//lime XXX_u.mamodel
+
+#//aqua GO FROM 00-03
+# 1 form animations ImageDataServer//lime XXX_f00.maanim
+# 1 form animations ImageDataServer//lime XXX_c00.maanim
+# 1 form animations ImageDataServer//lime XXX_s00.maanim
+# 1 form animations ImageDataServer//lime XXX_u00.maanim
+
+# unit description resLocal//yellow Unit_ExplanationXXX_en.csv
+# true form descriptions //yellow unitevolve_en.csv
+# unit stats DataLocal//yellow unitXXX.csv
+# unitbuy DataLocal//yellow unitbuy.csv
+# how much stats are gained per levelup//yellow unitlevel.csv
+# levelup unlocks//yellow unitlimit.csv
+
+# gacha icon ImageServer//yellow gatyachara_XXX_f.png
+# gacha icon shadow ImageServer//yellow gatyachara_XXX_z.png
+
 def swap_units():
     vanilla_unitbuy = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
     
@@ -45,10 +86,8 @@ def swap_units():
     allowed_ubers = [ubers[i] for i in range(len(ubers)) if i not in disallowed]
     allowed_units_other = [units_other[i] for i in range(len(units_other)) if i not in disallowed]
     
-
     print(f"NON UBERS: {allowed_units_other}")
     print(f"UBER+: {allowed_ubers}")
-
 
 
 def is_uber_lr(unit_id, vanilla_unitbuy):
