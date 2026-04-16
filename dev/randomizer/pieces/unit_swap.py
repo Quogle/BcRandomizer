@@ -5,7 +5,7 @@ from dev.randomizer.func.random import randinst
 import dev.randomizer.func.game_files as f
 from dev.randomizer.data.filepaths import *
 from dev.randomizer.enums.unitbuy import ub
-import dev.randomizer.enums.nyancombo as cc
+import shutil
 
 BASE = Path(__file__).resolve().parents[2]
 DATA_PATH = BASE / "randomizer" / "data" / "unit_blacklist.json"
@@ -21,46 +21,13 @@ LIMITED = set(data["limited_event"])
 UBER_RARE = 4
 LEGEND_RARE = 5
 
-# 1 form large icon UnitServer//yellow uiXXX_f.png
-# 2 form large icon UnitServer//yellow udiXXX_c.png 
-# 3 form large icon UnitServer//yellow udiXXX_s.png
-# 4 form large icon UnitServer//yellow udiXXX_u.png
-
-# 1 form small icon UnitServer //yellow unfXXX_u00 
-# 2 form small icon UnitServer//yellow uncXXX_u00
-# 3 form small icon UnitServer//yellow unsXXX_u00
-# 4 form small icon UnitServer//yellow uniXXX_u00
-
-# 1 form sprite NumberServer//yellow XXX_f.png
-# 2 form sprite NumberServer//yellow XXX_c.png
-# 3 form sprite NumberServer//yellow XXX_s.png
-# 4 form sprite NumberServer//yellow XXX_u.png
-
-# 1 form imgcut ImageDataServer//lime XXX_f.imgcut
-# 2 form imgcut ImageDataServer//lime XXX_c.imgcut
-# 3 form imgcut ImageDataServer//lime XXX_s.imgcut
-# 4 form imgcut ImageDataServer//lime XXX_u.imgcut
-
-# 1 form mamodel ImageDataServer//lime XXX_f.mamodel
-# 2 form mamodel ImageDataServer//lime XXX_c.mamodel
-# 3 form mamodel ImageDataServer//lime XXX_s.mamodel
-# 4 form mamodel ImageDataServer//lime XXX_u.mamodel
-
-#//aqua GO FROM 00-03
-# 1 form animations ImageDataServer//lime XXX_f00.maanim
-# 1 form animations ImageDataServer//lime XXX_c00.maanim
-# 1 form animations ImageDataServer//lime XXX_s00.maanim
-# 1 form animations ImageDataServer//lime XXX_u00.maanim
-
-# unit description resLocal//yellow Unit_ExplanationXXX_en.csv
-# true form descriptions //yellow unitevolve_en.csv
-# unit stats DataLocal//yellow unitXXX.csv
-# unitbuy DataLocal//yellow unitbuy.csv
-# how much stats are gained per levelup//yellow unitlevel.csv
-# levelup unlocks//yellow unitlimit.csv
-
-# gacha icon ImageServer//yellow gatyachara_XXX_f.png
-# gacha icon shadow ImageServer//yellow gatyachara_XXX_z.png
+# Other files units need to have edited
+UNITBUY_FILE  # DataLocal
+TALENT_FILE
+TALENT_ORB_FILE
+TRUE_FORM_DESCRIPTIONS
+LEVEL_STAT_GAIN
+LEVEL_LIMIT_UNLOCK
 
 def swap_units():
     vanilla_unitbuy = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
@@ -89,7 +56,7 @@ def swap_split(ubers, units_other, disallowed):
     allowed_ubers = [u for u in ubers if u not in disallowed]
     allowed_units_other = [u for u in units_other if u not in disallowed]
 
-    r = randinst(16)
+    r = randinst(17)
 
     # create shuffled array
     ubers_shuffled = r.shuffle(allowed_ubers)
@@ -97,12 +64,23 @@ def swap_split(ubers, units_other, disallowed):
 
     # print mapping for ubers
     for original, new in zip(allowed_ubers, ubers_shuffled):
-        print(f"swapped unit {original} with {new}")
+        # Make an array of file names for the original units and the unit they will swap to in same position
+        old_files = unit_files(original)
+        new_files = unit_files(new)
+
+        # Loop through all the unit files and change them to the new random unit
+        # large icons
+ 
+            
+        print(f"changed large icons: {original} -> {new}")
 
     # print mapping for non-ubers
     for original, new in zip(allowed_units_other, other_shuffled):
-        print(f"swapped unit {original} with {new}")
+        print(f"changed files of unit {original} to unit {new}")
 
+       
+    files = unit_files(34)
+    print(files)
 
 def is_uber_lr(unit_id, vanilla_unitbuy):
     # Return True if the unit counts toward the uber/lr limit
@@ -113,8 +91,41 @@ def is_uber_lr(unit_id, vanilla_unitbuy):
         return True
     return False
 
+
+def unit_files(unit_id):
+    unit_id = int(unit_id)
+    forms = ["f", "c", "s", "u"]
+    frames = range(4)
+
+    large_icons = {form: f"udi{unit_id:03d}_{form}.png" for form in forms}         # UnitServer
+    small_icons = {form: f"uni{unit_id:03d}_{form}00.png" for form in forms}       # UnitServer
+    spritesheet = {form: f"{unit_id:03d}_{form}.png" for form in forms}            # NumberServer
+    imgcut = {form: f"{unit_id:03d}_{form}.imgcut" for form in forms}              # ImageDataServer
+    mamodel = {form: f"{unit_id:03d}_{form}.mamodel" for form in forms}            # ImageDataServer
+    maanim = {                                                                     # ImageDataServer
+        form: [f"{unit_id:03d}_{form}{i:02d}.maanim" for i in frames]
+        for form in forms
+    }     
+    stats = f"unit{unit_id:03d}.csv"                                                   # DataLocal
+    description = f"Unit_Explanation{unit_id:03d}_en.csv"                              # ResLocal
+    gacha_icon = f"gatyachara_{unit_id:03d}_f.png"                                     # ImageServer
+    gacha_silhouette = f"gatyachara_{unit_id:03d}_z.png"                               # ImageServer
+
+    return {
+    "large_icons": large_icons,
+    "small_icons": small_icons,
+    "spritesheet": spritesheet,
+    "imgcut": imgcut,
+    "mamodel": mamodel,
+    "maanim": maanim,
+    "stats": stats,
+    "description": description,
+    "gacha_icon": gacha_icon,
+    "gacha_silhouette": gacha_silhouette,
+}
+    
+
 def config_settings():
-    # Blacklist options
     blacklist_collab = settings["game"]["catcombo"]["blacklist"]["collab"]
     blacklist_version_exclusive = settings["game"]["catcombo"]["blacklist"]["version_exclusive"]
     blacklist_unobtainable = settings["game"]["catcombo"]["blacklist"]["unobtainable"]
