@@ -12,7 +12,16 @@ from dev.randomizer.data.filepaths import *
 
 #add those with info on first line to this dictionary
 first_line_csv = {}
-
+#establish order for file searching here
+server_folders_for_order = [
+    SERVERIMAGE,
+    SERVERIMAGEDATA,
+    SERVERMAP,
+    SERVERNUMBER,
+    SERVERUNIT
+]
+#contains the proper order to search server folders in, made on first need
+server_folder_order = []
 
 
 """
@@ -194,7 +203,14 @@ def search_for_file(file_name,debug=True):
     for each in local_folders:
         if os.path.exists(local_dir + each + "\\" + file_name):
             return local_dir + each + "\\" + file_name
-    server_folders = os.listdir(server_dir)
+    if server_dir == SERVER_FILES:
+        global server_folder_order
+        if len(server_folder_order) == 0:
+            set_server_folder_order() #make it if first time
+        server_folders = server_folder_order
+    else:
+        server_folders = os.listdir(server_dir)
+    #now search in proper order
     for each in server_folders:
         if os.path.exists(server_dir + each + "\\" + file_name):
             return server_dir + each + "\\" + file_name
@@ -203,6 +219,51 @@ def search_for_file(file_name,debug=True):
     return None
     
 
+
+
+
+def set_server_folder_order():
+    """
+    puts the order to look in server folders in global variable
+    """
+    server_folders = os.listdir(SERVER_FILES)
+    temp0 = [] #contains the base
+    temp1 = [] #contains the number types
+    temp2 = [] #contains the letter types
+    temp3 = [] #contains all the folders that fit no types
+    temp4 = [] #contains all folders that matched a case but failed somehow
+    global server_folders_for_order
+    for each in server_folders:
+        found = False
+        for folder in server_folders_for_order:
+            if folder in each:
+                found = True
+                if len(folder) == len(each): #the case when it is the main folder
+                    temp0.append(each)
+                elif each[len(folder)] == "_": #number case
+                    temp2.append(each)
+                elif len(folder) + 1 == len(each): #letter case
+                    temp1.append(each)
+                else:
+                    temp4.append(each) #all else
+        if not found:
+            temp3.append(each) #this was here for modded but that prolly isnt required now
+    temp1.sort(reverse=True)
+    temp2.sort(reverse=True)
+    temp3.sort(reverse=True)
+    temp4.sort(reverse=True)
+    global server_folder_order
+    server_folder_order = temp0 + temp2 + temp1 + temp3 + temp4
+    
+
+
+
+"""
+debug funcs
+"""
+def print_array_one_by_one(array):
+    for each in array:
+        print(each)
 
 
 

@@ -19,7 +19,11 @@ PART_1_SPRITES = DUAL_TRAIT_SPRITE_PATH + "part1\\"
 PART_2_SPRITES = DUAL_TRAIT_SPRITE_PATH + "part2\\"
 MODDED_ADDITIONS_FILES = "dev\\assets\\modded_additions\\"
 
-
+SERVERUNIT = "UnitServer"
+SERVERNUMBER = "NumberServer"
+SERVERMAP = "MapServer"
+SERVERIMAGE = "ImageServer"
+SERVERIMAGEDATA = "ImageDataServer"
 
 
 
