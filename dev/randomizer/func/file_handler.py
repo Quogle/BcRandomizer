@@ -176,7 +176,7 @@ def array_to_array_type_file_writer(file_path,info,separator=","):
     file.close()
 
 
-def search_for_file(file_name,modded=False):
+def search_for_file(file_name):
     """
     searches local then server files for the file
     \n returns none if not found in either
@@ -184,17 +184,19 @@ def search_for_file(file_name,modded=False):
     #print("searching for " + file_name)
     local_dir = LOCAL_FILES
     server_dir = SERVER_FILES
-    if modded:
-        local_dir = None #this will be set when I get around to finishing that
+    if MODDED_MLETTER in file_name:
+        print("looking for modded " + file_name)
+        local_dir = MODDED_ADDITIONS_FILES
+        server_dir = MODDED_ADDITIONS_FILES
 
-    local_folders = os.listdir(LOCAL_FILES)
+    local_folders = os.listdir(local_dir)
     for each in local_folders:
-        if os.path.exists(LOCAL_FILES + each + "\\" + file_name):
-            return LOCAL_FILES + each + "\\" + file_name
-    server_folders = os.listdir(SERVER_FILES)
+        if os.path.exists(local_dir + each + "\\" + file_name):
+            return local_dir + each + "\\" + file_name
+    server_folders = os.listdir(server_dir)
     for each in server_folders:
-        if os.path.exists(SERVER_FILES + each + "\\" + file_name):
-            return SERVER_FILES + each + "\\" + file_name
+        if os.path.exists(server_dir + each + "\\" + file_name):
+            return server_dir + each + "\\" + file_name
     print("failed to find file: " + file_name)
     return None
     

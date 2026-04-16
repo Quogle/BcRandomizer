@@ -474,9 +474,9 @@ class stage_sche(csv):
         mapsn_png = MAPSN + misc.stringize_number(map_number[1],3) + "_" + misc.stringize_number(stage_number[1],2) + "_" + mletter[1].lower() + MAPSN_END_PNG
         new_mapsn_png = MAPSN + misc.stringize_number(map_number[0],3) + "_" + misc.stringize_number(stage_number[0],2) + "_" + mletter[0].lower() + MAPSN_END_PNG
         
-        if mletter[1] != EXTRA_STAGE_MLETTER:
-            fh.copy_file_to_download_local(fh.search_for_file(mapsn_imgcut,modded),new_mapsn_imgcut)
-            fh.copy_file_to_download_local(fh.search_for_file(mapsn_png,modded),new_mapsn_png)
+        if mletter[1] != EXTRA_STAGE_MLETTER and mletter[0] != EXTRA_STAGE_MLETTER:
+            fh.copy_file_to_download_local(fh.search_for_file(mapsn_imgcut),new_mapsn_imgcut)
+            fh.copy_file_to_download_local(fh.search_for_file(mapsn_png),new_mapsn_png)
 
         stagename_sletter = copy.deepcopy(sletter)
         for x in range(0,len(stagename_sletter)):

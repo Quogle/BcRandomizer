@@ -924,6 +924,7 @@ def buff_growing_epic():
     gepic.extra_chance = 100
     gepic.submit()
 
+#needs the stages actually made
 def buff_proving_grounds():
     """
     buffs xp gains, makes catseyes an endless stage
@@ -972,12 +973,14 @@ def buff_proving_grounds():
     # prepare stage names
     stage_name_start = STAGE_SCHEM + EXTRA_STAGE_SLETTER + stringize_number(27,3) + "_"
     # now create the stages and submit them
+    print(first_endless_stage.enemies)
     first_stage_enemies = copy.deepcopy(first_endless_stage.enemies)
     second_stage_enemies = copy.deepcopy(second_endless_stage.enemies)
     for x in range(0,endless_stage_count):
         scalar = int(1+x**1.4)
         first_endless_stage.enemies = copy.deepcopy(first_stage_enemies)
         second_endless_stage.enemies = copy.deepcopy(second_stage_enemies)
+        print(first_endless_stage.enemies)
         for each in first_endless_stage.enemies:
             each[first_endless_stage.magnification] = int(each[first_endless_stage.magnification]*scalar)
         for each in second_endless_stage.enemies:
@@ -988,10 +991,10 @@ def buff_proving_grounds():
         else:
             first_endless_stage.extra_chance = 100
             second_endless_stage.extra_chance = 100
-            first_endless_stage.extra_first_stage = stringize_number(2*(x+1),2)
-            second_endless_stage.extra_first_stage = stringize_number(2*(x+1),2)
-            first_endless_stage.extra_last_stage = stringize_number(1+2*(x+1),2)
-            second_endless_stage.extra_last_stage = stringize_number(1+2*(x+1),2)
+            first_endless_stage.extra_first_stage = stringize_number(2*(x+2),2)
+            second_endless_stage.extra_first_stage = stringize_number(2*(x+2),2)
+            first_endless_stage.extra_last_stage = stringize_number(1+2*(x+2),2)
+            second_endless_stage.extra_last_stage = stringize_number(1+2*(x+2),2)
         first_endless_stage.submit_as_new_stage(stage_name_start + stringize_number(2*(x+1),2) + ".csv")
         second_endless_stage.submit_as_new_stage(stage_name_start + stringize_number(1+2*(x+1),2) + ".csv")
 
