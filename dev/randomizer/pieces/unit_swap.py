@@ -66,7 +66,6 @@ def swap_units():
     vanilla_unitbuy = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
     
     cfg = config_settings()
-    r = randinst(16)
     units = f.get_cat_stats(True)
 
     ubers = [i for i in range(len(units)) if is_uber_lr(i,vanilla_unitbuy)]
@@ -83,11 +82,26 @@ def swap_units():
     if cfg["blacklist_limited_event"]:
         disallowed.update(LIMITED)
 
-    allowed_ubers = [ubers[i] for i in range(len(ubers)) if i not in disallowed]
-    allowed_units_other = [units_other[i] for i in range(len(units_other)) if i not in disallowed]
-    
-    print(f"NON UBERS: {allowed_units_other}")
-    print(f"UBER+: {allowed_ubers}")
+    swap_split(ubers, units_other, disallowed)
+
+def swap_split(ubers, units_other, disallowed):
+    # filter allowed units
+    allowed_ubers = [u for u in ubers if u not in disallowed]
+    allowed_units_other = [u for u in units_other if u not in disallowed]
+
+    r = randinst(16)
+
+    # create shuffled array
+    ubers_shuffled = r.shuffle(allowed_ubers)
+    other_shuffled = r.shuffle(allowed_units_other)
+
+    # print mapping for ubers
+    for original, new in zip(allowed_ubers, ubers_shuffled):
+        print(f"swapped unit {original} with {new}")
+
+    # print mapping for non-ubers
+    for original, new in zip(allowed_units_other, other_shuffled):
+        print(f"swapped unit {original} with {new}")
 
 
 def is_uber_lr(unit_id, vanilla_unitbuy):

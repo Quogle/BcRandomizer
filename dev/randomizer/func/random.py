@@ -151,6 +151,21 @@ class randinst():
         #if all fails output -1
         return -1
     
+    def shuffle(self, lst):
+        n = len(lst)
+        shuffled = lst.copy()
+
+        # shuffle everything except last element
+        for i in range(n - 1):
+            j = self.randrange(i + 1, n)  # pick random index after i
+            shuffled[i], shuffled[j] = shuffled[j], shuffled[i]  # swap em
+
+        # change last element if it stayed the same
+        if shuffled[-1] == lst[-1]:
+            shuffled[-1], shuffled[-2] = shuffled[-2], shuffled[-1]
+
+        return shuffled 
+    
     def clamp_value(value):
         """
         clamps a value as an int between 0-100, on r for convenience
