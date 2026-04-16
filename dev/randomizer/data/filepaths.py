@@ -50,7 +50,7 @@ DROP_CHARA = "drop_chara.csv"
 SHOP_FILE = "itemShopData.tsv"
 ORB_NP_AMOUNT_FILE = "equipmentgrade.csv"
 PARAM_FILE = "param.tsv"
-
+UNIT_FILE = "unit"
 
 
 

@@ -1,4 +1,4 @@
-
+import dev.randomizer.enums.unit_info as unit_info
 
 
 
@@ -30,7 +30,20 @@ def clamp_value(value):
             value = 100
         return int(value)
 
+def get_new_modded_unit_id(unit_info_array,enemy=True):
+    """
+    sets the first unit id allowed to no longer allowed and returns its id
+    \n returns (unit_id,input_array)
+    """
+    #set cat here
+    if enemy:
+        modded_id = unit_info.e.is_modded_available
+        unit_id = unit_info.e.unit_id
 
+    for unit in unit_info_array:
+        if unit[modded_id] == 1:
+            unit[modded_id] = 0
+            return (unit[unit_id],unit_info_array)
 
 
 

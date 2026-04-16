@@ -259,7 +259,12 @@ def get_cat_stats(vanilla=False):
     
     return units
 
-
+def write_cat_stats(stats):
+    """
+    writes 3d cat stat array to do
+    """
+    for x in range(0,len(stats)):
+        file_writer(UNIT_FILE + misc.stringize_number(x+1,3) + ".csv",stats[x])
 
 def get_talents(vanilla=False):
     """
