@@ -160,13 +160,15 @@ def array_type_file_reader(file_path,separator=",",force_num=True,non_num=False)
     array_to_return = interpret_csv_type_file(file,separator,force_num)
     return array_to_return
 
-def array_to_array_type_file_writer(file_path,info,separator=","):
+def array_to_array_type_file_writer(file_path,info,separator=",",old_file_name=None):
     """
     writes an array to file using separator default comma
     """
     directory_names = file_path.split("\\")
     file_name = directory_names[-1]
-    
+    if old_file_name != None:
+        file_name = old_file_name
+
     #set the line to the first line if its in dict
     file_string = ""
     global first_line_csv 

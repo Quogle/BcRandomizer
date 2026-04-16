@@ -180,7 +180,7 @@ def file_reader(file,force_separator=None,debug=True):
     else:
         return fh.array_type_file_reader(input,",",False) #current default to non numercial csv
 
-def file_writer(file,info,force_separator=None):
+def file_writer(file,info,force_separator=None,old_file_name=None):
     """
     writes file to dl
     \n if given force separator it uses that
@@ -196,17 +196,17 @@ def file_writer(file,info,force_separator=None):
         do_sep = True
 
     if do_sep:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,force_separator) #fuckass |
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,force_separator,old_file_name=old_file_name) #fuckass |
     elif end in tsv:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,"\t")
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,"\t",old_file_name=old_file_name)
     elif end in non_num_csv: #theyre separated but Im not sure if theres actually a reason to
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info)
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,old_file_name=old_file_name)
     elif end in num_csv:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info)
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,old_file_name=old_file_name)
     elif end in skip:
         pass
     else:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info) #defaults to a csv
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,old_file_name=old_file_name) #defaults to a csv
 
 def get_cat_stats(vanilla=False):
     """

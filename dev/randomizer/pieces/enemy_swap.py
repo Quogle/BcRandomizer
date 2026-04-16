@@ -5,7 +5,7 @@ from dev.randomizer.func.random import randinst
 from dev.randomizer.data.filepaths import *
 from dev.randomizer.func.misc import *
 from dev.randomizer.parse_config import settings
-
+from configs.internal_config import ENEMY_ID_SWAP_COUNT
 
 conditions = {}
 
@@ -33,25 +33,12 @@ def do_swap():
             each.append(50)
             each.append(0)
     #what else do I have to initialize
-    r = randinst(3004)
-    swapped_to = []
-    for x in range(0,len(info_array)):
-        swapped_to.append(-1)
-    #set collabs and unsetables in swapped
-    for unit_id in range(0,len(info_array)):
-        if info_array[unit_id][1] < 0 or info_array[unit_id][2] == 1:
-            swapped_to[unit_id] = unit_id
-    #now randomize remaining units
-    for unit_id in range(0,len(info_array)):
-        #call random on every single unit
-        random1 = r.randrange(0,1000)
-        if unit_id not in swapped_to: #ignore already done units
-            swapped_to = the_while(swapped_to,info_array,unit_id,random1)
+    
     #now create the swap array
     swap_info = []
     #do vanilla first
     for unit_id in range(0,len(vstats)):
-
+        pass
     
             
 
@@ -72,22 +59,60 @@ def do_swap():
 
 
 
+def get_total_swapped_list(info_array):
+    """
+    creates swapped to
+    """
+    r = randinst(3004)
+    length = len(info_array)
+    if conditions["update_enemy_count"] < length:
+        length = conditions["update_enemy_count"]
+    swapped_to = []
+    for x in range(0,len(info_array)):
+        swapped_to.append(-1)
+    #set collabs and unsetables in swapped
+    for unit_id in range(0,len(info_array)):
+        if info_array[unit_id][1] < 0 or info_array[unit_id][2] == 1:
+            swapped_to[unit_id] = unit_id
+    #now randomize remaining units
+    for unit_id in range(0,len(info_array)):
+        #call random on every single unit
+        random1 = r.randrange(0,1000)
+        if unit_id not in swapped_to: #ignore already done units
+            swapped_to = the_while(swapped_to,info_array,unit_id,random1)
 
 
+    
 
+def fill_out_swapped_list(swapped_to=list,info_array=list,r=randinst):
+    """
+    fills out the current swapped to list
+    """
+    for unit_id in range(0,len(swapped_to)):
+        #call random on every single unit
+        random1 = r.randrange(0,1000)
+        if unit_id not in swapped_to: #ignore already done units
+            swapped_to = the_while(swapped_to,info_array,unit_id,random1)
+    return swapped_to
 
 def the_while(swapped_to=list,info_array=list,unit_id=0,random_number=0):
     """
     the while loop for finding a units new id
     """
-    #fix specifically for if unit id is the last remaining thing not in swapped to
-    if unit_id+1 == len(swapped_to):
+    #count how many units
+    remaining_units = swapped_to.count(-1)
+    if conditions["swap_in_class"]:
+        remaining_units = 0
+        for unit in info_array:
+            if int(unit[1]/10) == int(info_array[unit_id][1]/10):
+                remaining_units += 1
+    #if remaining units = 0 or unitid is the last unit end it
+    if unit_id+1 == len(swapped_to)  or remaining_units == 0:
         swapped_to[unit_id] = unit_id
         return swapped_to
     #things to intialize
     r = randinst(random_number)
     granuality = 10000
-    remaining_units = swapped_to.count(-1)
     base_chance = 1/remaining_units
     current_id = unit_id
     loop_count = 0
@@ -146,6 +171,8 @@ def set_conditions():
     strictness = settings["enemy"]["extras"]["balance_strictness"]
     id_swap = settings["enemy"]["extras"]["balance_strictness"]
     strictness = settings["enemy"]["extras"]["balance_strictness"]
+    update = settings["enemy"]["extras"]["swap_untouched_by_update"]
+    enemy_count = ENEMY_ID_SWAP_COUNT
     try:
         strictness = float(strictness)
         if strictness < 0: #prevent negatives from breaking it
@@ -157,6 +184,8 @@ def set_conditions():
     conditions["balanced"] = balanced
     conditions["strictness"] = strictness
     conditions["do_swap"] = id_swap
+    conditions["block_update_breakage"] = update
+    conditions["update_enemy_count"] = enemy_count + 2
 
 
 
