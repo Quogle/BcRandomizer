@@ -153,12 +153,10 @@ ryelo_type_apk = false
 
 [extras] #everything except extras in this config has been added
 id_swap = false                             # swaps enemy id (ie those guys become doge)
-swap_to_similar_enemy = true                # limits swap to only similar "strength" enemies
-swap_ranges = [
-    [1,10],                                 # feel free to add more groupings, numbers range from 1-30
-    [11,20],                                # the smaller the groupings the more balanced itll be
-    [21,30],
-    ]                  
+ swap_only_in_class = true                  # divides enemies into peons, mid enemies, bosses. only swaps within these groupings
+ balanced_swap = true                       # makes it so enemies of more similar strength are more likely to swap together
+  balance_strictness = 10                   # determines how strict the balance determiner is (10 is default)
+
 
 randomize_abilities = false                 # randomizes each enemies abilities (keeps number the same)
 randomize_only_base_abilities = false       # only randomize abilities enemies normally have

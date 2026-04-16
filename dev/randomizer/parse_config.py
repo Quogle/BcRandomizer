@@ -276,7 +276,7 @@ def establish_available_for_modded_enemies(enemy_info):
     for unit in enemy_info:
         if unit[unit_info.e.non_returning_collab] == 1:
             unit[unit_info.e.is_modded_available] = 1
-            print(unit[unit_info.e.unit_id])
+            #print(unit[unit_info.e.unit_id])
 
 
 

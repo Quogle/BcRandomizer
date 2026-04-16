@@ -136,7 +136,7 @@ def burrow_animation_maker():
 
 """ these are the functions used for getting game files """
 
-def file_reader(file,force_separator=None):
+def file_reader(file,force_separator=None,debug=True):
     """
     returns 2d array from file
     \n filename and not path will return the downloadlocal version of the file if it exist
@@ -163,7 +163,7 @@ def file_reader(file,force_separator=None):
         if os.path.exists(DOWNLOAD_LOCAL+file):
             input = DOWNLOAD_LOCAL + file
         else:
-            input = fh.search_for_file(file)
+            input = fh.search_for_file(file,debug)
     if input == None or not os.path.exists(input): #stop it from trying to read a file that doesnt exist
         return None 
 
@@ -213,18 +213,16 @@ def get_cat_stats(vanilla=False):
     gets a length normalized version of cat array
     """
     egg_id = 757
-    file_name_start = "unit"
+    file_name_start = UNIT_FILE
     if vanilla:
-        file_name_start = DATA_LOCAL + "unit"
+        file_name_start = DATA_LOCAL + UNIT_FILE
     units = []
     for x in range(1,1000):
-        unit = []
-        file_path = file_name_start + misc.stringize_number(x,3) + ".csv"
-        if not os.path.exists(file_path):
-            unit = 0 #if unit doesnt exist slap a zero
-        else:
-            unit = file_reader(file_path)
-        units.append(unit)
+        file_name = file_name_start + misc.stringize_number(x,3) + ".csv"
+        this_cat = file_reader(file_name,debug=False)
+        if this_cat == None:
+            this_cat = 0
+        units.append(this_cat)
     
     #remove trailing zeros
     while True:
