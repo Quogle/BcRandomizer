@@ -27,10 +27,8 @@ def download_server_packs():
     apk = Apk(game_version="0.0.0", country_code="en")
     
     # Make sure server files are downloaded/extracted
-    print("Fetching Server Files... May take awhile")
+    print("Fetching Server Files... May take a few minutes")
     apk.download_server_files(force=True)
-
-   
     
     # Get server folder path
     server_folder = apk.get_server_path()
