@@ -15,15 +15,13 @@ import os
 def early_sol_xp_buff():
     """
     buffs pre ururun stages xp
-    conditional
+    \n conditional
     """
     if not settings["game"]["qol"]["stage_changes"]["sol_xp_buff"]:
         return
-    current_map = "000"
     for x in range(0,18):
         mult = int(20-x/1.8)/10
-        map_data = f.map_data(MAPSTAGEDATA + SOL_MLETTER + "_" + current_map + ".csv")
-        current_map = random.number_string_stepper(current_map,3)
+        map_data = f.map_data(MAPSTAGEDATA + SOL_MLETTER + "_" + stringize_number(x,3) + ".csv")
         for each in map_data.stages:
             each[map_data.xp] = int(each[map_data.xp]*mult)
         map_data.submit()
@@ -31,7 +29,7 @@ def early_sol_xp_buff():
 def buff_ticket_farming():
     """
     buffs hate siege and fd
-    conditional
+    \n conditional
     """
     changes = settings["game"]["qol"]["stage_changes"]
     hate = changes["hate_metal_hippoe_buff"]
@@ -51,13 +49,13 @@ def buff_ticket_farming():
         map_data.stages[0][map_data.drop1_count] = 15
         map_data.stages[0][map_data.drop2_count] = 10
         map_data.stages[0][map_data.drop1_rate] = 50
-        map_data.stages[0][map_data.drop2_rate] = 10
+        map_data.stages[0][map_data.drop2_rate] = 100
         map_data.submit()
 
 def buff_itf_aliens():
     """
     increases mags of ex aliens, will attempt to read from file to determine what to buff
-    conditional, post enemies written to file
+    \n conditional, post enemies written to file
     """
     do_a = settings["game"]["gameplay"]["preserve_alien_mags_main_chapters"]
     remove_itf_crystals = settings["game"]["gameplay"]["remove_itf_crystals"]
@@ -84,7 +82,7 @@ def buff_itf_aliens():
 def buff_cotc_aliens():
     """
     increases mags of ex aliens, will attempt to read from file to determine what to buff
-    conditional, post enemies written to file
+    \n conditional, post enemies written to file
     """
     
     do_a = settings["game"]["gameplay"]["preserve_alien_mags_main_chapters"]
