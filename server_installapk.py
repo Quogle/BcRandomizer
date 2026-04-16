@@ -1,9 +1,9 @@
 import tbcml
 
-apk = tbcml.Apk(game_version="15.2.0", country_code="en")
+apk = tbcml.Apk(game_version="0.0.0", country_code="en")
 
-apk.download()
-apk.extract()
+#apk.download()
+#apk.extract()
 
 apk.download_server_files()
 # if you want to display download progress do:
