@@ -154,6 +154,7 @@ id_swap = false                             # swaps enemy id (ie those guys beco
  swap_only_in_class = true                  # divides enemies into peons, mid enemies, bosses. only swaps within these groupings
  balanced_swap = true                       # makes it so enemies of more similar strength are more likely to swap together
   balance_strictness = 10                   # determines how strict the balance determiner is (10 is default)
+ swap_untouched_by_update = true            # please set enemy id swap count in internal_config.py for this, makes it so new enemies dont completely change what swaps to what
 
 
 randomize_abilities = false                 # randomizes each enemies abilities (keeps number the same)

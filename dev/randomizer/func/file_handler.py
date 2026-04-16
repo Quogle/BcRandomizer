@@ -187,7 +187,7 @@ def array_to_array_type_file_writer(file_path,info,separator=","):
 
 def search_for_file(file_name,debug=True):
     """
-    searches local then server files for the file
+    searches local then server files for the file, returns its full path
     \n returns none if not found in either
     """
     #print("searching for " + file_name)

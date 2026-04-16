@@ -5,3 +5,6 @@ SELECTED_VERSION = GAME_VERSION
 APP_NAME = "BCR"
 MOD_ID = "bcrando"
 PACKAGE = f"jp.co.{MOD_ID}.battlecatsen"
+
+# this value is how many enemies existed at the time your enemy swap was made, changing it will change your swap
+ENEMY_ID_SWAP_COUNT = 772
