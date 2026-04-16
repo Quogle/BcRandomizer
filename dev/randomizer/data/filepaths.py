@@ -56,6 +56,9 @@ SHOP_FILE = "itemShopData.tsv"
 ORB_NP_AMOUNT_FILE = "equipmentgrade.csv"
 PARAM_FILE = "param.tsv"
 UNIT_FILE = "unit"
+TRUE_FORM_DESCRIPTIONS = "unitevolve_en.csv"
+LEVEL_STAT_GAIN = "unitLevel.csv"
+LEVEL_LIMIT_UNLOCK = "unitLimit.csv"
 
 
 
