@@ -45,6 +45,7 @@ def calc_change(base_chance,value1,value2):
         except:
             strictness = 10
         
+        
     
     
 
