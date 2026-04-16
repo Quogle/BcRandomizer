@@ -1,0 +1,75 @@
+from pathlib import Path 
+import json
+from dev.randomizer.parse_config import settings
+from dev.randomizer.func.random import randinst
+import dev.randomizer.func.game_files as f
+from dev.randomizer.data.filepaths import *
+from dev.randomizer.enums.unitbuy import ub
+import dev.randomizer.enums.nyancombo as cc
+
+BASE = Path(__file__).resolve().parents[2]
+DATA_PATH = BASE / "randomizer" / "data" / "unit_blacklist.json"
+
+with open(DATA_PATH) as datapath:
+    data = json.load(datapath)
+
+COLLAB = set(data["collab"])
+VERSION_EXCLUSIVE = set(data["version_exclusive"])
+UNOBTAINABLE = set(data["unobtainable"])
+LIMITED = set(data["limited_event"])
+
+UBER_RARE = 4
+LEGEND_RARE = 5
+
+def swap_units():
+    vanilla_unitbuy = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
+    
+    cfg = config_settings()
+    r = randinst(16)
+    units = f.get_cat_stats(True)
+
+    ubers = [i for i in range(len(units)) if is_uber_lr(i,vanilla_unitbuy)]
+    units_other = [i for i in range(len(units)) if not is_uber_lr(i,vanilla_unitbuy)]
+
+    # Decide which units are allowed
+    disallowed = set()
+    if cfg["blacklist_collab"]:
+        disallowed.update(COLLAB)
+    if cfg["blacklist_version_exclusive"]:
+        disallowed.update(VERSION_EXCLUSIVE)
+    if cfg["blacklist_unobtainable"]:
+        disallowed.update(UNOBTAINABLE)
+    if cfg["blacklist_limited_event"]:
+        disallowed.update(LIMITED)
+
+    allowed_ubers = [ubers[i] for i in range(len(ubers)) if i not in disallowed]
+    allowed_units_other = [units_other[i] for i in range(len(units_other)) if i not in disallowed]
+    
+
+    print(f"NON UBERS: {allowed_units_other}")
+    print(f"UBER+: {allowed_ubers}")
+
+
+
+def is_uber_lr(unit_id, vanilla_unitbuy):
+    # Return True if the unit counts toward the uber/lr limit
+    rarity = vanilla_unitbuy[unit_id][ub.rarity]
+    if rarity == UBER_RARE:
+        return True
+    if rarity == LEGEND_RARE:
+        return True
+    return False
+
+def config_settings():
+    # Blacklist options
+    blacklist_collab = settings["game"]["catcombo"]["blacklist"]["collab"]
+    blacklist_version_exclusive = settings["game"]["catcombo"]["blacklist"]["version_exclusive"]
+    blacklist_unobtainable = settings["game"]["catcombo"]["blacklist"]["unobtainable"]
+    blacklist_limited_event = settings["game"]["catcombo"]["blacklist"]["limited_event"]
+    return {
+        "blacklist_collab": blacklist_collab,
+        "blacklist_version_exclusive": blacklist_version_exclusive,
+        "blacklist_unobtainable": blacklist_unobtainable,
+        "blacklist_limited_event": blacklist_limited_event,
+    }
+    
