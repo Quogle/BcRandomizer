@@ -184,6 +184,7 @@ def file_writer(file,info,force_separator=None,old_file_name=None):
     """
     writes file to dl
     \n if given force separator it uses that
+    \n animation files saved as new files need old file name
     """
     non_num_csv = ["imgcut","mamodel","maanim"]
     num_csv = ["csv"]

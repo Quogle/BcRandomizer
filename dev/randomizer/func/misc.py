@@ -1,6 +1,6 @@
 import dev.randomizer.enums.unit_info as unit_info
-
-
+from dev.randomizer.data.filepaths import *
+import os
 
 #steps the string number by 1, maintains length, can be specified to give a certain length
 def number_string_stepper(number,string_length=-1):
@@ -45,10 +45,34 @@ def get_new_modded_unit_id(unit_info_array,enemy=True):
             unit[modded_id] = 0
             return (unit[unit_id],unit_info_array)
 
+def get_all_vanilla_stages(include_eoc=True):
+    """
+    returns a list of the stage name of every vanilla stage
+    """
+    all_data_local_files = os.listdir(DATA_LOCAL)
+    stage_names = []
+    for file in all_data_local_files:
+        stage_location = file.find(STAGE_SCHEM)
+        __location = file.find("_")
+        dot_location = file.find(".")
+        check = True
+        if stage_location != 0:
+            check = False
+        if __location == 5:
+            check = False
+        if dot_location == 5:
+            check = False
+        if not include_eoc and dot_location == 7:
+            check = False
+        if MAIN_STORY_MAPSTAGEDATA in file:
+            check = False
+        if check:
+            stage_names.append(file)
+    return stage_names
 
-
-
-
+def print_array_one_by_one(array):
+    for each in array:
+        print(each)
 
 
 

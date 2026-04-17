@@ -155,6 +155,8 @@ id_swap = false                             # swaps enemy id (ie those guys beco
  balanced_swap = true                       # makes it so enemies of more similar strength are more likely to swap together
   balance_strictness = 10                   # determines how strict the balance determiner is (10 is default)
  swap_untouched_by_update = true            # please set enemy id swap count in internal_config.py for this, makes it so new enemies dont completely change what swaps to what
+ adjust_magnifications = true               # why would you turn this off
+ include_eoc = false                        # eoc cant have mags adjusted so I wouldnt recommend this one
 
 
 randomize_abilities = false                 # randomizes each enemies abilities (keeps number the same)
