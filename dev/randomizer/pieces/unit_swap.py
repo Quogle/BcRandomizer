@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 from dev.randomizer.parse_config import settings
 from dev.randomizer.func.random import randinst
+import dev.randomizer.func.file_handler as fh
 import dev.randomizer.func.game_files as f
 from dev.randomizer.data.filepaths import *
 from dev.randomizer.enums.unitbuy import ub
@@ -28,6 +29,14 @@ TALENT_ORB_FILE
 TRUE_FORM_DESCRIPTIONS
 LEVEL_STAT_GAIN
 LEVEL_LIMIT_UNLOCK
+
+FORM_ASSETS = [
+    "large_icons",
+    "small_icons",
+    "spritesheet",
+    "imgcut",
+    "mamodel",
+]
 
 def swap_units():
     vanilla_unitbuy = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
@@ -70,17 +79,78 @@ def swap_split(ubers, units_other, disallowed):
 
         # Loop through all the unit files and change them to the new random unit
         # large icons
- 
+        for asset in FORM_ASSETS:
+            for form, filename in old_files[asset].items():
             
-        print(f"changed large icons: {original} -> {new}")
+                source = fh.search_for_file(filename, True)
+                if source is None:
+                    continue
+                
+                destination = Path(DOWNLOAD_LOCAL) / new_files[asset][form]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+
+                if asset == "mamodel":
+                    data = f.file_reader(source)
+                    if data is None:
+                        continue
+                    
+                    # swap unit ID inside file
+                    for row in data:
+                        if len(row) > 1:
+                            try:
+                                if int(row[1]) == original:
+                                    row[1] = new
+                            except:
+                                pass
+                            
+                    f.file_writer(new_files[asset][form], data)
+
+                elif asset == "imgcut":
+                    data = f.file_reader(source)
+                    if data is None:
+                        continue
+
+                    
+                    data[1] = [new_files["spritesheet"][form]] 
+
+                    f.file_writer(new_files[asset][form], data)
+
+                else:
+                    shutil.copyfile(source, destination)
+        
+                print(f"[{asset}] {filename} -> {new_files[asset][form]}")
+
+        for form in old_files["maanim"]:
+            for i, filename in enumerate(old_files["maanim"][form]):
+            
+                source = fh.search_for_file(filename, True)
+                if source is None:
+                    continue
+                
+                destination = Path(DOWNLOAD_LOCAL) / new_files["maanim"][form][i]
+                destination.parent.mkdir(parents=True, exist_ok=True)
+
+                shutil.copyfile(source, destination)
+
+                print(f"[maanim:{form}:{i}] {filename} -> {new_files['maanim'][form][i]}")
+
+        for key, filename in old_files["single_files"].items():
+
+            source = fh.search_for_file(filename, True)
+            if source is None:
+                continue
+            
+            destination = Path(DOWNLOAD_LOCAL) / new_files["single_files"][key]
+            destination.parent.mkdir(parents=True, exist_ok=True)
+
+            shutil.copyfile(source, destination)
+            
+            print(f"[single:{key}] {filename} -> {new_files['single_files'][key]}")
 
     # print mapping for non-ubers
     for original, new in zip(allowed_units_other, other_shuffled):
-        print(f"changed files of unit {original} to unit {new}")
+        ""
 
-       
-    files = unit_files(34)
-    print(files)
 
 def is_uber_lr(unit_id, vanilla_unitbuy):
     # Return True if the unit counts toward the uber/lr limit
@@ -97,32 +167,32 @@ def unit_files(unit_id):
     forms = ["f", "c", "s", "u"]
     frames = range(4)
 
-    large_icons = {form: f"udi{unit_id:03d}_{form}.png" for form in forms}         # UnitServer
-    small_icons = {form: f"uni{unit_id:03d}_{form}00.png" for form in forms}       # UnitServer
-    spritesheet = {form: f"{unit_id:03d}_{form}.png" for form in forms}            # NumberServer
-    imgcut = {form: f"{unit_id:03d}_{form}.imgcut" for form in forms}              # ImageDataServer
-    mamodel = {form: f"{unit_id:03d}_{form}.mamodel" for form in forms}            # ImageDataServer
-    maanim = {                                                                     # ImageDataServer
+
+    form_assets = {
+        "large_icons": {form: f"udi{unit_id:03d}_{form}.png" for form in forms},    # UnitServer
+        "small_icons": {form: f"uni{unit_id:03d}_{form}00.png" for form in forms},  # UnitServer
+        "spritesheet": {form: f"{unit_id:03d}_{form}.png" for form in forms},       # NumberServer
+        "imgcut": {form: f"{unit_id:03d}_{form}.imgcut" for form in forms},         # ImageDataServer
+        "mamodel": {form: f"{unit_id:03d}_{form}.mamodel" for form in forms},       # ImageDataServer
+    }
+
+    maanim = {                                                                      # ImageDataServer
         form: [f"{unit_id:03d}_{form}{i:02d}.maanim" for i in frames]
         for form in forms
     }     
-    stats = f"unit{unit_id:03d}.csv"                                                   # DataLocal
-    description = f"Unit_Explanation{unit_id:03d}_en.csv"                              # ResLocal
-    gacha_icon = f"gatyachara_{unit_id:03d}_f.png"                                     # ImageServer
-    gacha_silhouette = f"gatyachara_{unit_id:03d}_z.png"                               # ImageServer
+
+    single_files = {
+        "stats": f"unit{unit_id:03d}.csv",                                          # DataLocal
+        "description": f"Unit_Explanation{unit_id:03d}_en.csv",                     # ResLocal
+        "gacha_icon": f"gatyachara_{unit_id:03d}_f.png",                            # ImageServer
+        "gacha_silhouette": f"gatyachara_{unit_id:03d}_z.png",                      # ImageServer
+    }
 
     return {
-    "large_icons": large_icons,
-    "small_icons": small_icons,
-    "spritesheet": spritesheet,
-    "imgcut": imgcut,
-    "mamodel": mamodel,
-    "maanim": maanim,
-    "stats": stats,
-    "description": description,
-    "gacha_icon": gacha_icon,
-    "gacha_silhouette": gacha_silhouette,
-}
+        **form_assets,
+        "maanim": maanim,
+        "single_files": single_files,
+    }
     
 
 def config_settings():
