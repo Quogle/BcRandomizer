@@ -110,8 +110,8 @@ def swap_split(ubers, units_other, disallowed):
                     if data is None:
                         continue
 
-                    # HARD FIX: enforce structure
-                    data[1] = [new_files["spritesheet"][form]]  # overwrite whole row
+                    
+                    data[1] = [new_files["spritesheet"][form]] 
 
                     f.file_writer(new_files[asset][form], data)
 
