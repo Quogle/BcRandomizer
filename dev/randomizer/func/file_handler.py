@@ -263,9 +263,7 @@ def set_server_folder_order():
 """
 debug funcs
 """
-def print_array_one_by_one(array):
-    for each in array:
-        print(each)
+
 
 
 

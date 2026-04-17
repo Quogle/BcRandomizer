@@ -6,6 +6,7 @@ from dev.randomizer.data.filepaths import *
 from dev.randomizer.func.misc import *
 from dev.randomizer.parse_config import settings
 from configs.internal_config import ENEMY_ID_SWAP_COUNT
+import math
 
 conditions = {}
 
@@ -33,13 +34,16 @@ def do_swap():
             each.append(50)
             each.append(0)
     #what else do I have to initialize
-    
-    #now create the swap array
+    swapped_to = get_total_swapped_list(info_array)
+    #now get mag changes, 1 is same strength
     swap_info = []
-    #do vanilla first
-    for unit_id in range(0,len(vstats)):
-        pass
-    
+    for unit_id in range(0,len(swapped_to)):
+        this_swap = [unit_id]
+        (to_dps,to_hp) = calc_enemy_stats(vstats[swapped_to[unit_id]])
+        (this_dps,this_hp) = calc_enemy_stats(vstats[unit_id])
+        magboost = calc_mag_by(to_dps,to_hp,this_dps,this_hp)
+        this_swap.append(magboost)
+        swap_info.append(this_swap)
             
 
 
@@ -53,11 +57,50 @@ def do_swap():
 
 
 
+def apply_swap_to_all_stages(swap_info):
+    """
+    is responsible for actually applying swap to all stage
+    """
 
+def calc_enemy_stats(stats):
+    """
+    returns dps and health
+    """
+    damage = 0
+    attack_cycle = stats[e.s.tba]
+    if attack_cycle == 0:
+        attack_cycle = 10
+    if stats[e.s.multiPreAtk3] != 0:
+        attack_cycle += stats[e.s.multiPreAtk3]
+        damage += stats[e.s.multiDamage3]
+    elif stats[e.s.multiPreAtk2] != 0:
+        attack_cycle += stats[e.s.multiPreAtk2]
+        damage += stats[e.s.multiDamage2]
+    else:
+        attack_cycle += stats[e.s.preatk]
+        damage += stats[e.s.attack]
+    dps = damage/attack_cycle
+    hp = stats[e.s.hp]
+    return (dps,hp)
 
-
-
-
+def calc_mag_by(damage1,hp1,damage2,hp2):
+    """
+    mag boost for replacing 1 with 2
+    \n if 2 is weaker than 1, this will be > 1
+    """
+    if not conditions["edit_mags"]:
+        return 1
+    if damage1 == 0:
+        damage1 = 1
+    if hp1 == 0:
+        hp1 = 1
+    if damage2 == 0:
+        damage2 = 1
+    if hp2 == 0:
+        hp2 = 1
+    attack_ratio = damage1/damage2
+    health_ratio = hp1/hp2
+    return math.sqrt(attack_ratio*health_ratio)
 
 def get_total_swapped_list(info_array):
     """
@@ -67,23 +110,27 @@ def get_total_swapped_list(info_array):
     length = len(info_array)
     if conditions["update_enemy_count"] < length:
         length = conditions["update_enemy_count"]
-    swapped_to = []
+    #divide units into before update and after update
+    swap_part_1 = []
+    swap_part_2 = []
     for x in range(0,len(info_array)):
-        swapped_to.append(-1)
-    #set collabs and unsetables in swapped
+        if x < length:
+            swap_part_1.append(-1)
+        else:
+            swap_part_2.append(-1)
+    #fill out arrays with collab/unswappable ids
     for unit_id in range(0,len(info_array)):
         if info_array[unit_id][1] < 0 or info_array[unit_id][2] == 1:
-            swapped_to[unit_id] = unit_id
-    #now randomize remaining units
-    for unit_id in range(0,len(info_array)):
-        #call random on every single unit
-        random1 = r.randrange(0,1000)
-        if unit_id not in swapped_to: #ignore already done units
-            swapped_to = the_while(swapped_to,info_array,unit_id,random1)
-
-
-    
-
+            if unit_id < length:
+                swap_part_1[unit_id] = unit_id
+            else:
+                swap_part_2[unit_id-length] = unit_id
+    if conditions["block_update_breakage"]:
+        swap_part_1 = fill_out_swapped_list(swap_part_1,info_array,r)
+    total_swapped_to = swap_part_1 + swap_part_2
+    total_swapped_to = fill_out_swapped_list(total_swapped_to,info_array,r)
+    return total_swapped_to
+ 
 def fill_out_swapped_list(swapped_to=list,info_array=list,r=randinst):
     """
     fills out the current swapped to list
@@ -95,6 +142,7 @@ def fill_out_swapped_list(swapped_to=list,info_array=list,r=randinst):
             swapped_to = the_while(swapped_to,info_array,unit_id,random1)
     return swapped_to
 
+#this prolly needs to be redone to better fix config changes having wild efffect
 def the_while(swapped_to=list,info_array=list,unit_id=0,random_number=0):
     """
     the while loop for finding a units new id
@@ -173,6 +221,8 @@ def set_conditions():
     strictness = settings["enemy"]["extras"]["balance_strictness"]
     update = settings["enemy"]["extras"]["swap_untouched_by_update"]
     enemy_count = ENEMY_ID_SWAP_COUNT
+    edit_mags = settings["enemy"]["extras"]["adjust_magnification"]
+    do_eoc = settings["enemy"]["extras"]["include_eoc"]
     try:
         strictness = float(strictness)
         if strictness < 0: #prevent negatives from breaking it
@@ -186,6 +236,8 @@ def set_conditions():
     conditions["do_swap"] = id_swap
     conditions["block_update_breakage"] = update
     conditions["update_enemy_count"] = enemy_count + 2
+    conditions["edit_mags"] = edit_mags
+    conditions["do_eoc"] = do_eoc
 
 
 
