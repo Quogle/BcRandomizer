@@ -124,7 +124,7 @@ def early_reworks(cstats):
                 cstats[121][x][c.s.multi_has_ability_2] = 1
                 cstats[121][x][c.s.multi_has_ability_3] = 1
                 cstats[121][x][c.s.savage_by] = 200
-                cstats[121][x][c.s.crit_chance] = 20
+                cstats[121][x][c.s.crit_chance] = 0 #was 20
                 cstats[121][x][c.s.savage_chance] = 20
             if capsule and x<2:
                 cstats[28][x][c.t.metal] = 1

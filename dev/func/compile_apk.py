@@ -28,7 +28,9 @@ DECOMPILED = WORKSPACE / "decompiled"
 WORKSPACE.mkdir(exist_ok=True)
 MODDED_APKS.mkdir(exist_ok=True)
 
-def compile():
+def compile(debug=True):
+    if debug:
+        print("compiling")
 
     print("JAVA_EXE:", JAVA_EXE)
     print("JAVA EXISTS:", Path(JAVA_EXE).exists())

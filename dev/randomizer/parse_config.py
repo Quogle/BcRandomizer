@@ -264,7 +264,6 @@ def get_unit_info():
         for y in range(0,len(user_enemy[x])):
             default_enemy[x][y] = user_enemy[x][y]
     #make sure the arrays are ready
-    
     enemy_info = establish_available_for_modded_enemies(default_enemy)
 
     return [enemy_info,[]] #there should be cat info in here aswell
@@ -276,7 +275,7 @@ def establish_available_for_modded_enemies(enemy_info):
     for unit in enemy_info:
         if unit[unit_info.e.non_returning_collab] == 1:
             unit[unit_info.e.is_modded_available] = 1
-            #print(unit[unit_info.e.unit_id])
+    return enemy_info
 
 
 

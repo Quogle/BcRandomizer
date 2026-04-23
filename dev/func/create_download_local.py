@@ -14,7 +14,9 @@ OUTPUT_DIR.generate_dirs()
 LOCAL_PACK_FOLDER.generate_dirs()
 
 
-def create_download_local():
+def create_download_local(debug=True):
+    if debug:
+        print("creating downloadlocal \nif enemy/unit swap or randomize boss this may take a while")
     # Create new PackFile
     pack = PackFile("DownloadLocal", CountryCode.EN, GameVersion.from_string("15.2.0"))
     

@@ -284,6 +284,7 @@ def get_talents(vanilla=False):
             talent = []
             for x in range(0,c.tpos.length):
                 talent.append(each[pos+x])
+            line.append(talent)
             pos += c.tpos.length
         talents.append(line)
     return talents

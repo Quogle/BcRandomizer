@@ -74,7 +74,12 @@ def print_array_one_by_one(array):
     for each in array:
         print(each)
 
-
+def print_array_as_tab_sep(array):
+    """
+    prints an array with each value separated by tab
+    """
+    for each in array:
+        print(each,end="\t")
 
 
 
