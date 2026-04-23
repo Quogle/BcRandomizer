@@ -289,7 +289,21 @@ def get_talents(vanilla=False):
         talents.append(line)
     return talents
 
-
+def write_talents(talents):
+    """
+    writes a talent array to download local
+    """
+    talent_array = []
+    for each in talents:
+        this_unit = []
+        if len(each) > 2:
+            this_unit.append(each[0])
+            this_unit.append(each[1])
+            for x in range(2,len(each)):
+                for zeach in each[x]:
+                    this_unit.append(zeach)
+        talent_array.append(this_unit)
+    file_writer(TALENT_FILE,talent_array)
 
 
 
