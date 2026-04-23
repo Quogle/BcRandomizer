@@ -71,21 +71,21 @@ def swap_split(ubers, units_other, disallowed):
     ubers_shuffled = r.shuffle(allowed_ubers)
     other_shuffled = r.shuffle(allowed_units_other)
 
-    # print mapping for ubers
-    for original, new in zip(allowed_ubers, ubers_shuffled):
-        # Make an array of file names for the original units and the unit they will swap to in same position
+    process_file_swaps(allowed_ubers, ubers_shuffled)
+    process_file_swaps(allowed_units_other, other_shuffled)
+
+def process_file_swaps(original_list, shuffled_list):
+    for original, new in zip(original_list, shuffled_list):
         old_files = unit_files(original)
         new_files = unit_files(new)
 
-        # Loop through all the unit files and change them to the new random unit
-        # large icons
         for asset in FORM_ASSETS:
             for form, filename in old_files[asset].items():
-            
+
                 source = fh.search_for_file(filename, True)
                 if source is None:
                     continue
-                
+
                 destination = Path(DOWNLOAD_LOCAL) / new_files[asset][form]
                 destination.parent.mkdir(parents=True, exist_ok=True)
 
@@ -93,8 +93,7 @@ def swap_split(ubers, units_other, disallowed):
                     data = f.file_reader(source)
                     if data is None:
                         continue
-                    
-                    # swap unit ID inside file
+
                     for row in data:
                         if len(row) > 1:
                             try:
@@ -102,31 +101,32 @@ def swap_split(ubers, units_other, disallowed):
                                     row[1] = new
                             except:
                                 pass
-                            
-                    f.file_writer(new_files[asset][form], data)
+
+                    f.file_writer(new_files[asset][form], data, old_file_name=filename)
 
                 elif asset == "imgcut":
                     data = f.file_reader(source)
                     if data is None:
                         continue
 
-                    
-                    data[1] = [new_files["spritesheet"][form]] 
+                    if len(data) > 1:
+                        data[1][0] = new_files["spritesheet"][form]
 
-                    f.file_writer(new_files[asset][form], data)
+                    f.file_writer(new_files[asset][form], data, old_file_name=filename)
 
                 else:
                     shutil.copyfile(source, destination)
-        
+
                 print(f"[{asset}] {filename} -> {new_files[asset][form]}")
 
+        # maanim
         for form in old_files["maanim"]:
             for i, filename in enumerate(old_files["maanim"][form]):
-            
+
                 source = fh.search_for_file(filename, True)
                 if source is None:
                     continue
-                
+
                 destination = Path(DOWNLOAD_LOCAL) / new_files["maanim"][form][i]
                 destination.parent.mkdir(parents=True, exist_ok=True)
 
@@ -134,22 +134,19 @@ def swap_split(ubers, units_other, disallowed):
 
                 print(f"[maanim:{form}:{i}] {filename} -> {new_files['maanim'][form][i]}")
 
+        # single files
         for key, filename in old_files["single_files"].items():
 
             source = fh.search_for_file(filename, True)
             if source is None:
                 continue
-            
+
             destination = Path(DOWNLOAD_LOCAL) / new_files["single_files"][key]
             destination.parent.mkdir(parents=True, exist_ok=True)
 
             shutil.copyfile(source, destination)
-            
-            print(f"[single:{key}] {filename} -> {new_files['single_files'][key]}")
 
-    # print mapping for non-ubers
-    for original, new in zip(allowed_units_other, other_shuffled):
-        ""
+            print(f"[single:{key}] {filename} -> {new_files['single_files'][key]}")
 
 
 def is_uber_lr(unit_id, vanilla_unitbuy):
@@ -182,8 +179,8 @@ def unit_files(unit_id):
     }     
 
     single_files = {
-        "stats": f"unit{unit_id:03d}.csv",                                          # DataLocal
-        "description": f"Unit_Explanation{unit_id:03d}_en.csv",                     # ResLocal
+        "stats": f"unit{unit_id + 1:03d}.csv",                                          # DataLocal
+        "description": f"Unit_Explanation{unit_id + 1:03d}_en.csv",                     # ResLocal
         "gacha_icon": f"gatyachara_{unit_id:03d}_f.png",                            # ImageServer
         "gacha_silhouette": f"gatyachara_{unit_id:03d}_z.png",                      # ImageServer
     }
