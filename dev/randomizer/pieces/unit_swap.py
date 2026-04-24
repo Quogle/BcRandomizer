@@ -40,6 +40,7 @@ FORM_ASSETS = [
 
 def swap_units():
     vanilla_unitbuy = f.file_reader(DATA_LOCAL + UNITBUY_FILE)
+    vanilla_talents = f.file_reader(DATA_LOCAL + TALENT_FILE)
     
     cfg = config_settings()
     units = f.get_cat_stats(True)
@@ -58,9 +59,9 @@ def swap_units():
     if cfg["blacklist_limited_event"]:
         disallowed.update(LIMITED)
 
-    swap_split(ubers, units_other, disallowed)
+    swap_split(ubers, units_other, disallowed,vanilla_talents)
 
-def swap_split(ubers, units_other, disallowed):
+def swap_split(ubers, units_other, disallowed,vanilla_talents):
     # filter allowed units
     allowed_ubers = [u for u in ubers if u not in disallowed]
     allowed_units_other = [u for u in units_other if u not in disallowed]
@@ -71,10 +72,10 @@ def swap_split(ubers, units_other, disallowed):
     ubers_shuffled = r.shuffle(allowed_ubers)
     other_shuffled = r.shuffle(allowed_units_other)
 
-    process_file_swaps(allowed_ubers, ubers_shuffled)
-    process_file_swaps(allowed_units_other, other_shuffled)
+    process_file_swaps(allowed_ubers, ubers_shuffled,vanilla_talents)
+    process_file_swaps(allowed_units_other, other_shuffled,vanilla_talents)
 
-def process_file_swaps(original_list, shuffled_list):
+def process_file_swaps(original_list, shuffled_list,vanilla_talents):
     for original, new in zip(original_list, shuffled_list):
         old_files = unit_files(original)
         new_files = unit_files(new)
@@ -89,6 +90,8 @@ def process_file_swaps(original_list, shuffled_list):
                 destination = Path(DOWNLOAD_LOCAL) / new_files[asset][form]
                 destination.parent.mkdir(parents=True, exist_ok=True)
 
+
+                # Special case to replace ID in MaModel
                 if asset == "mamodel":
                     data = f.file_reader(source)
                     if data is None:
@@ -104,6 +107,7 @@ def process_file_swaps(original_list, shuffled_list):
 
                     f.file_writer(new_files[asset][form], data, old_file_name=filename)
 
+                # Replace png in imgcut
                 elif asset == "imgcut":
                     data = f.file_reader(source)
                     if data is None:
@@ -147,6 +151,18 @@ def process_file_swaps(original_list, shuffled_list):
             shutil.copyfile(source, destination)
 
             print(f"[single:{key}] {filename} -> {new_files['single_files'][key]}")
+
+            # talent thing 
+            id_map = dict(zip(original_list, shuffled_list))
+
+            new_talents = [row[:] for row in vanilla_talents]
+
+            for row in new_talents:
+                if row[0] in id_map:
+                    row[0] = id_map[row[0]]
+
+            f.file_writer(TALENT_FILE, new_talents)
+            
 
 
 def is_uber_lr(unit_id, vanilla_unitbuy):
