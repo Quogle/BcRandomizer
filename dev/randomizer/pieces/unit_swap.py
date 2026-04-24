@@ -75,6 +75,19 @@ def swap_split(ubers, units_other, disallowed,vanilla_talents):
     process_file_swaps(allowed_ubers, ubers_shuffled,vanilla_talents)
     process_file_swaps(allowed_units_other, other_shuffled,vanilla_talents)
 
+    #do talents here
+    #Im assuming this is correct that the index of a unit in og is still the index of what it becomes in new
+    total_og_list = units_other + ubers #combine the two arrays
+    total_new_list = other_shuffled + ubers_shuffled
+    talents = f.file_reader(TALENT_FILE)
+    for each in talents:
+        #change the unit id from its index in og to that indexes value in new
+        if each[0] in total_og_list:
+            index = total_og_list.index(each[0])
+            each[0] = total_new_list[index]
+    f.file_writer(TALENT_FILE,talents)
+
+
 def process_file_swaps(original_list, shuffled_list,vanilla_talents):
     for original, new in zip(original_list, shuffled_list):
         old_files = unit_files(original)
@@ -152,7 +165,7 @@ def process_file_swaps(original_list, shuffled_list,vanilla_talents):
 
             print(f"[single:{key}] {filename} -> {new_files['single_files'][key]}")
 
-            # talent thing 
+            # talent thing
             id_map = dict(zip(original_list, shuffled_list))
 
             new_talents = [row[:] for row in vanilla_talents]
