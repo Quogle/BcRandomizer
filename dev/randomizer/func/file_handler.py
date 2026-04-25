@@ -81,7 +81,6 @@ def copy_file_to_download_local(file_path,filename=None):
     print("copying " + file_path + " to dl as " + filename)
     shutil.copy(file_path,DOWNLOAD_LOCAL + filename)
 
-
 """
 File Readers
 """
@@ -117,13 +116,13 @@ def interpret_csv_type_file(file,separator=",",force_num=True):
             line = line.replace("\ufeff","")
         #process it
         line_array = line.split(separator)
-        if force_num:
-            for x in range(0,len(line_array)):
-                try:
-                    line_array[x] = float(line_array[x]) #convert first to float then if that float is an int make it such
-                    if int(line_array[x]) == line_array[x]:
-                        line_array[x] = int(line_array[x])
-                except:
+        for x in range(0,len(line_array)):
+            try:
+                line_array[x] = float(line_array[x]) #convert first to float then if that float is an int make it such
+                if int(line_array[x]) == line_array[x]:
+                    line_array[x] = int(line_array[x])
+            except:
+                if force_num:
                     if x != len(line_array)-1: #prevent it from adding values on trailing commas
                         line_array[x] = 0
                     else:
@@ -143,9 +142,15 @@ def figure_if_unreadable_first_line(file,name,separator):
     except:
         global first_line_csv
         first_line_csv[name] = first_line
+        return first_line
     #Im assuming that this has an effect on the object outside this function for now
 
-def array_type_file_reader(file_path,separator=",",force_num=True,non_num=False):
+def array_type_file_reader(file_path, # the full file path
+                           separator=",", #separator to use, default ,
+                           force_numerical=True, #force set all values in file to 0 if not numeric
+                           first_line_check=True, #check if first line is non numeric
+                           return_first_line=None #causes file to return the first line as a first entry in the array
+                           ):
     """
     returns 2d array of file at path, int if possible
     \n if first line only is unreadable puts it in first_line_csv to read from when writing
@@ -153,25 +158,42 @@ def array_type_file_reader(file_path,separator=",",force_num=True,non_num=False)
     directory_names = file_path.split("\\")
     file_name = directory_names[-1]
     file = open(file_path,"r",encoding="utf-8")
+    #set default actions
+    force_num = True
+    if force_numerical != None:
+        force_num = force_numerical
+    do_first_line_check = True
+    if first_line_check != None:
+        do_first_line_check = first_line_check
+    slap_first_line_on = False
+    if return_first_line != None:
+        slap_first_line_on = return_first_line
 
-    if not non_num:
-        figure_if_unreadable_first_line(file,file_name,separator)
+
+    if do_first_line_check:
+        first_line = figure_if_unreadable_first_line(file,file_name,separator)
     
     array_to_return = interpret_csv_type_file(file,separator,force_num)
+    if slap_first_line_on: #slap it on front
+        array_to_return = [first_line] + array_to_return
     return array_to_return
 
-def array_to_array_type_file_writer(file_path,info,separator=",",old_file_name=None):
+def array_to_array_type_file_writer(file_path,info,separator=",",old_file_name=None,first_line_in_array=None):
     """
     writes an array to file using separator default comma
     """
+    global first_line_csv 
     directory_names = file_path.split("\\")
     file_name = directory_names[-1]
     if old_file_name != None:
         file_name = old_file_name
+    if first_line_in_array:
+        first_line_csv[file_name] = info.pop(0)
+
 
     #set the line to the first line if its in dict
     file_string = ""
-    global first_line_csv 
+    
     if file_name in first_line_csv:
         file_string = first_line_csv[file_name]
     
@@ -272,26 +294,4 @@ debug funcs
 deprecated
 """
 
-
-#this also never had a reason to exist in the first place
-def old_read_vanilla_talents():
-    """
-    returns a 3d array of talents, first two in each unit are integers, broken
-    """
-    path = LOCAL_FILES + "DataLocal\\SkillAcquisition.csv"
-    base = 0#csv_reader(path)
-    talents = []
-    for each in base:
-        line = []
-        line.append(each[0])
-        line.append(each[1])
-        pos = 2
-        while pos < len(each):
-            talent = []
-            for x in range(0,c.tpos.length):
-                talent.append(each[pos+x])
-            pos += c.tpos.length
-        talents.append(line)
-    
-    return talents
 

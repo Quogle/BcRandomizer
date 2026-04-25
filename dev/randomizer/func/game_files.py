@@ -136,7 +136,7 @@ def burrow_animation_maker():
 
 """ these are the functions used for getting game files """
 
-def file_reader(file,force_separator=None,debug=True):
+def file_reader(file,debug=True,force_separator=None,force_numerical=None,return_first_line=None,non_numerical_csv=None):
     """
     returns 2d array from file
     \n filename and not path will return the downloadlocal version of the file if it exist
@@ -167,20 +167,35 @@ def file_reader(file,force_separator=None,debug=True):
     if input == None or not os.path.exists(input): #stop it from trying to read a file that doesnt exist
         return None 
 
-    if do_unusual_sep:
-        return fh.array_type_file_reader(input,force_separator,False,True) #currently for files with fuckass |
-    elif ending in tsv:
-        return fh.array_type_file_reader(input,"\t",False)
-    elif ending in num_csv:
-        return fh.array_type_file_reader(input,",")
-    elif ending in non_num_csv:
-        return fh.array_type_file_reader(input,",",False)
-    elif ending in skip:
-        pass
-    else:
-        return fh.array_type_file_reader(input,",",False) #current default to non numercial csv
 
-def file_writer(file,info,force_separator=None,old_file_name=None):
+    #set default behavior, csv is default
+    sep = ","
+    force_num = True
+    check_first_line = True
+    if ending in tsv:
+        sep = "\t"
+        force_num = False
+    elif ending in non_num_csv:
+        force_num = False
+    #now set modified behavior
+    if force_separator != None:
+        sep = force_separator
+    if non_numerical_csv != None:
+        check_first_line = False
+    if force_numerical != None:
+        force_num = force_numerical
+
+    if ending not in skip:
+        return fh.array_type_file_reader(input,
+                                        separator=sep,
+                                        force_numerical=force_num,
+                                        first_line_check=check_first_line,
+                                        return_first_line=return_first_line)
+
+def file_writer(file,info,
+                force_separator=None, #forces it to use a separator other than default
+                old_file_name=None, #the old file name to grab first line from if exists
+                first_line_included=None): #first line is included in the array
     """
     writes file to dl
     \n if given force separator it uses that
@@ -192,22 +207,22 @@ def file_writer(file,info,force_separator=None,old_file_name=None):
     skip = ["json","png","preset"] #json and preset seem the same and can prolly be split
     end_check = file.split(".")
     end = end_check[-1]
-    do_sep = False
-    if force_separator != None:
-        do_sep = True
+    #set defaults
+    sep = ","
+    file_name = file
+    first_line_in_array = False
+    if end in tsv:
+        sep = "\t"
+    if old_file_name != None:
+        file_name = old_file_name
+    if first_line_included != None:
+        first_line_in_array = first_line_included
 
-    if do_sep:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,force_separator,old_file_name=old_file_name) #fuckass |
-    elif end in tsv:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,"\t",old_file_name=old_file_name)
-    elif end in non_num_csv: #theyre separated but Im not sure if theres actually a reason to
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,old_file_name=old_file_name)
-    elif end in num_csv:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,old_file_name=old_file_name)
-    elif end in skip:
-        pass
-    else:
-        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,old_file_name=old_file_name) #defaults to a csv
+    if end not in skip:
+        fh.array_to_array_type_file_writer(DOWNLOAD_LOCAL + file,info,
+                                           separator=sep,
+                                           old_file_name=file_name,
+                                           first_line_in_array=first_line_in_array)
 
 def get_cat_stats(vanilla=False):
     """
@@ -304,6 +319,10 @@ def write_talents(talents):
                     this_unit.append(zeach)
         talent_array.append(this_unit)
     file_writer(TALENT_FILE,talent_array)
+
+
+
+
 
 
 
@@ -632,3 +651,69 @@ class map_data(csv):
     def submit_as_new_map(s,file_name,copy_from=None):
         s.file_name = file_name
         s.submit()
+
+
+
+
+
+class animation(): #doesnt use csv as its functions arent correct
+    def __init__(s,file_name):
+        s.load_animation(file_name)
+        s.process_animation()
+        
+
+    def load_animation(s,file_name):
+        file_split = file_name.split("\\")
+        s.file_name = file_split[-1]
+        s.old_file_name = s.file_name
+        s.array = file_reader(file_name,return_first_line=True)
+
+    def process_animation(s):
+        if s.array != None:
+            s.first_line = s.array[0] #isnt this just always [maanim]
+            s.value_at_start = s.array[1][0] #no idea why this is 1 sometimes and 2 other
+            s.pieces = {}
+            current_part = -1
+            remaining = -1
+            set_remaining = False
+            current_type = -1
+            loop_status = -1
+            for x in range(3,len(s.array)):
+                if current_part < 0:
+                    current_part = s.array[x][0]
+                    current_type = s.array[x][1]
+                    loop_status = s.array[x][2]
+                    if current_part not in s.pieces:
+                        s.pieces[current_part] = {}
+                    s.pieces[current_part][current_type] = {"loop":loop_status,"v":[]}
+                    set_remaining = True
+                elif set_remaining:
+                    set_remaining = False
+                    remaining = s.array[x][0]
+                elif remaining > 0:
+                    remaining -= 1
+                    s.pieces[current_part][current_type]["v"].append(s.array[x])
+                    if remaining == 0:
+                        current_part = -1
+    
+    def submit(s):
+        print(s.pieces)
+        new_array = []
+        new_array.append(s.first_line)
+        new_array.append([s.value_at_start])
+        new_array.append([0])
+        for part in s.pieces:
+            for type in s.pieces[part]: #I would need to set this name somehow
+                new_array[2][0] += 1
+                start_array = [[part,type,s.pieces[part][type]["loop"],0,0,"name"],[0]]
+                for each in s.pieces[part][type]["v"]:
+                    print(each)
+                    start_array.append(each)
+                start_array[1][0] = len(start_array)-2
+                new_array += start_array
+        print(new_array)
+        file_writer(s.file_name,new_array,old_file_name=s.old_file_name,first_line_included=True)
+                
+
+
+
