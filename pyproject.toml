@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "battlecats-randomizer"
+version = "0.0.0"
+description = "Battle Cats Randomizer"
+requires-python = ">=3.14"
+dependencies = [
+    "PySide6",
+    "pycryptodome",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
