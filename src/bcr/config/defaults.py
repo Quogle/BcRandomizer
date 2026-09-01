@@ -15,8 +15,8 @@ DEFAULT_CONFIG = {
             "min_abilities": 0, # Minimum number of abilities an enemy can have
             # TODO MAKE WEIGHTS FOR EVERY FUCKING ABILITY GAHHHHHHHHHHHHHHH
         },
-        "traits":{
-            "mode": "randomize", # none / swap / randomize'
+        "trait":{
+            "randomization_mode": "randomize", # none / swap / randomize'
             "specified_swaps": [
                 # { "old": "red", "new": "black"} 
             ],
@@ -216,6 +216,73 @@ DEFAULT_CONFIG = {
             "metal": {
                 "enabled": True,
             },
+        }
+    },
+    "unit": {
+        "id_swap": {
+            "enabled": True,
+        },
+        "ability": {
+            "randomize": True,
+            "grant_trait_abilities": True, # Cats that gain zombie target get zkill, etc
+            "remove_trait_abilities": True, # Cats that lose zombie target lose zkill, etc
+            "zkill_frequency": 80,
+            "curse_immune_frequency": 100,
+            "shield_pierce_frequency": 20,
+        },
+        "trait": {
+            "randomization_mode": "Randomize", # none / swap / randomize'
+            "specified_swaps": [
+                # { "old": "red", "new": "black"} 
+            ],
+            "vary_form_traits": False, # Each form of a unit will randomize individually
+            "avoid_old_traits": True # If possible unit will not randomize to target the same trait
+        },
+        "talent": {
+            "randomize": True,
+            "avoid_dupe_traits": True # Will not get a trait talent for a trait it already targets
+            # TODO the rest
+        }
+    },
+    "catcombo": {
+        "randomize": {
+            "enabled": True, # Randomize Cat Combos
+            "units": True, # Randomize the units within catcombos
+            "multipliers": True, # Randomize Combo Size DOWN, SM, M, L, XL
+            "effects": True, # Randomize the effect of each combo
+            "max_uber_count": 1, # Maximum amount of ubers / legend rares that can be put in a combo
+        },
+        "blacklist": {
+            "collab": False, # collab unis can be in combos
+            "version_exclusive": False,
+            "unobtainable": False,
+            "limited": False, # limited units such as capsule
+        },
+        "size": {
+            "mult_weights": True, # If false, chooses between the 5 combo effect multipliers at equal chance  
+            "custom_mult_weights": [
+                {
+                    "size": 1,
+                    "sm": 1,
+                    "m": 1,
+                    "l": 1,
+                    "xl": 1,
+                    "down": 1,
+                }
+                # TODO figure out how I actually want to 
+                # structure this and do the other 4 sizes
+            ],
+            "keep_unit_count": True, # combos stay the sam amount of units
+            "count_weights": True, # use custom weights for unit count
+            "custom_count_weights": [
+                {
+                    "1": 10,
+                    "2": 25,
+                    "3": 35,
+                    "4": 20,
+                    "5": 10
+                }
+            ]
         }
     }
 }
