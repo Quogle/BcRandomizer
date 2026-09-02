@@ -101,10 +101,8 @@ class SetupWindow(QWidget):
         layout.addStretch()
 
     def test_config(self):
-        if self.config["enemy"]["trait_gimmicks"]["white"]["enabled"]:
-            print("White enabled: True")
-        else:
-            print("White enabled: False")
+        weaken_weight = self.config["enemy"]["ability"]["weights"]["weaken"]
+        print(weaken_weight)
 
     # APK Selection
     def select_input_apk(self):

@@ -13,11 +13,13 @@ from PySide6.QtCore import Qt
 from src.bcr.gui.themes.dark import DARK_THEME
 from .trait_gimmicks import TraitGimmicks
 from .randomization import EnemyRandomization
+from .ability import AbilityRandomization
 
 class EnemyWindow(QWidget):
     def refresh_from_config(self):
         self.trait_gimmicks.refresh_from_config()
         self.enemy_randomization.refresh_from_config()
+        self.ability_randomization.refresh_from_config()
 
     def __init__(self, config):
         super().__init__()
@@ -147,19 +149,16 @@ class EnemyWindow(QWidget):
         content_layout.addWidget(randomization_settings)
 
         # --------------------------------------------------
-        # Extras
+        # Abilities
         # --------------------------------------------------
 
-        extras = QGroupBox("Extras")
-        extras_layout = QVBoxLayout(extras)
+        ability_settings = QGroupBox("Ability Randomization")
+        ability_settings_layout = QVBoxLayout(ability_settings)
 
-        extras_layout.addWidget(
-            QLabel("Extra randomization settings will go here.")
-        )
+        self.ability_randomization = AbilityRandomization(self.config)
+        ability_settings_layout.addWidget(self.ability_randomization)
 
-        content_layout.addWidget(extras)
-
-        content_layout.addStretch()
+        content_layout.addWidget(ability_settings)
 
     # ======================================================
     # Specified Swaps
