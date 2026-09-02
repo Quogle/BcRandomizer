@@ -1,13 +1,15 @@
 DEFAULT_CONFIG = {
     "enemy": {
-        "id_swap": {
-            "enabled": False,
-            "keep_class": True, # Tries to swap enemies with enemies of the same class; ie backliner becomes different backliner
-            "balanced_swap": True, # Randomizer will try to swap enemies with those of similar strength
-            "balance_strictness": 10,
-            "max_id": -1,   # Highest enemy id that can be selected for swapping. This is so enemies dont completely change every update. -1 to ignore this
-            "adjust_magnifications": True, # Adjusts the new enemy's magnification to better match the original enemy's stats
-            "include_eoc": False, # eoc cant have mags adjusted so I wouldnt recommend this one
+        "randomization": {
+            # None          -   Enemies are not randomized
+            # ID Swap       -   Every instance of doge is randomized into ____, etc
+            # Fully Random  -   Randomization is different for every stage
+            "type": "Fully Random", 
+            "keep_class": True,             # peons stay as peons, basically enemies will randomize into similar types ish kinda?????
+            "variant_swap": False,          # enemies will randomize into their variants if they have any
+            "max_id": -1,                   # Highest enemy id that can be selected for swapping. This is so enemies dont completely change every update. -1 to ignore this
+            "adjust_magnifications": True,  # Adjusts the new enemy's magnification to better match the original enemy's stats
+            "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one
 
         },
         "ability": {
