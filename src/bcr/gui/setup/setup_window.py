@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 
 from PySide6.QtCore import Signal
 
-from ..helpers.config_helpers import save_config, load_config
+from ..helpers.config_helpers import save_config, load_config, update_config
 
 from ...apk.extract import extract_apk
 from ...apk.build import build_apk
@@ -143,10 +143,7 @@ class SetupWindow(QWidget):
 
         if path:
             loaded_config = load_config(path)
-
-            self.config.clear()
-            self.config.update(loaded_config)
-
+            update_config(self.config, loaded_config)
             self.config_loaded.emit()
 
 

@@ -15,11 +15,16 @@ from ..helpers.config_helpers import *
 
 class EnemyRandomization(QWidget):
     def refresh_from_config(self):
-        self.random_type.setCurrentIndex(
-            self.random_type.findText(
-                self.config["enemy"]["randomization"]["type"]
-            )
+        rando_config = self.config["enemy"]["randomization"]
+
+        self.random_type.setCurrentText(rando_config["type"])
+        self.keep_class.setChecked(rando_config["keep_class"])
+        self.variant_swap.setChecked(rando_config["variant_swap"])
+        self.adjust_magnifications.setChecked(
+            rando_config["adjust_magnifications"]
         )
+        self.include_eoc.setChecked(rando_config["include_eoc"])
+        self.max_id.setValue(rando_config["max_id"])
 
     def __init__ (self, config):
         super().__init__()

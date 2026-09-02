@@ -10,6 +10,15 @@ def load_config(path):
     with open(path, "r", encoding="utf-8") as file:
         return json.load(file)
 
+
+def update_config(original, loaded):
+    for key, value in loaded.items():
+        if isinstance(value, dict) and isinstance(original.get(key), dict):
+            update_config(original[key], value)
+        else:
+            original[key] = value
+
+
 def connect_checkbox(widget, config, key):
     widget.setChecked(config[key])
 
@@ -19,6 +28,7 @@ def connect_checkbox(widget, config, key):
             widget.isChecked()
         )
     )
+
 
 def connect_value(widget, config, key):
     widget.setValue(config[key])
@@ -30,6 +40,7 @@ def connect_value(widget, config, key):
         )
     )
 
+
 def connect_combobox(widget, config, key):
     widget.setCurrentText(config[key])
 
@@ -39,6 +50,7 @@ def connect_combobox(widget, config, key):
             value
         )
     )
+
 
 def connect_weighted_list(widget, config):
     for name, spinbox in widget.items.items():
