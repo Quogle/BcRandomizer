@@ -2,7 +2,7 @@ from pathlib import Path
 import subprocess
 
 
-TOOLS_DIR = Path(__file__).resolve().parents[3] / "tools"
+TOOLS_DIR = Path(__file__).resolve().parents[3]/"resources"/"tools"
 APKTOOL_PATH = TOOLS_DIR/"apktool.jar"
 
 
