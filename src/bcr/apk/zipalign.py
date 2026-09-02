@@ -1,7 +1,7 @@
 from pathlib import Path
 import subprocess
 
-TOOLS_DIR = Path(__file__).resolve().parents[3] / "tools"
+TOOLS_DIR = Path(__file__).resolve().parents[3]/"resources"/"tools"
 ZIPALIGN_PATH = TOOLS_DIR/"windows"/"build-tools"/"zipalign.exe"
 
 

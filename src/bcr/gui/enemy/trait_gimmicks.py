@@ -15,6 +15,9 @@ from ..helpers.config_helpers import *
 
 
 class TraitGimmicks(QWidget):
+    def refresh_from_config(self):
+        self.change_trait_gimmick(self.selected_trait)
+    
     def __init__(self, config):
         super().__init__()
 

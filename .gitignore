@@ -651,7 +651,7 @@ FodyWeavers.xsd
 *moddedAPKS
 workspace/
 .vscode/
-*.test.py
+*.test*.py
 self_install.py
 self_upload.py
 

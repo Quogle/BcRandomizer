@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 
 from PySide6.QtCore import Signal
 
-from ..helpers.config_helpers import save_config, load_config
+from ..helpers.config_helpers import save_config, load_config, update_config
 
 from ...apk.extract import extract_apk
 from ...apk.build import build_apk
@@ -101,10 +101,8 @@ class SetupWindow(QWidget):
         layout.addStretch()
 
     def test_config(self):
-        if self.config["enemy"]["trait_gimmicks"]["white"]["enabled"]:
-            print("White enabled: True")
-        else:
-            print("White enabled: False")
+        weaken_weight = self.config["enemy"]["ability"]["weights"]["weaken"]
+        print(weaken_weight)
 
     # APK Selection
     def select_input_apk(self):
@@ -143,10 +141,7 @@ class SetupWindow(QWidget):
 
         if path:
             loaded_config = load_config(path)
-
-            self.config.clear()
-            self.config.update(loaded_config)
-
+            update_config(self.config, loaded_config)
             self.config_loaded.emit()
 
 
