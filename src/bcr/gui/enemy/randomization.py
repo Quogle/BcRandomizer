@@ -82,6 +82,8 @@ class EnemyRandomization(QWidget):
             "adjust_magnifications"
         )
 
+        self.layout.addWidget(self.adjust_magnifications)
+
         # Include Eoc
 
         self.include_eoc = QCheckBox("Include Eoc")
