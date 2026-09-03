@@ -378,11 +378,244 @@ def _give_ability_explosion(stats,likelihood=10,distanceness=10,post_attack_time
     stats[e.s.explodeVariance] = int(4*spawn_variation)
     return stats
 
+def _give_ability_warp(stats,post_attack_time=-1,distanceness=10,slowness=10,likeliness=10,is_backwards=False):
+    """ gives stats a warp and returns it 
+    \ndistanceness determines the distance of the warp, higher means further backwards too
+    \nslowness determines how long the warp takes"""
+    #first start by getting the units range + say 200
+    shifted_range = stats[e.s.range] + 200
+    #now determine the warp range ratio by dividing distanceness into chunks
+    range_ratio = 0.3  #this is the default ratio
+    if is_backwards:
+        if distanceness < 3:
+            range_ratio = -0.1
+        elif distanceness < 5:
+            range_ratio = -0.3
+        elif distanceness < 7:
+            range_ratio = -0.4
+        elif distanceness < 10:
+            range_ratio = -0.6
+        elif distanceness < 14:
+            range_ratio = -0.8
+        elif distanceness < 16:
+            range_ratio = -1.2
+        elif distanceness < 18:
+            range_ratio = -1.5
+        elif distanceness < 21:
+            range_ratio = -1.8
+        else:
+            range_ratio = -2.0
+    else:
+        if distanceness < 3:
+            range_ratio = 0.2
+        elif distanceness < 5:
+            range_ratio = 0.5
+        elif distanceness < 7:
+            range_ratio = 0.7
+        elif distanceness < 10:
+            range_ratio = 0.9
+        elif distanceness < 14:
+            range_ratio = 1.2
+        elif distanceness < 16:
+            range_ratio = 1.5
+        elif distanceness < 18:
+            range_ratio = 1.9
+        elif distanceness < 21:
+            range_ratio = 2.4
+        else:
+            range_ratio = 4.0
+    #now get the actual warp range resulting from that
+    warp_range = shifted_range*range_ratio #common units
+    #now determine the warp time
+    #Im gonna also just block this (do I even wanna consider attack cycle or just use hard numbers)
+    time_scale = 30
+    attack_cycle_increase_minimum = 150 #this is the minimum amount before attack cycle will be added to the time scale
+    cycle_scalor = 0.2 #this is the % amount thats added to the scale (after minimum)
+    attack_cycle = _get_stats_attack_cycle(stats,post_attack_time)
+    time_scale += simp.clamp((attack_cycle-attack_cycle_increase_minimum)*cycle_scalor,0,400) #restrict it to not reduce and only increase by 400 max
+    #now get the ratios to be mult with time scale and boost
+    time_ratio = 1
+    time_boost = 0
+    if slowness < 3:
+        time_ratio = 0.1
+    elif slowness < 6:
+        time_ratio = 0.5
+    elif slowness < 10:
+        time_ratio = 1
+    elif slowness < 13:
+        time_boost = 30
+        time_ratio = 1.5
+    elif slowness < 15:
+        time_boost = 40
+        time_ratio = 1.9
+    elif slowness < 17:
+        time_boost = 60
+        time_ratio = 2.5
+    elif slowness < 18:
+        time_boost = 90
+        time_ratio = 3.5
+    elif slowness < 19:
+        time_boost = 120
+        time_ratio = 5.0
+    elif slowness < 20:
+        time_boost = 130
+        time_ratio = 7.0
+    else:
+        time_ratio = slowness/2 #it can keep increasing beyond 20 but its linear
+    warp_time = time_ratio*(time_scale+time_boost)
+    #now to do chance (I think for warp Ill actually ignore all other information and just do chance raw)
+    #actually no Ill set chance higher on single target things
+    chance = 5+((attack_cycle/60)**1.5)*5
+    if stats[e.s.area] == 0:
+        chance += (20 + attack_cycle/8)
+    chance = simp.clamp(int(chance),1,100)
+    #set it
+    stats[e.s.warpChance] = int(chance)
+    stats[e.s.warpDuration] = int(warp_time) #im gonna ignore the possibility it could be negative if something else went wrong
+    stats[e.s.warpMin4x] = int(4*warp_range)
+    stats[e.s.warpMax4x] = int(4*warp_range)
+    return stats
+
+def _give_ability_barrier(stats,strength=10):
+    """ gives the unit a barrier, doesnt scale with units hp
+    \n strength below 1 results in a shitter barrier """
+    #Im literally just gonna separate this into 8 blocks with hardcoded stats
+    barrier_hp = 400 #this is prolly a decent shitter hp
+    if strength >= 1:
+        barrier_hp += 2600 #for 3k
+    if strength >= 6:
+        barrier_hp += 3000 #for 6k
+    if strength >= 9:
+        barrier_hp += 4000 #for 10k
+    if strength >= 13:
+        barrier_hp += 12000 #for 22k
+    if strength >= 15:
+        barrier_hp += 20000 #for 42k
+    if strength >= 17:
+        barrier_hp += 40000 #for 82k
+    if strength >= 19:
+        barrier_hp += 178000 #for 260k
+    stats[e.s.barrierHp] = int(barrier_hp)
+    return stats
+
+def _give_ability_shield(stats):
+    """ gives a unit a shield based on kb count """
+    #literally just gonna copy this from aku
+    kb = stats[e.s.kbs]
+    hp = stats[e.s.hp]
+
+    #default barrier to 5k for most enemies
+    barrier_health = 0
+    if hp > 5000:
+        barrier_health = 5000
+    regen_at = 100
+    #1 30%,2 20%,3 15%,>24 15%, else 10%    (2 and else 50%)
+    if kb == 1:
+        barrier_health += hp*0.3
+    elif kb == 2:
+        barrier_health += hp*0.2
+        regen_at = 50
+    elif kb == 3:
+        barrier_health += hp*0.15
+    elif kb > 24:
+        barrier_health += hp*0.15
+    else:
+        barrier_health += hp*0.1
+        regen_at = 50
+    
+    stats[e.s.shieldHp] = int(barrier_health)
+    stats[e.s.shieldRegenPercent] = regen_at
+
+    return stats
+
+def _give_ability_death_surge(stats,strength=10,distanceness=10,is_mini=False,is_wild=False,force_gauranteed=False):
+    """ gives stats death surge, NOT a death surge with an ability
+    \n mini ds has a higher level on average
+    \n wild means has a high spawn area
+    \n things with <5k hp and <200 range get 50% chance, can be forced to 100% for eoc enemies and the like """
+    #first get the level
+    surge_level = (strength/8)**1.2
+    if is_mini:
+        stats[e.s.miniSurge] = 1
+        surge_level += 0.3
+    surge_level = simp.clamp(int(surge_level),1,3)
+    #now get the range
+    #Im literally just gonna do 3 ratios to add the units range to 345 + 30
+    range_ratio = 0.3
+    if distanceness > 7:
+        range_ratio = 0.5
+    if distanceness > 14:
+        range_ratio = 0.8
+    spawn_start = 345 + 30 + int(range_ratio*stats[e.s.range]) #common units
+    spawn_variation = 60
+    if is_wild:
+        spawn_variation = 1200
+    #now do chance
+    spawn_chance = 100
+    if stats[e.s.hp] < 5000 and stats[e.s.range] < 200: #most peons will only get 50%, unfortunately so will most eoc enemies
+        spawn_chance = 50
+    if force_gauranteed:
+        spawn_chance = 100
+    #now set it
+    stats[e.s.deathSurgeChance] = simp.clamp(int(spawn_chance),1,100)
+    stats[e.s.deathSurgeLevel] = simp.clamp(int(surge_level),1,3)
+    stats[e.s.deathSurgeStartPos] = int(spawn_start)
+    stats[e.s.deathSurgeWidth] = int(spawn_variation)
+    return stats
+    
+def _give_ability_ld(stats,relative_size=10,blindspot_size=10):
+    """ gives a unit ld
+    \n blindspots 18 and above result in a unit that cant hit within its own range """
+    #clamp the inputs to array indexes
+    relative_size = simp.clamp(int(relative_size),0,20)
+    blindspot_size = simp.clamp(int(blindspot_size)0,20)
+    unit_range = stats[e.s.range]
+    #                    0      1       2       3       4       5       6       7       8       9       10      11      12      13      14      15      16      17      18      19      20
+    sizes_array =       [0.2,   0.25,   0.33,   0.40,   0.45,   0.50,   0.58,   0.66,   0.70,   0.78,   0.85,   0.90,   0.95,   1.00,   1.10,   1.20,   1.30,   1.40,   1.60,   1.70,   1.80]
+    blindspot_array =   [-1,    0,      0.10,   0.20,   0.25,   0.30,   0.33,   0.35,   0.40,   0.45,   0.50,   0.55,   0.60,   0.66,   0.70,   0.75,   0.80,   0.85,   0.05,   0.05,   0.05]
+    width = unit_range*sizes_array[relative_size]
+    blindspot_start = unit_range*blindspot_array[blindspot_size]
+    #now adjust for 0 and 1 blindspot
+    if blindspot_size == 0:
+        blindspot_start = -320
+    elif blindspot_size == 1:
+        blindspot_start = 0
+    #now break into pattern for 18+ or not
+    if blindspot_size >= 18:
+        #18:50, 19:150, 20:250, with chunks of 5 based on the units actual range
+        blindspot_increase = 50 + 100*(blindspot_size-18) + 5*int(blindspot_start/5)
+        blindspot_start = int(unit_range + blindspot_increase)
+        width = int(round(width,0))
+        #should be all good to set this one
+    else: #now to do if it isnt tackey type enemy
+        #adjustment loop for if it doesnt reach its standing range
+        while int(blindspot_start) + int(width) < unit_range:
+            blindspot_start += 0.01*unit_range
+            width += 0.01*unit_range
+        #adjustment loop for if a unit with a proportionally large width also has a large pierce
+        # first check is if (width-50)/unit range is more than 60%
+        # second check is if (piercing width - 50)/unitrange is more than 40%
+        #doesnt this prevent anything like clionel where it has a large blindspot but also massive pierce? (do I want that anyways)
+        while (int(width)-50)/unit_range >= 0.6 and (int(blindspot_start)+int(width)-unit_range-50)/unit_range >= 0.4:
+            blindspot_start -= 1 #Im gonna make this move back way slower
+            width -= 0.01*unit_range
+        #now floor them to make them flat numbers
+        blindspot_start = int(blindspot_start)
+        width = int(width)
+    #now set it
+    stats[e.s.ldMinRange] = blindspot_start
+    stats[e.s.ldWidth] = width
+    return stats
 
 
 
 
 
+
+
+
+
+""" still missing: ld omni """
 
 
 
