@@ -1,14 +1,16 @@
 import tadbcmc.data.enums.enemy as e
-
-
-
+import tadbcmc.core.game_files as gf
+import tadbcmc.data.filenames as fn
+import copy
 
 
 #idk what else to do here but Im gonna put all the making of base arrays in here
 
-def hp_buff_metals(stats):
+def _hp_buff_metals(stats):
     """ buffs the hp of current metals
     \n 400x if hp < 1000, 20x otherwise """
+    #I hate python references
+    stats = copy.deepcopy(stats)
     for each in stats:
         if each[e.t.metal] == 1:
             this_hp = each[e.s.hp]
@@ -18,9 +20,11 @@ def hp_buff_metals(stats):
                 each[e.s.hp] = int(20*this_hp)
     return stats
 
-def metal_new_trait(stats):
+def _metal_new_trait(stats):
     """ gives metals a new trait and removes their metal
     \n default trait is red but most used metals get their own """
+    #I hate python references
+    stats = copy.deepcopy(stats)
     for unit in stats:
         if unit[e.t.metal] == 1:
             unit[e.t.metal] = 0
@@ -47,9 +51,11 @@ def metal_new_trait(stats):
         stats[each[0]+2][each[1]] = 1   
     return stats
 
-def ex_metal_rebalance(stats):
+def _ex_metal_rebalance(stats):
     """ rebalances some of the vanilla metal enemies, does not remove metal trait
     \n this should be run after buffing metal hp (otherwise you get 3 mill hp smh) """
+    #I hate python references
+    stats = copy.deepcopy(stats)
     # metal doge 147
     stats[149][e.s.hp] = 20000
 
@@ -92,17 +98,24 @@ def ex_metal_rebalance(stats):
     stats[56][e.s.kbs] = 3
     stats[56][e.s.hp] = 300000
 
+    #croc 497 (only tba is done here hp and metal trait are done after literally everything else)
+    stats[499][e.s.tba] = 0
+
 
     return stats
 
-def behemoth_killer(stats):
+def _behemoth_killer(stats):
     """ removes behemoth and returns, thats it """
+    #I hate python references
+    stats = copy.deepcopy(stats)
     for each in stats:
         each[e.s.behemoth] = 0
     return each
 
-def ex_behemoth_rebalance(stats):
+def _ex_behemoth_rebalance(stats):
     """ rebalances the vanilla behemoths """
+    #I hate python references
+    stats = copy.deepcopy(stats)
     # wild doge 603
     stats[605][e.s.hp] = 45000
     stats[605][e.s.attack] = 12000
@@ -195,30 +208,69 @@ def ex_behemoth_rebalance(stats):
 
     return stats
 
-def late_enemy_rebalance(stats):
-    """ applies changes that should be done after most other things? """
+def _literally_just_metal_croc(stats):
+    """ literally just gives croc metal with 5 hp
+    \n this has to be done after sprites because I didnt account for croc as dual trait """
+    #I hate python references
+    stats = copy.deepcopy(stats)
     #croc 497
     stats[499][e.t.metal] = 1
     stats[499][e.s.hp] = 5
-    stats[499][e.s.tba] = 0
-
-    #kronium
-    #idk what Im gonna do for this mf yet
-
     return stats
 
 
 
+from ...config.defaults import DEFAULT_CONFIG
+
+""" actual total functions 
+\n this functions do not save to file """
+def early_rebalance(config=DEFAULT_CONFIG):
+    """ pulls vanilla enemy array and applys the proper rebalances to make the before anything array """
+    vanilla_stats = gf.file_reader(fn.ENEMY_STATS,vanilla=True)
+    modded_array = copy.deepcopy(vanilla_stats)
+    #gonna specify all the bools here because I dont like calling config in an if
+    remove_metals = True
+    give_metals_new_trait = True
+    rebalance_metals = True
+    remove_behemoths = True
+    rebalance_behemoths = True
+    #now actually edit the arrays
+    if remove_metals:
+        modded_array = _hp_buff_metals(modded_array)
+    if give_metals_new_trait:
+        modded_array = _metal_new_trait(modded_array) #as long as this is after hp buff it doesnt matter where in this func it is
+    if rebalance_metals:
+        modded_array = _ex_metal_rebalance(modded_array) #as long as this is after hp buff location doesnt matter
+    if remove_behemoths:
+        modded_array = _behemoth_killer(modded_array)
+    if rebalance_behemoths:
+        modded_array = _ex_behemoth_rebalance(modded_array)
+    #is there anything else that needs to be done before this array can be used
+    return modded_array
+
+def middle_rebalance(stats,config=DEFAULT_CONFIG):
+    """ modded enemies intended to be affected by randomization should go in here """
+    #dunno what yet so this is basically empty
+    stats = copy.deepcopy(stats)
 
 
+    return stats
+
+def late_rebalance(stats,config=DEFAULT_CONFIG):
+    """ modded enemies that arent intended to be affected by randomization should go in here """
+    #I dont currently know what to do so this is empty for now
+    stats = copy.deepcopy(stats)
 
 
+    return stats
 
-
-
-
-
-
+def end_rebalance(stats,config=DEFAULT_CONFIG):
+    """ this function should run at the very end of the program """
+    stats = copy.deepcopy(stats)
+    rebalance_metal = True
+    if rebalance_metal:
+        stats = _literally_just_metal_croc(stats)
+    return stats
 
 
 
