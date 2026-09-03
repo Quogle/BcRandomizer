@@ -37,7 +37,8 @@ import tadbcmc.core.simple_funcs as simp
 
 
 
-""" applying specific abilities to stats """
+""" applying specific abilities to stats 
+the way these work is inputs are almost always relative to 10, usually within the bounds of 0-20 (outside that rarely does anything different)"""
 def _give_ability_weaken(stats,strength=10,time=10,weak_to=50,post_attack_time=-1,scale_by_strength_of_weakness=True):
     """ gives a weaken of specified strength time and % to a unit and returns the stat array
     \n 10 means what I consider to be average strength and time (dont ask what that means) """
@@ -136,7 +137,8 @@ def _give_ability_self_destruct(stats,die=True,number_of_attacks=1):
     return stats
 
 def _give_ability_dodge(stats,chance=10,time=30):
-    """ gives stats listed dodge and returns it """
+    """ gives stats listed dodge and returns it
+    \n chance and time are the actual stats, not used for calculation """
     stats[e.s.dodgeChance] = chance
     stats[e.s.dodgeDuration] = time
     return stats
@@ -370,7 +372,7 @@ def _give_ability_explosion(stats,likelihood=10,distanceness=10,post_attack_time
     variant_adjustment = simp.clamp(1+(spawn_variation/400)**1.3,1,2) 
     #now do chance
     adjusted_cycle = attack_cycle*(distance_adjustment+variant_adjustment)/4
-    chance = int(5+((adjusted_cycle/300)**1.5)*100)
+    chance = int(5+((adjusted_cycle/300)**1.5)*100*(10+likelihood)/20)
     chance = simp.clamp(chance,1,100)
     #now set all that info
     stats[e.s.explodeChance] = chance
@@ -465,9 +467,9 @@ def _give_ability_warp(stats,post_attack_time=-1,distanceness=10,slowness=10,lik
     warp_time = time_ratio*(time_scale+time_boost)
     #now to do chance (I think for warp Ill actually ignore all other information and just do chance raw)
     #actually no Ill set chance higher on single target things
-    chance = 5+((attack_cycle/60)**1.5)*5
+    chance = 5+((attack_cycle/60)**1.5)*(4+likeliness/10)
     if stats[e.s.area] == 0:
-        chance += (20 + attack_cycle/8)
+        chance += (20 + attack_cycle/8 + likeliness)
     chance = simp.clamp(int(chance),1,100)
     #set it
     stats[e.s.warpChance] = int(chance)
@@ -565,10 +567,11 @@ def _give_ability_death_surge(stats,strength=10,distanceness=10,is_mini=False,is
     
 def _give_ability_ld(stats,relative_size=10,blindspot_size=10):
     """ gives a unit ld
+    \n inputs clamped to within 0-20
     \n blindspots 18 and above result in a unit that cant hit within its own range """
     #clamp the inputs to array indexes
     relative_size = simp.clamp(int(relative_size),0,20)
-    blindspot_size = simp.clamp(int(blindspot_size)0,20)
+    blindspot_size = simp.clamp(int(blindspot_size),0,20)
     unit_range = stats[e.s.range]
     #                    0      1       2       3       4       5       6       7       8       9       10      11      12      13      14      15      16      17      18      19      20
     sizes_array =       [0.2,   0.25,   0.33,   0.40,   0.45,   0.50,   0.58,   0.66,   0.70,   0.78,   0.85,   0.90,   0.95,   1.00,   1.10,   1.20,   1.30,   1.40,   1.60,   1.70,   1.80]
@@ -595,7 +598,7 @@ def _give_ability_ld(stats,relative_size=10,blindspot_size=10):
         #adjustment loop for if a unit with a proportionally large width also has a large pierce
         # first check is if (width-50)/unit range is more than 60%
         # second check is if (piercing width - 50)/unitrange is more than 40%
-        #doesnt this prevent anything like clionel where it has a large blindspot but also massive pierce? (do I want that anyways)
+        #doesnt this prevent anything like clionel where it has a large blindspot but also massive pierce? (do I want that anyways) clionel type enemies could easily be added by simply adding an or that makes this not function on say 15+ blindspot size
         while (int(width)-50)/unit_range >= 0.6 and (int(blindspot_start)+int(width)-unit_range-50)/unit_range >= 0.4:
             blindspot_start -= 1 #Im gonna make this move back way slower
             width -= 0.01*unit_range
@@ -607,15 +610,52 @@ def _give_ability_ld(stats,relative_size=10,blindspot_size=10):
     stats[e.s.ldWidth] = width
     return stats
 
+def _give_ability_omni(stats,relative_size=10,blindspot_size=10):
+    """ gives stats an omni and returns it
+    \n bounds on inputs limited to 0-20
+    \n 20 blindspot results in a unit that cant hit within its range """
+    #clamp the inputs to array indexes
+    relative_size = simp.clamp(int(relative_size),0,20)
+    blindspot_size = simp.clamp(int(blindspot_size),0,20)
+    unit_range = stats[e.s.range]
+    #                    0      1       2       3       4       5       6       7       8       9       10      11      12      13      14      15      16      17      18      19      20
+    sizes_array =       [0.2,   0.25,   0.33,   0.40,   0.45,   0.50,   0.58,   0.66,   0.70,   0.78,   0.85,   0.90,   0.95,   1.00,   1.10,   1.20,   1.30,   1.40,   1.60,   1.70,   1.80]
+    blindspot_array =   [-1.0,  -0.70,  -0.50,  -0.30,  -0.20,  0.00,   0.10,   0.20,   0.25,   0.33,   0.40,   0.45,   0.50,   0.55,   0.60,   0.66,   0.70,   0.75,   0.80,   0.85,   0.05]
+    width = unit_range*sizes_array[relative_size]
+    blindspot_start = unit_range*blindspot_array[blindspot_size]
+    #omni blindspot shit
+    if blindspot_size <= 4:
+        blindspot_start -= 345*(blindspot_start-4)/4
+    #now separate into 20 and not
+    if blindspot_size == 20:
+        #carry over the blindspot start in blocks of 5 starting from 100 past the range
+        blindspot_start = int(unit_range + 100 + 5*int(blindspot_start/5))
+        width = int(width)
+        #that should be all ready
+    else: #now what to do for all else
+        #adjustment for if the omni doesnt reach the units range
+        while int(blindspot_start) + int(width) < unit_range:
+            blindspot_start += 0.01*unit_range
+            width += 0.01*unit_range
+        #now adjustment for if the omni is too huge without also a respectively large blindspot
+        #first check is if blindspot-50 is less than 50% of a units range
+        #second check is if pierce-50 is greater than 50% of a units range
+        while int(blindspot_start-50)/unit_range < 0.5 and (int(blindspot_start)+int(width)-50-unit_range)/unit_range > 0.5:
+            blindspot_start += 0.01*unit_range
+            width -= 0.01*unit_range
+        #now floor them to make them nice numbers
+        blindspot_start = int(blindspot_start)
+        width = int(width)
+    #now set them
+    #(just now realizing I didnt even consider that this is omni not ld)
+    stats[e.s.ldMinRange] = int(blindspot_start+width)
+    stats[e.s.ldWidth] = int(-width)
+    return stats
 
 
 
 
 
-
-
-
-""" still missing: ld omni """
 
 
 
