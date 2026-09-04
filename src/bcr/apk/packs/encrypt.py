@@ -56,11 +56,6 @@ def create_list(
         if path.is_file()
     ]
 
-    if not files:
-        raise RuntimeError(
-            f"No files found in {game_files_dir}"
-        )
-
     list_file = f"{len(files)}\n"
 
     address = 0
@@ -113,9 +108,7 @@ def create_pack(
         )
 
     if not entries:
-        raise RuntimeError(
-            "No valid list entries found"
-        )
+        return b""
 
     total_size = (
         entries[-1][1]

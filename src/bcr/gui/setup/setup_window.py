@@ -19,9 +19,11 @@ from ...apk.build import build_apk
 from ...apk.zipalign import zipalign_apk
 from ...apk.sign import sign_apk
 
-from ...apk.packs.decrypt_specifics import decrypt_specifics
 from ...apk.packs.decrypt import decrypt_packs
 from ...apk.packs.encrypt import encrypt_pack
+
+from ...apk.server.downloader import download_server_files, process_server_files
+from ...apk.packs.required_files import get_required_files
 
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
@@ -155,35 +157,16 @@ class SetupWindow(QWidget):
             return
 
         workspace = Path("workspace")
-
-        decoded_directory = (
-            workspace / "decoded"
-        )
-
-        decrypted_directory = (
-            workspace / "decrypted"
-        )
-
-        rebuilt_apk = (
-            workspace / "rebuilt.apk"
-        )
-
-        aligned_apk = (
-            workspace / "aligned.apk"
-        )
-
-        signed_apk = (
-            workspace / "signed.apk"
-        )
+        decoded_directory = (workspace/"decoded")
+        decrypted_directory = (workspace/"decrypted")
+        rebuilt_apk = (workspace/"rebuilt.apk")
+        aligned_apk = (workspace/"aligned.apk")
+        signed_apk = (workspace/"signed.apk")
 
         # Extract APK
         print("Extracting APK")
 
-        extract_apk(
-            apk_path,
-            decoded_directory,
-        )
-
+        extract_apk(apk_path,decoded_directory,)
 
         # Find pack files
         pack_paths = [
@@ -204,15 +187,79 @@ class SetupWindow(QWidget):
                 "No .pack files found"
             )
 
+        requirements = get_required_files(self.config)
 
         # Decrypt packs
         print("Decrypting packs")
 
         if DECRYPT_SPECIFICS:
-            decrypt_specifics(packs_directory=decoded_directory/"assets",output_directory=decrypted_directory / "vanilla_files",
+            decrypt_packs(
+                pack_paths=pack_paths,
+                cc="en",
+                output_directory=decrypted_directory/"vanilla_files",
+                wanted_files=requirements["local"],
+                use_pack_directory=False,
             )
         else:
-            decrypt_packs( pack_paths=pack_paths, cc="en", output_directory=decrypted_directory,)
+            decrypt_packs(
+                pack_paths=pack_paths, 
+                cc="en", 
+                output_directory=decrypted_directory,
+                )
+
+        # Download server files
+
+        server_directory = (workspace/"en_server")
+
+        lib_path = (decoded_directory/"lib"/"x86_64"/"libnative-lib.so")
+
+        tsv_paths = sorted(
+            decoded_directory.rglob("download_*.tsv")
+        )
+
+        print(
+            f"\nFound libnative.so: {lib_path}"
+        )
+
+        print(
+            f"Found {len(tsv_paths)} server TSV files:"
+        )
+
+        for tsv in tsv_paths:
+            print(f"  {tsv}")
+
+        if (DECRYPT_SPECIFICS == False):
+            download_server_files(
+                lib_path=lib_path,
+                tsv_paths=tsv_paths,
+                country_code="en",
+                output_directory=server_directory,
+            )
+
+            # Decrypt server packs
+
+            server_pack_paths = list(server_directory.rglob("*.pack"))
+
+            print(f"\nFound {len(server_pack_paths)} server pack files:")
+
+            for pack in server_pack_paths:
+                print(f"  {pack}")
+
+            decrypt_packs(
+                pack_paths=server_pack_paths,
+                cc="en",
+                output_directory=decrypted_directory / "server",
+        )
+        else:
+            process_server_files(
+                lib_path=lib_path,
+                tsv_paths=tsv_paths,
+                country_code="en",
+                server_directory=server_directory,
+                output_directory=decrypted_directory/ "vanilla_files",
+                wanted_files=requirements["server"],
+                use_pack_directory=False,
+            )
 
         # DownloadLocal
         pack_path = (
@@ -227,11 +274,10 @@ class SetupWindow(QWidget):
             decrypted_directory / pack_name
         )
 
-        if not game_files_directory.is_dir():
-            raise FileNotFoundError(
-                "Decrypted pack directory not found: "
-                f"{game_files_directory}"
-            )
+        game_files_directory.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
 
         # RANDOMIZER CODE
 
