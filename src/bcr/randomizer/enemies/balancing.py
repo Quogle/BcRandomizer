@@ -98,6 +98,9 @@ def _ex_metal_rebalance(stats):
     stats[56][e.s.kbs] = 3
     stats[56][e.s.hp] = 300000
 
+    #cybear 57
+    stats[59][e.s.waveImmune] = 1
+
     #croc 497 (only tba is done here hp and metal trait are done after literally everything else)
     stats[499][e.s.tba] = 0
 
@@ -220,11 +223,11 @@ def _literally_just_metal_croc(stats):
 
 
 
-from ...config.defaults import DEFAULT_CONFIG
+from ...config import defaults
 
 """ actual total functions 
 \n this functions do not save to file """
-def early_rebalance(config=DEFAULT_CONFIG):
+def early_rebalance(config=defaults.DEFAULT_CONFIG):
     """ pulls vanilla enemy array and applys the proper rebalances to make the before anything array """
     vanilla_stats = gf.file_reader(fn.ENEMY_STATS,vanilla=True)
     modded_array = copy.deepcopy(vanilla_stats)
@@ -248,23 +251,23 @@ def early_rebalance(config=DEFAULT_CONFIG):
     #is there anything else that needs to be done before this array can be used
     return modded_array
 
-def middle_rebalance(stats,config=DEFAULT_CONFIG):
-    """ modded enemies intended to be affected by randomization should go in here """
+def middle_rebalance(stats,config=defaults.DEFAULT_CONFIG):
+    """ modded enemies intended to be affected by randomization should go in here """ #this shouldnt be the method desc lmao
     #dunno what yet so this is basically empty
     stats = copy.deepcopy(stats)
 
 
     return stats
 
-def late_rebalance(stats,config=DEFAULT_CONFIG):
-    """ modded enemies that arent intended to be affected by randomization should go in here """
+def late_rebalance(stats,config=defaults.DEFAULT_CONFIG):
+    """ modded enemies that arent intended to be affected by randomization should go in here """ #this shouldnt be the method desc lmao
     #I dont currently know what to do so this is empty for now
     stats = copy.deepcopy(stats)
 
 
     return stats
 
-def end_rebalance(stats,config=DEFAULT_CONFIG):
+def end_rebalance(stats,config=defaults.DEFAULT_CONFIG):
     """ this function should run at the very end of the program """
     stats = copy.deepcopy(stats)
     rebalance_metal = True
