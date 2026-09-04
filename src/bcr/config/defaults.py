@@ -255,8 +255,8 @@ DEFAULT_CONFIG = {
         }
     },
     "unit": {
-        "id_swap": {
-            "enabled": True,
+        "randomization": {
+            "enabled": True,    # randomizes units into other units
         },
         "ability": {
             "randomize": True,

@@ -100,7 +100,15 @@ class AbilityRandomization(QWidget):
 
         self.layout.addLayout(min_abilities_layout)
 
-                # Ability Weights
+        # Ability Weights
+        weights_label = QLabel("Ability Weights")
+        weights_label.setStyleSheet("""
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 8px;
+        """)
+        self.layout.addWidget(weights_label)
+
         self.ability_weights = WeightedGrid(
             ability_config["weights"].items(),
             columns=3,

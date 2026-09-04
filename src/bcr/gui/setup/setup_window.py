@@ -23,6 +23,8 @@ from ...apk.packs.decrypt_specifics import decrypt_specifics
 from ...apk.packs.decrypt import decrypt_packs
 from ...apk.packs.encrypt import encrypt_pack
 
+from ...apk.server.downloader import download_server_files
+
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
 DECRYPT_SPECIFICS = True
@@ -214,6 +216,56 @@ class SetupWindow(QWidget):
         else:
             decrypt_packs( pack_paths=pack_paths, cc="en", output_directory=decrypted_directory,)
 
+        # Download server files
+
+        server_directory = (
+            workspace / "en_server"
+        )
+
+        lib_path = (
+            decoded_directory
+            / "lib"
+            / "x86_64"
+            / "libnative-lib.so"
+        )
+
+        tsv_paths = sorted(
+            decoded_directory.rglob("download_*.tsv")
+        )
+
+        print(
+            f"\nFound libnative.so: {lib_path}"
+        )
+
+        print(
+            f"Found {len(tsv_paths)} server TSV files:"
+        )
+
+        for tsv in tsv_paths:
+            print(f"  {tsv}")
+
+        download_server_files(
+            lib_path=lib_path,
+            tsv_paths=tsv_paths,
+            country_code="en",
+            output_directory=server_directory,
+        )
+
+        # Decrypt server packs
+
+        server_pack_paths = list(server_directory.rglob("*.pack"))
+
+        print(f"\nFound {len(server_pack_paths)} server pack files:")
+
+        for pack in server_pack_paths:
+            print(f"  {pack}")
+
+        decrypt_packs(
+            pack_paths=server_pack_paths,
+            cc="en",
+            output_directory=decrypted_directory / "server",
+        )
+
         # DownloadLocal
         pack_path = (
             decoded_directory
@@ -227,11 +279,10 @@ class SetupWindow(QWidget):
             decrypted_directory / pack_name
         )
 
-        if not game_files_directory.is_dir():
-            raise FileNotFoundError(
-                "Decrypted pack directory not found: "
-                f"{game_files_directory}"
-            )
+        game_files_directory.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
 
         # RANDOMIZER CODE
 
