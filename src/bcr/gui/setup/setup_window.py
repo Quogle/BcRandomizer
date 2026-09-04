@@ -19,7 +19,6 @@ from ...apk.build import build_apk
 from ...apk.zipalign import zipalign_apk
 from ...apk.sign import sign_apk
 
-from ...apk.packs.decrypt_specifics import decrypt_specifics
 from ...apk.packs.decrypt import decrypt_packs
 from ...apk.packs.encrypt import encrypt_pack
 
