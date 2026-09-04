@@ -194,10 +194,19 @@ class SetupWindow(QWidget):
         print("Decrypting packs")
 
         if DECRYPT_SPECIFICS:
-            decrypt_specifics(packs_directory=decoded_directory/"assets",output_directory=decrypted_directory / "vanilla_files",
+            decrypt_packs(
+                pack_paths=pack_paths,
+                cc="en",
+                output_directory=decrypted_directory/"vanilla_files",
+                wanted_files=requirements["local"],
+                use_pack_directory=False,
             )
         else:
-            decrypt_packs( pack_paths=pack_paths, cc="en", output_directory=decrypted_directory,)
+            decrypt_packs(
+                pack_paths=pack_paths, 
+                cc="en", 
+                output_directory=decrypted_directory,
+                )
 
         # Download server files
 
@@ -248,8 +257,9 @@ class SetupWindow(QWidget):
                 tsv_paths=tsv_paths,
                 country_code="en",
                 server_directory=server_directory,
-                output_directory=decrypted_directory / "server",
+                output_directory=decrypted_directory/ "vanilla_files",
                 wanted_files=requirements["server"],
+                use_pack_directory=False,
             )
 
         # DownloadLocal
