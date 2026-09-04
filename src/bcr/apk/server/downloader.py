@@ -191,6 +191,7 @@ def process_server_files(
     server_directory: str | Path,
     output_directory: str | Path,
     wanted_files: set[str],
+    use_pack_directory: bool = True,
 ) -> None:
     """
     Downloads server pack files one at a time,
@@ -238,6 +239,7 @@ def process_server_files(
             cc=country_code,
             output_directory=output_directory,
             wanted_files=wanted_files,
+            use_pack_directory=use_pack_directory,
         )
 
         # Delete the server pack and list files
