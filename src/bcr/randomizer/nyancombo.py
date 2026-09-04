@@ -40,6 +40,11 @@ def add_all_unit_down_combos():
 
 
 
-
-
-
+def _get_allowed_in_combo_bool_array():
+    """ returns an array where the bool at a unit id index is if they are allowed or not """
+    bool_array = []
+    vanilla_stats = gf.get_cat_stats(vanilla=True)
+    for x in range(0,len(vanilla_stats)):
+        bool_array.append(True)
+    #ok now Im supposed to do something with the config and cat data to set some of them to false, but I cant do that rn anyways
+    return bool_array

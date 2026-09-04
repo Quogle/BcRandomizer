@@ -90,7 +90,7 @@ def _get_all_other_sprites(trait_array):
             sprite_path = simp.path_join(fh.SPRITE_FILES,file_name)
             fh.copy_file_to_dl(sprite_path,file_name)
             
-def _get_enemy_traits(stats):
+def _get_enemy_traits(stats,consider_witch=False):
     """
     returns an array of trait names that a unit has
     \n nonconditional
@@ -98,7 +98,8 @@ def _get_enemy_traits(stats):
     #get names and arrays #if need to make this work for cats and enemies you only need to swap between differnt number traits
     number_traits = [e.t.dark,e.t.red,e.t.white,e.t.floating,e.t.relic,e.t.zombie,e.t.alien,e.t.angel,e.t.aku,e.t.metal]
     text_traits = ["dark","red","white","floating","relic","zombie","alien","angel","aku","metal"]
-
+    if consider_witch:
+        number_traits[5] = e.s.witch
 
     trait_array = []
     for unit_id in range(0,len(stats)):
@@ -126,10 +127,10 @@ def _get_new_enemy_traits(new_stats,old_stats):
     return new_traits
     
 
-def get_enemy_sprites(kill_previous=False):
+def get_enemy_sprites(kill_previous=False,consider_zombie_as_witch=False):
     """
     gets the new sprites and if designated kills old sprites
-    \n total, doesnt consider witch
+    \n total
     """
     r = srand.randinst(106)
     new_stats = gf.file_reader(fn.ENEMY_STATS)
@@ -138,7 +139,7 @@ def get_enemy_sprites(kill_previous=False):
             file_name = simp.uinfo_to_anim(x,enemy=True,file_end=".png")
             fh.remove_from_dl(file_name)
     
-    current_traits = _get_enemy_traits(new_stats)
+    current_traits = _get_enemy_traits(new_stats,consider_zombie_as_witch)
 
     #get images
     for unit_id in range(0,len(current_traits)):
