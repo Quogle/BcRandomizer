@@ -212,14 +212,16 @@ def unpack_pack(
         output_path.write_bytes(decrypted)
 
 def is_wanted_file(name, wanted_files):
-
     if wanted_files is None:
         return True
 
     if name in wanted_files:
         return True
 
-    return bool(re.fullmatch(r"unit\d+\.csv", name))
+    return any(
+        re.fullmatch(pattern, name)
+        for pattern in wanted_files
+    )
 
 def decrypt_packs(
     pack_paths: list[str | Path],

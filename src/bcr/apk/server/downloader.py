@@ -125,7 +125,7 @@ def download_server_files(
         count=len(tsv_paths),
     )
 
-    for index, tsv_path in enumerate(tsv_paths):
+    for index, _ in enumerate(tsv_paths):
         print(
             f"Downloading server files "
             f"{index + 1}/{len(tsv_paths)}"
@@ -210,7 +210,7 @@ def process_server_files(
         count=len(tsv_paths),
     )
 
-    for index, tsv_path in enumerate(tsv_paths):
+    for index, _ in enumerate(tsv_paths):
         print(
             f"Processing server files "
             f"{index + 1}/{len(tsv_paths)}"

@@ -1,8 +1,11 @@
+import re
+
 def get_required_files(config):
     requirements = {
-        "local": {},
-        "server": {},
+        "local": set(),
+        "server": set(),
     }
+
 
     add_enemy_requirements(config, requirements)
     add_unit_requirements(config, requirements)
@@ -12,12 +15,15 @@ def get_required_files(config):
 
 
 def add_enemy_requirements(config, requirements):
-    requirements["local"].setdefault("DataLocal.pack", set()).add("t_unit.csv")
+    requirements["local"].add("t_unit.csv")
 
 
 def add_unit_requirements(config, requirements):
     if config["unit"]["talent"]["randomize"]:
-        requirements["local"].setdefault("DataLocal.pack", set()).add("SkillAcquisition.csv")
+        requirements["local"].add("SkillAcquisition.csv")
+
+    # TODO add required config settings
+    requirements["server"].add(r"^\d{3}_f\.png$")
 
 
 def add_catcombo_requirements(config, requirements):
