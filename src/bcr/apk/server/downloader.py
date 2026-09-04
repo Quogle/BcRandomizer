@@ -7,6 +7,7 @@ from bcr.apk.server.cloudfront import generate_signed_cookie
 
 
 SERVER_BASE_URL = "https://nyanko-assets.ponosgames.com/iphone"
+from ..packs.decrypt import decrypt_packs
 
 
 def get_server_url(
@@ -38,6 +39,9 @@ def find_server_versions(
     country_code: str,
     count: int,
 ) -> list[int]:
+    """
+    Finds the server versions stored in libnative.so
+    """
     lib_data = Path(lib_path).read_bytes()
 
     if country_code == "jp":
@@ -109,6 +113,9 @@ def download_server_files(
     country_code: str,
     output_directory: str | Path,
 ) -> None:
+    """
+    Download and extract all server pack zips
+    """
     output_directory = Path(output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
 
@@ -119,44 +126,121 @@ def download_server_files(
     )
 
     for index, tsv_path in enumerate(tsv_paths):
-        url = get_server_url(
-            country_code=country_code,
-            game_version=versions[index],
-            index=index,
-        )
-
         print(
             f"Downloading server files "
             f"{index + 1}/{len(tsv_paths)}"
         )
-        print(url)
 
-        cookie = generate_signed_cookie()
-
-        print("Cookie generated")
-        print(cookie[:100])
-
-        response = requests.get(
-            url,
-            headers={
-                "accept-encoding": "gzip",
-                "connection": "keep-alive",
-                "cookie": cookie,
-                "range": "bytes=0-",
-                "user-agent": (
-                    "Dalvik/2.1.0 "
-                    "(Linux; U; Android 9; Pixel 2 "
-                    "Build/PQ3A.190801.002)"
-                ),
-            },
+        zip_path = download_server_zip(
+            country_code=country_code,
+            game_version=versions[index],
+            index=index,
+            output_directory=output_directory,
         )
-
-        response.raise_for_status()
-
-        zip_path = output_directory / f"server_{index}.zip"
-        zip_path.write_bytes(response.content)
 
         with zipfile.ZipFile(zip_path) as zip_file:
             zip_file.extractall(output_directory)
 
         zip_path.unlink()
+
+def download_server_zip(
+    country_code: str,
+    game_version: int,
+    index: int,
+    output_directory: Path,
+) -> Path:
+    """
+    Download a single server pack zip
+    """
+    url = get_server_url(
+        country_code=country_code,
+        game_version=game_version,
+        index=index,
+    )
+
+    print(url)
+
+    cookie = generate_signed_cookie()
+
+    response = requests.get(
+        url,
+        headers={
+            "accept-encoding": "gzip",
+            "connection": "keep-alive",
+            "cookie": cookie,
+            "range": "bytes=0-",
+            "user-agent": (
+                "Dalvik/2.1.0 "
+                "(Linux; U; Android 9; Pixel 2 "
+                "Build/PQ3A.190801.002)"
+            ),
+        },
+    )
+
+    response.raise_for_status()
+
+    zip_path = output_directory / f"server_{index}.zip"
+    zip_path.write_bytes(response.content)
+
+    return zip_path
+
+def process_server_files(
+    lib_path: str | Path,
+    tsv_paths: list[str | Path],
+    country_code: str,
+    server_directory: str | Path,
+    output_directory: str | Path,
+    wanted_files: set[str],
+) -> None:
+    """
+    Downloads server pack files one at a time,
+    extracting only the requested files and 
+    deleting the server files after
+    """
+    server_directory = Path(server_directory)
+    output_directory = Path(output_directory)
+
+    server_directory.mkdir(parents=True, exist_ok=True)
+    output_directory.mkdir(parents=True, exist_ok=True)
+
+    # Find the server versions stored in libnative.so
+    versions = find_server_versions(
+        lib_path=lib_path,
+        country_code=country_code,
+        count=len(tsv_paths),
+    )
+
+    for index, tsv_path in enumerate(tsv_paths):
+        print(
+            f"Processing server files "
+            f"{index + 1}/{len(tsv_paths)}"
+        )
+
+        # Download the server zip for this version
+        zip_path = download_server_zip(
+            country_code=country_code,
+            game_version=versions[index],
+            index=index,
+            output_directory=server_directory,
+        )
+
+        # Extract the server pack and list files
+        with zipfile.ZipFile(zip_path) as zip_file:
+            zip_file.extractall(server_directory)
+
+        zip_path.unlink()
+
+        pack_paths = list(server_directory.glob("*.pack"))
+
+        # Decrypt only the needed files from the packs
+        decrypt_packs(
+            pack_paths=pack_paths,
+            cc=country_code,
+            output_directory=output_directory,
+            wanted_files=wanted_files,
+        )
+
+        # Delete the server pack and list files
+        for pack_path in pack_paths:
+            pack_path.unlink()
+            pack_path.with_suffix(".list").unlink()
