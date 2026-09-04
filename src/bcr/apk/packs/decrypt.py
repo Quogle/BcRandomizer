@@ -4,6 +4,13 @@ import re
 
 from Crypto.Cipher import AES
 
+SERVER_PACK_TYPES = [
+    "UnitServer",
+    "NumberServer",
+    "ImageDataServer",
+    "ImageServer",
+    "MapServer",
+]
 
 EN_KEY = bytes([
     0x0A, 0xD3, 0x9E, 0x4A,
@@ -229,6 +236,15 @@ def decrypt_packs(
         exist_ok=True,
     )
 
+    pack_paths = sorted(
+        pack_paths,
+        key=lambda path: (
+            0 if Path(path).stem in SERVER_PACK_TYPES
+            else 2 if re.search(r"\d{6}", Path(path).stem)
+            else 1,
+        )
+    )
+
     for pack_path in pack_paths:
 
         pack_path = Path(pack_path)
@@ -251,6 +267,22 @@ def decrypt_packs(
 
         pack_name = pack_path.stem
 
+        if use_pack_directory:
+            if "server" in pack_name.lower():
+                pack_type = next(
+                    (
+                        pack_type
+                        for pack_type in SERVER_PACK_TYPES
+                        if pack_type.lower() in pack_name.lower()
+                    ),
+                    pack_name,
+                )
+                pack_output = output_directory / pack_type
+            else:
+                pack_output = output_directory / pack_name
+        else:
+            pack_output = output_directory
+
         print(f"Pack name: {pack_name}")
 
         key, iv = get_key_iv(
@@ -259,13 +291,7 @@ def decrypt_packs(
         )
 
         print("Decrypting list...")
-
         list_data = unpack_list(list_path)
-
-        if use_pack_directory:
-            pack_output = output_directory / pack_name
-        else:
-            pack_output = output_directory
 
         print(f"Extracting to: {pack_output}")
 
