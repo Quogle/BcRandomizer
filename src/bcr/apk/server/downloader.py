@@ -225,9 +225,13 @@ def process_server_files(
             output_directory=server_directory,
         )
 
-        # Extract the server pack and list files
+        # Extract the server pack and list files, with none of the audio ones
         with zipfile.ZipFile(zip_path) as zip_file:
-            zip_file.extractall(server_directory)
+            for member in zip_file.infolist():
+                if member.filename.lower().endswith((".ogg", ".caf")):
+                    continue
+
+                zip_file.extract(member, server_directory)
 
         zip_path.unlink()
 
