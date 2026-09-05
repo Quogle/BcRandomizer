@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 
 from .enemy.enemy_window import EnemyWindow
 from .unit.unit_window import UnitWindow
+from .combo.combo_window import ComboWindow
 from .setup.setup_window import SetupWindow
 from src.bcr.gui.themes.dark import DARK_THEME
 from ..config.defaults import DEFAULT_CONFIG
@@ -78,7 +79,7 @@ class MainWindow(QMainWindow):
         self.pages.addWidget(self.setup_page)       # Setup
         self.pages.addWidget(UnitWindow(self.config))       # Units
         self.pages.addWidget(EnemyWindow(self.config))   # Enemies
-        self.pages.addWidget(QWidget())       # Cat Combos
+        self.pages.addWidget(ComboWindow(self.config))       # Cat Combos
         self.pages.addWidget(QWidget())       # Gameplay
         self.pages.addWidget(QWidget())       # Reworks
         self.pages.addWidget(QWidget())       # QoL

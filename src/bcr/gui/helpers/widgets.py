@@ -106,6 +106,9 @@ class WeightedGrid(QWidget):
         row_layout.setSpacing(8)
 
         label = QLabel(self.names.get(name, name))
+        label.setStyleSheet("""
+            padding: 0px 2px;
+        """)
 
         weight_spin = NoWheelSpinBox()
         weight_spin.setRange(0, 999)

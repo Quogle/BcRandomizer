@@ -23,7 +23,7 @@ def connect_checkbox(widget, config, key):
     widget.setChecked(config[key])
 
     widget.stateChanged.connect(
-        lambda state: config.__setitem__(
+        lambda _: config.__setitem__(
             key,
             widget.isChecked()
         )
