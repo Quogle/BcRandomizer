@@ -11,7 +11,8 @@ dependencies = [
     "PySide6",
     "pycryptodome",
     "cryptography",
-    "requests"
+    "requests",
+    "tadbcmc"
 ]
 
 [tool.setuptools.packages.find]
