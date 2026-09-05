@@ -267,7 +267,7 @@ DEFAULT_CONFIG = {
             "shield_pierce_frequency": 20,
         },
         "trait": {
-            "randomization_mode": "Randomize", # none / swap / randomize'
+            "randomization_mode": "Randomize", # none / swap / randomize        # WILL ONLY RANDOMIZE TO TRAITS ENEMIES CAN HAVE
             "specified_swaps": [
                 # { "old": "red", "new": "black"} 
             ],

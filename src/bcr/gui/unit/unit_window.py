@@ -11,10 +11,15 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from src.bcr.gui.themes.dark import DARK_THEME
+from .ability import AbilityRandomization
+from .trait import TraitRandomization
+from .talent import TalentRandomization
 
 class UnitWindow(QWidget):
     def refresh_from_config(self):
-        self.randomization.refresh_from_config()
+        self.ability_randomization.refresh_from_config()
+        self.trait_randomization.refresh_from_config()
+        self.talent_randomization.refresh_from_config()
 
     def __init__(self, config):
         super().__init__()
@@ -22,10 +27,6 @@ class UnitWindow(QWidget):
         self.config = config
 
         self.setStyleSheet(DARK_THEME)
-
-        # --------------------------------------------------
-        # Main layout
-        # --------------------------------------------------
 
         main_layout = QVBoxLayout(self)
 
@@ -37,104 +38,34 @@ class UnitWindow(QWidget):
         content_layout.setSpacing(16)
 
         scroll.setWidget(content)
-
         main_layout.addWidget(scroll)
 
+        ################ Ability Randomization ###########################################################################
 
-        # --------------------------------------------------
-        # TRAIT GIMMICKS
-        # --------------------------------------------------
-
-        trait_gimmicks = QGroupBox("Trait Gimmicks")
-        trait_gimmicks_layout = QVBoxLayout(trait_gimmicks)
-
-        self.trait_gimmicks = TraitGimmicks(self.config)
-        trait_gimmicks_layout.addWidget(self.trait_gimmicks)
-
-        content_layout.addWidget(trait_gimmicks)
-
-        # --------------------------------------------------
-        # Enemy Randomization
-        # --------------------------------------------------
-
-        randomization_settings = QGroupBox("Enemy Randomization")
-        randomization_settings_layout = QVBoxLayout(randomization_settings)
-
-        self.enemy_randomization = EnemyRandomization(self.config)
-        randomization_settings_layout.addWidget(self.enemy_randomization)
-
-        content_layout.addWidget(randomization_settings)
-
-        # --------------------------------------------------
-        # Abilities
-        # --------------------------------------------------
-
-        ability_settings = QGroupBox("Ability Randomization")
-        ability_settings_layout = QVBoxLayout(ability_settings)
+        ability_randomization = QGroupBox("Ability Randomization")
+        ability_randomization_layout = QVBoxLayout(ability_randomization)
 
         self.ability_randomization = AbilityRandomization(self.config)
-        ability_settings_layout.addWidget(self.ability_randomization)
+        ability_randomization_layout.addWidget(self.ability_randomization)
 
-        content_layout.addWidget(ability_settings)
+        content_layout.addWidget(ability_randomization)
 
-    # ======================================================
-    # Specified Swaps
-    # ======================================================
+        ################ Trait Randomization ###########################################################################
 
-    def add_swap(self):
-        row_widget = QWidget()
+        trait_randomization = QGroupBox("Trait Randomization")
+        trait_randomization_layout = QVBoxLayout(trait_randomization)
 
-        row_layout = QHBoxLayout(row_widget)
-        row_layout.setContentsMargins(0, 0, 0, 0)
-        row_layout.setSpacing(8)
+        self.trait_randomization = TraitRandomization(self.config)
+        trait_randomization_layout.addWidget(self.trait_randomization)
 
-        # From traitfr
-        from_combo = QComboBox()
-        from_combo.addItems([
-            "White",
-            "Red",
-            "Floating",
-            "Dark",
-            "Metal",
-            "Angel",
-            "Alien",
-            "Zombie",
-            "Relic",
-            "Aku",
-        ])
+        content_layout.addWidget(trait_randomization)
 
-        # Arrow
-        arrow = QLabel("→")
-        arrow.setFixedWidth(20)
+        ################ Talent Randomization ###########################################################################
 
-        # To trait
-        to_combo = QComboBox()
-        to_combo.addItems([
-            "White",
-            "Red",
-            "Floating",
-            "Dark",
-            "Metal",
-            "Angel",
-            "Alien",
-            "Zombie",
-            "Relic",
-            "Aku",
-        ])
+        talent_randomization = QGroupBox("Talent Randomization")
+        talent_randomization_layout = QVBoxLayout(talent_randomization)
 
-        # Remove button
-        remove_button = QPushButton("Remove")
-        remove_button.clicked.connect(
-            lambda: self.remove_swap(row_widget)
-        )
+        self.talent_randomization = TalentRandomization(self.config)
+        talent_randomization_layout.addWidget(self.talent_randomization)
 
-        row_layout.addWidget(from_combo)
-        row_layout.addWidget(arrow)
-        row_layout.addWidget(to_combo)
-        row_layout.addWidget(remove_button)
-        row_layout.addStretch()
-
-        self.swaps_layout.addWidget(row_widget)
-
-    def remove_swap(self, row_widget):
-        row_widget.deleteLater()
+        content_layout.addWidget(talent_randomization)

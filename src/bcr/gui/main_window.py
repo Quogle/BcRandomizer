@@ -12,11 +12,12 @@ from PySide6.QtWidgets import (
 )
 
 from .enemy.enemy_window import EnemyWindow
+from .unit.unit_window import UnitWindow
 from .setup.setup_window import SetupWindow
 from src.bcr.gui.themes.dark import DARK_THEME
 from ..config.defaults import DEFAULT_CONFIG
 
-#191a1b
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -75,7 +76,7 @@ class MainWindow(QMainWindow):
         self.setup_page.config_loaded.connect(self.refresh_from_config)
 
         self.pages.addWidget(self.setup_page)       # Setup
-        self.pages.addWidget(QWidget())       # Units
+        self.pages.addWidget(UnitWindow(self.config))       # Units
         self.pages.addWidget(EnemyWindow(self.config))   # Enemies
         self.pages.addWidget(QWidget())       # Cat Combos
         self.pages.addWidget(QWidget())       # Gameplay
