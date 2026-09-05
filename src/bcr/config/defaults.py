@@ -53,9 +53,6 @@ DEFAULT_CONFIG = {
         },
         "trait":{
             "randomization_mode": "randomize", # none / swap / randomize'
-            "specified_swaps": [
-                # { "old": "red", "new": "black"} 
-            ],
             "untraited_get_trait": True
         },
         "trait_gimmicks": {
@@ -268,9 +265,6 @@ DEFAULT_CONFIG = {
         },
         "trait": {
             "randomization_mode": "Randomize", # none / swap / randomize        # WILL ONLY RANDOMIZE TO TRAITS ENEMIES CAN HAVE
-            "specified_swaps": [
-                # { "old": "red", "new": "black"} 
-            ],
             "vary_form_traits": False, # Each form of a unit will randomize individually
             "avoid_old_traits": True # If possible unit will not randomize to target the same trait
         },
@@ -295,30 +289,51 @@ DEFAULT_CONFIG = {
             "limited": False, # limited units such as capsule
         },
         "size": {
-            "mult_weights": True, # If false, chooses between the 5 combo effect multipliers at equal chance  
-            "custom_mult_weights": [
-                {
-                    "size": 1,
+            "keep_unit_count": True, # combos stay the sam amount of units
+                "custom_count_weights": {
+                    "1": 10,
+                    "2": 25,
+                    "3": 35,
+                    "4": 20,
+                    "5": 10,
+                },
+           "custom_mult_weights": {
+                1: {
+                    "sm": 1,
+                    "m": 1,
+                    "l": 1,
+                    "xl": 1,
+                    "down": 1,
+                },
+                2: {
+                    "sm": 1,
+                    "m": 1,
+                    "l": 1,
+                    "xl": 1,
+                    "down": 1,
+                },
+                3: {
+                    "sm": 1,
+                    "m": 1,
+                    "l": 1,
+                    "xl": 1,
+                    "down": 1,
+                },
+                4: {
+                    "sm": 1,
+                    "m": 1,
+                    "l": 1,
+                    "xl": 1,
+                    "down": 1,
+                },
+                5: {
                     "sm": 1,
                     "m": 1,
                     "l": 1,
                     "xl": 1,
                     "down": 1,
                 }
-                # TODO figure out how I actually want to 
-                # structure this and do the other 4 sizes
-            ],
-            "keep_unit_count": True, # combos stay the sam amount of units
-            "count_weights": True, # use custom weights for unit count
-            "custom_count_weights": [
-                {
-                    "1": 10,
-                    "2": 25,
-                    "3": 35,
-                    "4": 20,
-                    "5": 10
-                }
-            ]
+            }
         }
     }
 }
