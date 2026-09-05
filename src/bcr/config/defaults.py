@@ -1,4 +1,8 @@
 DEFAULT_CONFIG = {
+    "mod": {
+        "seed": -1,
+        "id": "bcrando"
+    },
     "enemy": {
         "randomization": {
             # None          -   Enemies are not randomized
