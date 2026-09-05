@@ -1,6 +1,6 @@
 DEFAULT_CONFIG = {
     "mod": {
-        "seed": -1,
+        "seed": None,
         "id": "bcrando"
     },
     "enemy": {

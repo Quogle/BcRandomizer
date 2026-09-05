@@ -63,3 +63,18 @@ def connect_weighted_list(widget, config):
                 value
             )
         )
+
+
+def connect_line_edit(widget, config, key):
+    value = config[key]
+
+    widget.setText(
+        "" if value is None else str(value)
+    )
+
+    widget.textChanged.connect(
+        lambda text: config.__setitem__(
+            key,
+            text
+        )
+    )

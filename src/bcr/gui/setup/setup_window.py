@@ -1,4 +1,6 @@
 from pathlib import Path
+from PySide6.QtGui import QIntValidator
+import random
 
 from PySide6.QtWidgets import (
     QWidget,
@@ -12,7 +14,7 @@ from PySide6.QtWidgets import (
 
 from PySide6.QtCore import Signal
 
-from ..helpers.config_helpers import save_config, load_config, update_config
+from ..helpers.config_helpers import *
 
 from ...apk.extract import extract_apk
 from ...apk.build import build_apk
@@ -79,8 +81,26 @@ class SetupWindow(QWidget):
 
         randomizer_layout = QHBoxLayout()
 
+        ######## SEED INPUT FIELD ############################################################################
+
         seed_label = QLabel("Seed:")
         self.seed = QLineEdit()
+        self.seed.setValidator(QIntValidator(-2147483648, 2147483647))
+
+        connect_line_edit(
+            self.seed,
+            self.config["mod"],
+            "seed",
+        )
+
+        id_label = QLabel("Mod ID:")
+        self.id = QLineEdit()
+
+        connect_line_edit(
+            self.id,
+            self.config["mod"],
+            "id",
+        )
 
         randomize_button = QPushButton("Randomize")
 
@@ -90,6 +110,8 @@ class SetupWindow(QWidget):
 
         randomizer_layout.addWidget(seed_label)
         randomizer_layout.addWidget(self.seed)
+        randomizer_layout.addWidget(id_label)
+        randomizer_layout.addWidget(self.id)
         randomizer_layout.addWidget(randomize_button)
 
         layout.addLayout(randomizer_layout)
@@ -144,12 +166,31 @@ class SetupWindow(QWidget):
         if path:
             loaded_config = load_config(path)
             update_config(self.config, loaded_config)
+
+            self.seed.setText(
+                "" if self.config["mod"]["seed"] is None
+                else str(self.config["mod"]["seed"])
+            )
+            self.id.setText(self.config["mod"]["id"])
+
             self.config_loaded.emit()
 
 
-    # Randomize Function
+    # Randomize Function 
 
     def randomize(self):
+
+        # Use Input seed or Generate Random one if box is blank
+        seed_text = self.seed.text().strip()
+        if seed_text:
+            seed = int(seed_text)
+        else:
+            seed = random.randint(-2147483648, 2147483647)
+
+        self.config["mod"]["seed"] = seed
+        self.seed.setText(str(seed))
+
+        print(f"Seed: {seed}")
 
         apk_path = self.input_apk.text().strip()
 
