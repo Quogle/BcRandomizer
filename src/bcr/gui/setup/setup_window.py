@@ -41,12 +41,15 @@ class SetupWindow(QWidget):
         self.config = config
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(32, 28, 32, 32)
+        layout.setSpacing(20)
 
         # Input APK
         input_layout = QHBoxLayout()
 
         input_label = QLabel("Input APK:")
         self.input_apk = QLineEdit()
+        self.input_apk.setPlaceholderText("Select APK file...")
         input_button = QPushButton("Browse")
 
         input_button.clicked.connect(
@@ -112,21 +115,11 @@ class SetupWindow(QWidget):
         randomizer_layout.addWidget(self.seed)
         randomizer_layout.addWidget(id_label)
         randomizer_layout.addWidget(self.id)
-        randomizer_layout.addWidget(randomize_button)
 
         layout.addLayout(randomizer_layout)
-
-        ######### TEST BUTTON ############################################################################
-
-        test_button = QPushButton("Test")
-        test_button.clicked.connect(self.test_config)
-        layout.addWidget(test_button)
+        layout.addWidget(randomize_button)
 
         layout.addStretch()
-
-    def test_config(self):
-        weaken_weight = self.config["enemy"]["ability"]["weights"]["weaken"]
-        print(weaken_weight)
 
     # APK Selection
     def select_input_apk(self):

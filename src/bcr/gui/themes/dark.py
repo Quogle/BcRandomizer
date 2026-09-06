@@ -201,4 +201,21 @@ QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical {
     height: 0;
 }
+
+QLineEdit {
+    background-color: #24272a;
+    color: #ffffff;
+    border: 1px solid #383b3e;
+    border-radius: 5px;
+    padding: 5px 10px;
+    min-width: 20px;
+}
+
+QLineEdit:hover {
+    border: 1px solid #9e42bf;
+}
+
+QLineEdit:focus {
+    border: 1px solid #383b3e;
+}
 """
