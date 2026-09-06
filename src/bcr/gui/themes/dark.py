@@ -192,6 +192,10 @@ QScrollArea {
 QScrollArea > QWidget > QWidget {
     background-color: #121314;
 }
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background-color: #191a1b;
+}
 
 QScrollBar:vertical {
     background-color: #191a1b;
@@ -246,4 +250,5 @@ QPlainTextEdit:hover {
 QPlainTextEdit:focus {
     border: 1px solid #383b3e;
 }
+
 """
