@@ -177,7 +177,7 @@ class SetupWindow(QWidget):
     def randomize_error(self, message):
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
-        self.log(f"ERROR: {message}")
+        self.console.appendHtml(f'<span style="color: red;">ERROR: {message}</span>')
 
 
     # Randomize Function 
@@ -221,6 +221,10 @@ class SetupWindow(QWidget):
 
         self.worker.log.connect(
             self.log
+        )
+
+        self.worker.html_log.connect(
+            self.console.appendHtml
         )
 
         self.worker.finished.connect(

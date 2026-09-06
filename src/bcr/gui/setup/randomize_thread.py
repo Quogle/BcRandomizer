@@ -21,6 +21,7 @@ class RandomizeThread(QObject):
     finished = Signal()
     error = Signal(str)
     log = Signal(str)
+    html_log = Signal(str)
 
     def __init__(self, apk_path, config):
         super().__init__()
@@ -50,10 +51,7 @@ class RandomizeThread(QObject):
 
         self.log.emit("Extracting APK...")
 
-        extract_apk(
-            apk_path,
-            decoded_directory,
-        )
+        extract_apk(apk_path,decoded_directory,)
 
         pack_paths = [
             path
@@ -69,9 +67,7 @@ class RandomizeThread(QObject):
             print(f"  {pack}")
 
         if not pack_paths:
-            raise RuntimeError(
-                "No .pack files found"
-            )
+            raise RuntimeError("No .pack files found")
 
         requirements = get_required_files(config)
 
@@ -101,17 +97,11 @@ class RandomizeThread(QObject):
             / "libnative-lib.so"
         )
 
-        tsv_paths = sorted(
-            decoded_directory.rglob("download_*.tsv")
-        )
+        tsv_paths = sorted(decoded_directory.rglob("download_*.tsv"))
 
-        self.log.emit(
-            f"\nFound libnative.so: {lib_path}"
-        )
+        self.log.emit(f"\nFound libnative.so: {lib_path}")
 
-        self.log.emit(
-            f"Found {len(tsv_paths)} server TSV files:"
-        )
+        self.log.emit(f"Found {len(tsv_paths)} server TSV files:")
 
         self.log.emit("Decrypting server packs...")
 
@@ -165,9 +155,7 @@ class RandomizeThread(QObject):
 
         pack_name = pack_path.stem
 
-        game_files_directory = (
-            decrypted_directory / pack_name
-        )
+        game_files_directory = (decrypted_directory/pack_name)
 
         game_files_directory.mkdir(
             parents=True,
@@ -196,19 +184,12 @@ class RandomizeThread(QObject):
 
         self.log.emit("Zipaligning APK")
 
-        zipalign_apk(
-            rebuilt_apk,
-            aligned_apk,
-        )
+        zipalign_apk(rebuilt_apk,aligned_apk,)
 
         self.log.emit("Signing APK")
 
-        sign_apk(
-            aligned_apk,
-            signed_apk,
-        )
+        sign_apk(aligned_apk,signed_apk,)
 
-        self.log.emit("Randomization Complete.")
-        self.log.emit(
-            f"Signed APK: {signed_apk}"
-        )
+        self.html_log.emit('<span style="color: lime;">Randomization Complete.</span>')
+        self.log.emit(f"Signed APK: {signed_apk}")
+        self.html_log.emit('<span style="color: orange;">MAKE SURE TO SAVE YOUR CONFIG IF YOU HAVENT!</span>')
