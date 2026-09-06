@@ -41,8 +41,8 @@ class SetupWindow(QWidget):
         self.config = config
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(32, 28, 32, 32)
-        layout.setSpacing(20)
+        layout.setContentsMargins(22, 18, 22, 22)
+        layout.setSpacing(15)
 
         # Input APK
         input_layout = QHBoxLayout()
