@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 MULT_NAMES = {
     "sm": "SM",
     "m": "M",
-    "L": "L",
+    "l": "L",
     "xl": "XL",
     "down": "DOWN"
 }
