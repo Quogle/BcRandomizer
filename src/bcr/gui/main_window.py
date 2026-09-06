@@ -46,8 +46,8 @@ class MainWindow(QMainWindow):
             "Enemies",
             "Cat Combos",
             "Gameplay",
-            "Reworks",
             "QoL",
+            "Funny Hahas"
         ]
 
         self.menu_buttons = []
@@ -81,7 +81,6 @@ class MainWindow(QMainWindow):
         self.pages.addWidget(EnemyWindow(self.config))   # Enemies
         self.pages.addWidget(ComboWindow(self.config))       # Cat Combos
         self.pages.addWidget(QWidget())       # Gameplay
-        self.pages.addWidget(QWidget())       # Reworks
         self.pages.addWidget(QWidget())       # QoL
 
         # Start on the first page
