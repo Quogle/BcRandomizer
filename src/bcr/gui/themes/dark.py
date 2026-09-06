@@ -120,6 +120,18 @@ QComboBox:focus {
     border: 1px solid #383b3e;
 }
 
+QComboBox QAbstractItemView {
+    background-color: #24272a;
+    color: #ffffff;
+    border: 1px solid #383b3e;
+    selection-background-color: #9e42bf;
+    selection-color: #ffffff;
+}
+
+QComboBox QAbstractItemView::item:hover {
+    background-color: #383b3e;
+}
+
 QSpinBox {
     background-color: #24272a;
     color: #ffffff;
