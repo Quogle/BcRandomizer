@@ -404,6 +404,11 @@ DEFAULT_CONFIG = {
             "buff_normal_catfruit_catamins": True,
             "split_normal_catfruit_stages": True,
             "jubilee_always_epic": True,
+            "relic_aku_in_island": True,
+            "orb_stage_has_strong_massive_resist": True,
+            "orb_stage_has_ability_orb": True,
+        },
+        "drop_buffs": {
             "gstrange_buff": True,
             "growing_aku_buff": True,
             "growing_epic_buff": True,
@@ -418,9 +423,6 @@ DEFAULT_CONFIG = {
             "siege_buff": True,
             "facing_danger_buff": True,
             "orb_stage_buff": True,
-            "relic_aku_in_island": True,
-            "orb_stage_has_strong_massive_resist": True,
-            "orb_stage_has_ability_orb": True,
         },
     },
     "funny": {
