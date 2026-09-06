@@ -230,4 +230,20 @@ QLineEdit:hover {
 QLineEdit:focus {
     border: 1px solid #383b3e;
 }
+QPlainTextEdit {
+    background-color: #191a1b;
+    color: #d9d9d9;
+    border: 1px solid #2b2e31;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 13px;
+}
+
+QPlainTextEdit:hover {
+    border: 1px solid #9e42bf;
+}
+
+QPlainTextEdit:focus {
+    border: 1px solid #383b3e;
+}
 """

@@ -10,9 +10,12 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLineEdit,
     QFileDialog,
+    QPlainTextEdit,
+    QApplication,
 )
 
-from PySide6.QtCore import Signal
+
+from PySide6.QtCore import Signal, QObject, QThread
 
 from ..helpers.config_helpers import *
 
@@ -30,6 +33,201 @@ from ...apk.packs.required_files import get_required_files
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
 DECRYPT_SPECIFICS = True
+
+class RandomizeWorker(QObject):
+
+    finished = Signal()
+    error = Signal(str)
+    log = Signal(str)
+
+    def __init__(self, apk_path, config):
+        super().__init__()
+
+        self.apk_path = apk_path
+        self.config = config
+
+    def run(self):
+        try:
+            self.randomize_process()
+            self.finished.emit()
+
+        except Exception as e:
+            self.error.emit(str(e))
+
+    def randomize_process(self):
+
+        apk_path = self.apk_path
+        config = self.config
+
+        workspace = Path("workspace")
+        decoded_directory = workspace / "decoded"
+        decrypted_directory = workspace / "decrypted"
+        rebuilt_apk = workspace / "rebuilt.apk"
+        aligned_apk = workspace / "aligned.apk"
+        signed_apk = workspace / "signed.apk"
+
+        self.log.emit("Extracting APK")
+
+        extract_apk(
+            apk_path,
+            decoded_directory,
+            self.log.emit,
+        )
+
+        pack_paths = [
+            path
+            for path in decoded_directory.rglob("*.pack")
+            if "_" not in path.stem
+        ]
+
+        self.log.emit(
+            f"\nFound {len(pack_paths)} pack files:"
+        )
+
+        for pack in pack_paths:
+            self.log.emit(f"  {pack}")
+
+        if not pack_paths:
+            raise RuntimeError(
+                "No .pack files found"
+            )
+
+        requirements = get_required_files(config)
+
+        self.log.emit("Decrypting packs")
+
+        if DECRYPT_SPECIFICS:
+            decrypt_packs(
+                pack_paths=pack_paths,
+                cc="en",
+                output_directory=decrypted_directory / "vanilla_files",
+                wanted_files=requirements["local"],
+                use_pack_directory=False,
+            )
+        else:
+            decrypt_packs(
+                pack_paths=pack_paths,
+                cc="en",
+                output_directory=decrypted_directory,
+            )
+
+        server_directory = workspace / "en_server"
+
+        lib_path = (
+            decoded_directory
+            / "lib"
+            / "x86_64"
+            / "libnative-lib.so"
+        )
+
+        tsv_paths = sorted(
+            decoded_directory.rglob("download_*.tsv")
+        )
+
+        self.log.emit(
+            f"\nFound libnative.so: {lib_path}"
+        )
+
+        self.log.emit(
+            f"Found {len(tsv_paths)} server TSV files:"
+        )
+
+        for tsv in tsv_paths:
+            self.log.emit(f"  {tsv}")
+
+        if not DECRYPT_SPECIFICS:
+
+            download_server_files(
+                lib_path=lib_path,
+                tsv_paths=tsv_paths,
+                country_code="en",
+                output_directory=server_directory,
+            )
+
+            server_pack_paths = list(
+                server_directory.rglob("*.pack")
+            )
+
+            self.log.emit(
+                f"\nFound {len(server_pack_paths)} server pack files:"
+            )
+
+            for pack in server_pack_paths:
+                self.log.emit(f"  {pack}")
+
+            decrypt_packs(
+                pack_paths=server_pack_paths,
+                cc="en",
+                output_directory=decrypted_directory / "server",
+            )
+
+        else:
+
+            process_server_files(
+                lib_path=lib_path,
+                tsv_paths=tsv_paths,
+                country_code="en",
+                server_directory=server_directory,
+                output_directory=decrypted_directory / "vanilla_files",
+                wanted_files=requirements["server"],
+                use_pack_directory=False,
+            )
+
+        pack_path = (
+            decoded_directory
+            / "assets"
+            / "DownloadLocal.pack"
+        )
+
+        pack_name = pack_path.stem
+
+        game_files_directory = (
+            decrypted_directory / pack_name
+        )
+
+        game_files_directory.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        # RANDOMIZER CODE
+
+        self.log.emit(
+            f"\nEncrypting: {pack_name}"
+        )
+
+        encrypt_pack(
+            game_files_dir=game_files_directory,
+            pack_name=pack_name,
+            output_directory=pack_path.parent,
+            cc="en",
+        )
+
+        self.log.emit("Building APK")
+
+        build_apk(
+            decoded_directory,
+            rebuilt_apk,
+        )
+
+        self.log.emit("Zipaligning APK")
+
+        zipalign_apk(
+            rebuilt_apk,
+            aligned_apk,
+        )
+
+        self.log.emit("Signing APK")
+
+        sign_apk(
+            aligned_apk,
+            signed_apk,
+        )
+
+        self.log.emit("DONE")
+        self.log.emit(
+            f"Signed APK: {signed_apk}"
+        )
 
 class SetupWindow(QWidget):
 
@@ -119,6 +317,12 @@ class SetupWindow(QWidget):
         layout.addLayout(randomizer_layout)
         layout.addWidget(randomize_button)
 
+        # console
+        self.console = QPlainTextEdit()
+        self.console.setReadOnly(True)
+
+        layout.addWidget(self.console)
+
         layout.addStretch()
 
     # APK Selection
@@ -168,197 +372,67 @@ class SetupWindow(QWidget):
 
             self.config_loaded.emit()
 
+    def log(self, message):
+        self.console.appendPlainText(str(message))
+
+    def randomize_error(self, message):
+        self.log(f"ERROR: {message}")
+
 
     # Randomize Function 
 
     def randomize(self):
 
-        # Use Input seed or Generate Random one if box is blank
         seed_text = self.seed.text().strip()
+
         if seed_text:
             seed = int(seed_text)
         else:
-            seed = random.randint(-2147483648, 2147483647)
+            seed = random.randint(
+                -2147483648,
+                2147483647,
+            )
 
         self.config["mod"]["seed"] = seed
         self.seed.setText(str(seed))
 
-        print(f"Seed: {seed}")
+        self.log(f"Seed: {seed}")
 
         apk_path = self.input_apk.text().strip()
 
         if not apk_path:
             return
 
-        workspace = Path("workspace")
-        decoded_directory = (workspace/"decoded")
-        decrypted_directory = (workspace/"decrypted")
-        rebuilt_apk = (workspace/"rebuilt.apk")
-        aligned_apk = (workspace/"aligned.apk")
-        signed_apk = (workspace/"signed.apk")
-
-        # Extract APK
-        print("Extracting APK")
-
-        extract_apk(apk_path,decoded_directory,)
-
-        # Find pack files
-        pack_paths = [
-            path
-            for path in decoded_directory.rglob("*.pack")
-            if "_" not in path.stem
-        ]
-
-        print(
-            f"\nFound {len(pack_paths)} pack files:"
+        self.thread = QThread(self)
+        self.worker = RandomizeWorker(
+            apk_path,
+            self.config.copy(),
         )
 
-        for pack in pack_paths:
-            print(f"  {pack}")
+        self.worker.moveToThread(self.thread)
 
-        if not pack_paths:
-            raise RuntimeError(
-                "No .pack files found"
-            )
-
-        requirements = get_required_files(self.config)
-
-        # Decrypt packs
-        print("Decrypting packs")
-
-        if DECRYPT_SPECIFICS:
-            decrypt_packs(
-                pack_paths=pack_paths,
-                cc="en",
-                output_directory=decrypted_directory/"vanilla_files",
-                wanted_files=requirements["local"],
-                use_pack_directory=False,
-            )
-        else:
-            decrypt_packs(
-                pack_paths=pack_paths, 
-                cc="en", 
-                output_directory=decrypted_directory,
-                )
-
-        # Download server files
-
-        server_directory = (workspace/"en_server")
-
-        lib_path = (decoded_directory/"lib"/"x86_64"/"libnative-lib.so")
-
-        tsv_paths = sorted(
-            decoded_directory.rglob("download_*.tsv")
+        self.thread.started.connect(
+            self.worker.run
         )
 
-        print(
-            f"\nFound libnative.so: {lib_path}"
+        self.worker.log.connect(
+            self.log
         )
 
-        print(
-            f"Found {len(tsv_paths)} server TSV files:"
+        self.worker.finished.connect(
+            self.thread.quit
         )
 
-        for tsv in tsv_paths:
-            print(f"  {tsv}")
-
-        if (DECRYPT_SPECIFICS == False):
-            download_server_files(
-                lib_path=lib_path,
-                tsv_paths=tsv_paths,
-                country_code="en",
-                output_directory=server_directory,
-            )
-
-            # Decrypt server packs
-
-            server_pack_paths = list(server_directory.rglob("*.pack"))
-
-            print(f"\nFound {len(server_pack_paths)} server pack files:")
-
-            for pack in server_pack_paths:
-                print(f"  {pack}")
-
-            decrypt_packs(
-                pack_paths=server_pack_paths,
-                cc="en",
-                output_directory=decrypted_directory / "server",
-        )
-        else:
-            process_server_files(
-                lib_path=lib_path,
-                tsv_paths=tsv_paths,
-                country_code="en",
-                server_directory=server_directory,
-                output_directory=decrypted_directory/ "vanilla_files",
-                wanted_files=requirements["server"],
-                use_pack_directory=False,
-            )
-
-        # DownloadLocal
-        pack_path = (
-            decoded_directory
-            / "assets"
-            / "DownloadLocal.pack"
+        self.worker.finished.connect(
+            self.worker.deleteLater
         )
 
-        pack_name = pack_path.stem
-
-        game_files_directory = (
-            decrypted_directory / pack_name
+        self.worker.error.connect(
+            self.randomize_error
         )
 
-        game_files_directory.mkdir(
-            parents=True,
-            exist_ok=True,
+        self.thread.finished.connect(
+            self.thread.deleteLater
         )
 
-        # RANDOMIZER CODE
-
-        # TODO: Make Randomizer Code
-
-        # Re-encrypt DownloadLocal
-
-        print(
-            f"\nEncrypting: {pack_name}"
-        )
-
-        encrypt_pack(
-            game_files_dir=game_files_directory,
-            pack_name=pack_name,
-            output_directory=pack_path.parent,
-            cc="en",
-        )
-
-        print(
-            (pack_path.parent / "DownloadLocal.list").read_bytes()
-        )
-
-
-        # Build APK
-        print("Building APK")
-
-        build_apk(
-            decoded_directory,
-            rebuilt_apk,
-        )
-
-        # Zipalign
-        print("Zipaligning APK")
-
-        zipalign_apk(
-            rebuilt_apk,
-            aligned_apk,
-        )
-
-        # Sign
-        print("Signing APK")
-
-        sign_apk(
-            aligned_apk,
-            signed_apk,
-        )
-
-
-        print("DONE")
-        print(f"Signed APK: {signed_apk}")
+        self.thread.start()

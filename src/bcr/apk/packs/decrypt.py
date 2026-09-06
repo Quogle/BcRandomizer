@@ -229,6 +229,7 @@ def decrypt_packs(
     output_directory: str | Path,
     wanted_files: set[str] | None = None,
     use_pack_directory: bool = True,
+    log = None,
 ) -> Path:
 
     output_directory = Path(output_directory)
@@ -251,7 +252,10 @@ def decrypt_packs(
 
         pack_path = Path(pack_path)
 
-        print(f"\nDecrypting: {pack_path}")
+        message = f"\nDecrypting: {pack_path}"
+        print(message)
+        if log:
+            log(message)
 
         if not pack_path.is_file():
             raise FileNotFoundError(
@@ -260,7 +264,11 @@ def decrypt_packs(
 
         list_path = pack_path.with_suffix(".list")
 
-        print(f"List file: {list_path}")
+        message = f"List file: {list_path}"
+        print(message)
+
+        if log:
+            log(message)
 
         if not list_path.is_file():
             raise FileNotFoundError(
@@ -285,17 +293,30 @@ def decrypt_packs(
         else:
             pack_output = output_directory
 
-        print(f"Pack name: {pack_name}")
+        message = f"Pack name: {pack_name}"
+        print(message)
+
+        if log:
+            log(message)
 
         key, iv = get_key_iv(
             pack_name,
             cc,
         )
 
-        print("Decrypting list...")
+        message = "Decrypting list..."
+        print(message)
+
+        if log:
+            log(message)
+
         list_data = unpack_list(list_path)
 
-        print(f"Extracting to: {pack_output}")
+        message = f"Extracting to: {pack_output}"
+        print(message)
+
+        if log:
+            log(message)
 
         unpack_pack(
             pack_path,
