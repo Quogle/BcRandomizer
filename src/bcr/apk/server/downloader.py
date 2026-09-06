@@ -192,6 +192,7 @@ def process_server_files(
     output_directory: str | Path,
     wanted_files: set[str],
     use_pack_directory: bool = True,
+    log = None,
 ) -> None:
     """
     Downloads server pack files one at a time,
@@ -212,10 +213,15 @@ def process_server_files(
     )
 
     for index, _ in enumerate(tsv_paths):
-        print(
-            f"Processing server files "
+        message = (
+            f"Decrypting server pack "
             f"{index + 1}/{len(tsv_paths)}"
         )
+
+        print(message)
+
+        if log:
+            log(message)
 
         # Download the server zip for this version
         zip_path = download_server_zip(
@@ -250,3 +256,4 @@ def process_server_files(
         for pack_path in pack_paths:
             pack_path.unlink()
             pack_path.with_suffix(".list").unlink()
+

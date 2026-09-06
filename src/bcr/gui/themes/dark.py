@@ -250,5 +250,18 @@ QPlainTextEdit:hover {
 QPlainTextEdit:focus {
     border: 1px solid #383b3e;
 }
+QProgressBar {
+    background-color: #24272a;
+    color: #ffffff;
+    border: 1px solid #383b3e;
+    border-radius: 5px;
+    text-align: center;
+    height: 18px;
+}
+
+QProgressBar::chunk {
+    background-color: #9e42bf;
+    border-radius: 4px;
+}
 
 """

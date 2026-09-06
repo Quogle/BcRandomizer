@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QPlainTextEdit,
     QApplication,
+    QProgressBar,
 )
 
 
@@ -93,7 +94,7 @@ class RandomizeWorker(QObject):
 
         requirements = get_required_files(config)
 
-        self.log.emit("Decrypting packs...")
+        self.log.emit("Decrypting Local packs...")
 
         if DECRYPT_SPECIFICS:
             decrypt_packs(
@@ -172,6 +173,7 @@ class RandomizeWorker(QObject):
                 output_directory=decrypted_directory / "vanilla_files",
                 wanted_files=requirements["server"],
                 use_pack_directory=False,
+                log=self.log.emit,
             )
 
         pack_path = (
@@ -225,7 +227,7 @@ class RandomizeWorker(QObject):
             signed_apk,
         )
 
-        self.log.emit("DONE")
+        self.log.emit("Randomization Complete.")
         self.log.emit(
             f"Signed APK: {signed_apk}"
         )
@@ -324,6 +326,13 @@ class SetupWindow(QWidget):
 
         layout.addWidget(self.console)
 
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(True)
+
+        layout.addWidget(self.progress_bar)
+
         layout.addStretch()
 
     # APK Selection
@@ -376,13 +385,21 @@ class SetupWindow(QWidget):
     def log(self, message):
         self.console.appendPlainText(str(message))
 
+    def randomize_finished(self):
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setValue(100)
+
     def randomize_error(self, message):
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setValue(0)
         self.log(f"ERROR: {message}")
 
 
     # Randomize Function 
 
     def randomize(self):
+
+        self.progress_bar.setRange(0, 0)
 
         seed_text = self.seed.text().strip()
 
@@ -402,6 +419,7 @@ class SetupWindow(QWidget):
         apk_path = self.input_apk.text().strip()
 
         if not apk_path:
+            self.randomize_error("No APK selected.")
             return
 
         self.thread = QThread(self)
@@ -418,6 +436,10 @@ class SetupWindow(QWidget):
 
         self.worker.log.connect(
             self.log
+        )
+
+        self.worker.finished.connect(
+            self.randomize_finished
         )
 
         self.worker.finished.connect(
