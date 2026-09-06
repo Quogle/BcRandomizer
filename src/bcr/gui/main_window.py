@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
         self.config = deepcopy(DEFAULT_CONFIG)
 
         self.setWindowTitle("Battle Cats Randomizer")
-        self.resize(1000, 600)
+        self.resize(1000, 550)
 
        
         central_widget = QWidget()
