@@ -11,10 +11,12 @@ from ...apk.packs.decrypt import decrypt_packs
 from ...apk.packs.encrypt import encrypt_pack
 from ...apk.server.downloader import download_server_files,process_server_files
 from ...apk.packs.required_files import get_required_files
+from ...apk.edit_xml import edit_manifest
 
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
 DECRYPT_SPECIFICS = True
+SKIP_SERVER = True
 
 class RandomizeThread(QObject):
 
@@ -108,44 +110,48 @@ class RandomizeThread(QObject):
         for tsv in tsv_paths:
            print(f"  {tsv}")
 
-        if not DECRYPT_SPECIFICS:
+        ########## DECRYPT SERVER FILES ##########################################################################
 
-            download_server_files(
-                lib_path=lib_path,
-                tsv_paths=tsv_paths,
-                country_code="en",
-                output_directory=server_directory,
-            )
+        if not SKIP_SERVER:
 
-            server_pack_paths = list(
-                server_directory.rglob("*.pack")
-            )
+            if not DECRYPT_SPECIFICS:
 
-            self.log.emit(
-                f"\nFound {len(server_pack_paths)} server pack files:"
-            )
+                download_server_files(
+                    lib_path=lib_path,
+                    tsv_paths=tsv_paths,
+                    country_code="en",
+                    output_directory=server_directory,
+                )
 
-            for pack in server_pack_paths:
-                self.log.emit(f"  {pack}")
+                server_pack_paths = list(
+                    server_directory.rglob("*.pack")
+                )
 
-            decrypt_packs(
-                pack_paths=server_pack_paths,
-                cc="en",
-                output_directory=decrypted_directory / "server",
-            )
+                self.log.emit(
+                    f"\nFound {len(server_pack_paths)} server pack files:"
+                )
 
-        else:
+                for pack in server_pack_paths:
+                    self.log.emit(f"  {pack}")
 
-            process_server_files(
-                lib_path=lib_path,
-                tsv_paths=tsv_paths,
-                country_code="en",
-                server_directory=server_directory,
-                output_directory=decrypted_directory / "vanilla_files",
-                wanted_files=requirements["server"],
-                use_pack_directory=False,
-                log=self.log.emit,
-            )
+                decrypt_packs(
+                    pack_paths=server_pack_paths,
+                    cc="en",
+                    output_directory=decrypted_directory / "server",
+                )
+
+            else:
+
+                process_server_files(
+                    lib_path=lib_path,
+                    tsv_paths=tsv_paths,
+                    country_code="en",
+                    server_directory=server_directory,
+                    output_directory=decrypted_directory / "vanilla_files",
+                    wanted_files=requirements["server"],
+                    use_pack_directory=False,
+                    log=self.log.emit,
+                )
 
         pack_path = (
             decoded_directory
@@ -162,7 +168,7 @@ class RandomizeThread(QObject):
             exist_ok=True,
         )
 
-        # RANDOMIZER CODE
+        # TODO RANDOMIZER CODE
 
         self.log.emit(
             f"\nEncrypting: {pack_name}"
@@ -174,6 +180,11 @@ class RandomizeThread(QObject):
             output_directory=pack_path.parent,
             cc="en",
         )
+
+        # EDIT XML
+        self.log.emit("Setting mod ID")
+        edit_manifest(config["mod"]["id"])
+
 
         self.log.emit("Building APK")
 
