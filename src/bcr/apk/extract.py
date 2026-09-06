@@ -6,7 +6,7 @@ TOOLS_DIR = Path(__file__).resolve().parents[3]/"resources"/"tools"
 APKTOOL_PATH = TOOLS_DIR/"apktool.jar"
 
 
-def extract_apk(apk_path,output_directory,log=None):
+def extract_apk(apk_path,output_directory,):
     """
     Decode an APK using APKTool.
 
@@ -42,27 +42,9 @@ def extract_apk(apk_path,output_directory,log=None):
         "-f",
     ]
 
-    process = subprocess.Popen(
+    subprocess.run(
         command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        bufsize=1,
+        check=True,
     )
-
-    for line in process.stdout:
-        line = line.rstrip()
-
-        if log:
-            log(line)
-        else:
-            print(line)
-
-    process.wait()
-
-    if process.returncode != 0:
-        raise RuntimeError(
-            f"APKTool failed with exit code {process.returncode}"
-        )
 
     return output_directory

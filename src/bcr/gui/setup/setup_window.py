@@ -66,12 +66,11 @@ class RandomizeWorker(QObject):
         aligned_apk = workspace / "aligned.apk"
         signed_apk = workspace / "signed.apk"
 
-        self.log.emit("Extracting APK")
+        self.log.emit("Extracting APK...")
 
         extract_apk(
             apk_path,
             decoded_directory,
-            self.log.emit,
         )
 
         pack_paths = [
@@ -85,7 +84,7 @@ class RandomizeWorker(QObject):
         )
 
         for pack in pack_paths:
-            self.log.emit(f"  {pack}")
+            print(f"  {pack}")
 
         if not pack_paths:
             raise RuntimeError(
@@ -94,7 +93,7 @@ class RandomizeWorker(QObject):
 
         requirements = get_required_files(config)
 
-        self.log.emit("Decrypting packs")
+        self.log.emit("Decrypting packs...")
 
         if DECRYPT_SPECIFICS:
             decrypt_packs(
@@ -132,8 +131,10 @@ class RandomizeWorker(QObject):
             f"Found {len(tsv_paths)} server TSV files:"
         )
 
+        self.log.emit("Decrypting server packs...")
+
         for tsv in tsv_paths:
-            self.log.emit(f"  {tsv}")
+           print(f"  {tsv}")
 
         if not DECRYPT_SPECIFICS:
 
