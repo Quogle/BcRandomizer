@@ -257,7 +257,9 @@ DEFAULT_CONFIG = {
     },
     "unit": {
         "randomization": {
-            "enabled": True,    # randomizes units into other units
+            "enabled": True,        # randomizes units into other units
+            "keep_rarity": False,   # Units will randomize into the same rarity
+            "keep_uber_lr": True,   # Ubers and Legend Rares cannot randomize into lower rarities
         },
         "ability": {
             "randomize": True,
