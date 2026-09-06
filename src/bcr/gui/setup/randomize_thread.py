@@ -12,6 +12,7 @@ from ...apk.packs.encrypt import encrypt_pack
 from ...apk.server.downloader import download_server_files,process_server_files
 from ...apk.packs.required_files import get_required_files
 from ...apk.edit_xml import edit_manifest
+from ...apk.replace_icon import replace_icon
 
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
@@ -180,6 +181,11 @@ class RandomizeThread(QObject):
             output_directory=pack_path.parent,
             cc="en",
         )
+
+
+        # APK ICON
+        self.log.emit("Replacing app icon")
+        replace_icon()
 
         # EDIT XML
         self.log.emit("Setting mod ID")
