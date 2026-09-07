@@ -71,7 +71,7 @@ class TraitGimmicks(QWidget):
         menu = QWidget()
 
         menu_layout = QVBoxLayout(menu)
-        menu_layout.setContentsMargins(12, 8, 12, 8)
+        menu_layout.setContentsMargins(18, 10, 18, 18)  # LEFT, TOP, RIGHT, BOTTOM
         menu_layout.setSpacing(8)
 
         return menu, menu_layout
@@ -175,7 +175,8 @@ class TraitGimmicks(QWidget):
         # Sage Debuff Resist Multiplier
         resist_layout = QHBoxLayout()
 
-        resist_label = QLabel("Sage Debuff Resist Multiplier:")
+        resist_label = QLabel("Sage Debuff Resist Multiplier")
+        resist_label.setFixedWidth(200)
 
         self.white_sage_resist_mult = NoWheelSpinBox()
         self.white_sage_resist_mult.setRange(1, 100)
@@ -187,13 +188,14 @@ class TraitGimmicks(QWidget):
             "sage_resist_mult"
         )
 
-        resist_layout.addWidget(resist_label)
-        resist_layout.addWidget(self.white_sage_resist_mult)
-        resist_layout.addStretch()
-
         menu_layout.addWidget(self.white_enabled)
-        menu_layout.addWidget(self.white_sage)
-        menu_layout.addLayout(resist_layout)
+
+        sage_layout = QHBoxLayout()
+        sage_layout.addWidget(self.white_sage,1)
+        sage_layout.addWidget(resist_label)
+        sage_layout.addWidget(self.white_sage_resist_mult)
+
+        menu_layout.addLayout(sage_layout)
 
         layout.addWidget(menu)
 
@@ -216,6 +218,7 @@ class TraitGimmicks(QWidget):
 
         speed_layout = QHBoxLayout()
         speed_label = QLabel("Speed Multiplier")
+        speed_label.setFixedWidth(150)
 
         self.red_speed_mult = NoWheelDoubleSpinBox()
         self.red_speed_mult.setSingleStep(0.1)
@@ -230,6 +233,7 @@ class TraitGimmicks(QWidget):
 
         kb_layout = QHBoxLayout()
         kb_label = QLabel("Knockback Multiplier")
+        kb_label.setFixedWidth(150)
 
         self.red_kb_mult = NoWheelDoubleSpinBox()
         self.red_kb_mult.setSingleStep(0.1)
@@ -244,6 +248,7 @@ class TraitGimmicks(QWidget):
 
         mult_rounding_layout = QHBoxLayout()
         mult_rounding_label = QLabel("Multiplier Rounding")
+        mult_rounding_label.setFixedWidth(150)
 
         self.red_mult_rounding = NoWheelQComboBox()
         self.red_mult_rounding.addItems([
@@ -263,6 +268,8 @@ class TraitGimmicks(QWidget):
         menu_layout.addLayout(speed_layout)
         menu_layout.addLayout(kb_layout)
         menu_layout.addLayout(mult_rounding_layout)
+
+        menu_layout.addStretch()
 
         layout.addWidget(menu)
 
@@ -287,8 +294,9 @@ class TraitGimmicks(QWidget):
 
         # Ability Selection
 
-        self.floating_abilities = WeightedList(
-            floating_config["abilities"].items()
+        self.floating_abilities = WeightedGrid(
+            floating_config["abilities"].items(),
+            3
         )
 
         connect_weighted_list(
@@ -301,7 +309,7 @@ class TraitGimmicks(QWidget):
         # Dual Ability Chance
         dual_ability_layout = QHBoxLayout()
 
-        dual_ability_label = QLabel("Dual Ability Chance:")
+        dual_ability_label = QLabel("Dual Ability Chance")
         dual_ability_value = QLabel()
 
         self.floating_dual_ability_chance = NoWheelSlider(Qt.Horizontal)
@@ -525,6 +533,7 @@ class TraitGimmicks(QWidget):
         )
 
         menu_layout.addWidget(self.angel_enabled)
+        menu_layout.addSpacing(4)
 
         self.angel_balanced = QCheckBox("Balanced")
         connect_checkbox(
@@ -538,7 +547,7 @@ class TraitGimmicks(QWidget):
         # Speed multiplier
         speed_layout = QHBoxLayout()
 
-        speed_label = QLabel("Speed Multiplier:")
+        speed_label = QLabel("Speed Multiplier")
         speed_label.setFixedWidth(130)
 
         self.angel_speed_mult = NoWheelDoubleSpinBox()
@@ -552,14 +561,13 @@ class TraitGimmicks(QWidget):
 
         speed_layout.addWidget(speed_label)
         speed_layout.addWidget(self.angel_speed_mult)
-        speed_layout.addStretch()
 
         menu_layout.addLayout(speed_layout)
 
         # Attack multiplier
         attack_layout = QHBoxLayout()
 
-        attack_label = QLabel("Attack Multiplier:")
+        attack_label = QLabel("Attack Multiplier")
         attack_label.setFixedWidth(130)
 
         self.angel_attack_mult = NoWheelDoubleSpinBox()
@@ -573,14 +581,13 @@ class TraitGimmicks(QWidget):
 
         attack_layout.addWidget(attack_label)
         attack_layout.addWidget(self.angel_attack_mult)
-        attack_layout.addStretch()
 
         menu_layout.addLayout(attack_layout)
 
         # Health Multiplier
         health_layout = QHBoxLayout()
 
-        health_label = QLabel("Health Multiplier:")
+        health_label = QLabel("Health Multiplier")
         health_label.setFixedWidth(130)
 
         self.angel_health_mult = NoWheelDoubleSpinBox()
@@ -594,7 +601,6 @@ class TraitGimmicks(QWidget):
 
         health_layout.addWidget(health_label)
         health_layout.addWidget(self.angel_health_mult)
-        health_layout.addStretch()
 
         menu_layout.addLayout(health_layout)
 
@@ -617,9 +623,10 @@ class TraitGimmicks(QWidget):
 
         rounding_layout.addWidget(rounding_label)
         rounding_layout.addWidget(self.angel_rounding)
-        rounding_layout.addStretch()
         
         menu_layout.addLayout(rounding_layout)
+
+        menu_layout.addStretch()     
 
 
         layout.addWidget(menu)
@@ -647,8 +654,9 @@ class TraitGimmicks(QWidget):
         # Ability Selection
         # ----------------------------------------------------------------------------------------------------
 
-        self.alien_abilities = WeightedList(
-            alien_config["abilities"].items()
+        self.alien_abilities = WeightedGrid(
+            alien_config["abilities"].items(),
+            3
         )
 
         connect_weighted_list(
@@ -809,7 +817,7 @@ class TraitGimmicks(QWidget):
 
         frequency_layout = QHBoxLayout()
 
-        frequency_label = QLabel("Frequency:")
+        frequency_label = QLabel("Frequency")
         frequency_value = QLabel()
 
         self.zombie_revive_frequency = NoWheelSlider(Qt.Horizontal)
@@ -888,7 +896,7 @@ class TraitGimmicks(QWidget):
 
         burrow_frequency_layout = QHBoxLayout()
 
-        burrow_frequency_label = QLabel("Frequency:")
+        burrow_frequency_label = QLabel("Frequency")
         burrow_frequency_value = QLabel()
 
         self.zombie_burrow_frequency = NoWheelSlider(Qt.Horizontal)

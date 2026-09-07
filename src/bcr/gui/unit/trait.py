@@ -36,6 +36,7 @@ class TraitRandomization(QWidget):
         # Randomization Type
         randomization_mode_layout = QHBoxLayout()
         randomization_mode_label = QLabel("Randomization Type")
+        randomization_mode_label.setFixedWidth(200)
 
         self.randomization_mode = NoWheelQComboBox()
         self.randomization_mode.addItems([
@@ -51,6 +52,7 @@ class TraitRandomization(QWidget):
 
         randomization_mode_layout.addWidget(randomization_mode_label)
         randomization_mode_layout.addWidget(self.randomization_mode)
+        randomization_mode_layout.addStretch()
 
         self.layout.addLayout(randomization_mode_layout)
 
