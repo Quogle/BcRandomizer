@@ -552,7 +552,7 @@ def _give_ability_death_surge(stats,strength=10,distanceness=10,is_mini=False,is
     """ gives stats death surge, NOT a death surge with an ability
     \n mini ds has a higher level on average
     \n wild means has a high spawn area
-    \n things with <5k hp and <200 range get 50% chance, can be forced to 100% for eoc enemies and the like """
+    \n things with <5k hp and <200 range get 50% chance, can be forced to 100% for low range eoc enemies and the like """
     #first get the level
     surge_level = (strength/8)**1.2
     if is_mini:
@@ -677,7 +677,7 @@ def _give_ability_omni(stats,relative_size=10,blindspot_size=10):
 
 
 
-""" these functions are meant to be used in giving alien abilities, they work different than the usual give ability """
+""" these functions are meant to be used in giving alien/aku abilities, they work different than the usual give ability """
 #this could also be done in enemy info if I wanna fine tune it
 #needs information on peon strength
 def _alien_lethal(stats):
@@ -755,6 +755,52 @@ def _alien_multihit(stats,multihit_decider=10,post_attack_time=-1):
     #should be all good
     return stats
      
+def _aku_ability_ds(stats,ability_dec):
+    """ gives stats a ds with an ability decided by ability_dec and returns stats
+    \n doesnt actually give the ds so normal death surge giving should be done first """
+    #first set all the absolute information
+    stats[e.s.multiDamage2] = stats[e.s.attack]
+    stats[e.s.multiPreAtk2] = stats[e.s.preatk]
+    stats[e.s.preatk] = -1
+    stats[e.s.multiHasAbility1] = 1
+    stats[e.s.multiHasAbility2] = 0
+    #now handle that ability ds shouldnt go above level 1 if it isnt mini
+    if stats[e.s.miniSurge] == 0:
+        stats[e.s.deathSurgeLevel] = 1
+    #now decide which ability to give
+    savage_chance = 0
+    savage_total = 0 #I call it total because this is not the value to be written to stats
+    if ability_dec < 10:
+        savage_chance = 20
+        savage_total = 450 #this means it should do 4.5x the damage
+    elif ability_dec < 25:
+        savage_chance = 50
+        savage_total = 200 #this means it should do 2x the damage
+    elif ability_dec < 45:
+        stats[e.s.freezeChance] = 100
+        stats[e.s.freezeTime] = 60
+    elif ability_dec < 65:
+        stats[e.s.slowChance] = 100
+        stats[e.s.slowTime] = 120
+    elif ability_dec < 85:
+        stats[e.s.weakenChance] = 100
+        stats[e.s.weakenPercent] = 50
+        stats[e.s.weakenTime] = 180
+    else:
+        stats[e.s.kbChance] = 100
+    #now scale the savage total to keep it the same damage if mini
+    if stats[e.s.miniSurge]:
+        savage_total *= 5
+    #apply it
+    stats[e.s.savageChance] = savage_chance
+    stats[e.s.savageBoost] = int(simp.clamp(savage_total-100,0,5000))
+    #should be all
+    return stats
+
+
+
+
+
 
 
 
