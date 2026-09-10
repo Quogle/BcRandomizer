@@ -70,7 +70,7 @@ DEFAULT_CONFIG = {
                 "enabled": True,
                 "speed_mult": 0.8,
                 "kb_mult": 0.5,
-                "mult_rounding": "Up", # Up / Down
+                "mult_rounding": "Down", # Up / Down
             },
 
             "floating": {
@@ -198,37 +198,37 @@ DEFAULT_CONFIG = {
                 "burrow_types": [
                     {
                         "count": -1,
-                        "distance": 1600,
+                        "distance": 400,
                         "weight": 3,
                     },
                     {
                         "count": 3,
-                        "distance": 2400,
+                        "distance": 600,
                         "weight": 3,
                     },
                     {
                         "count": 1,
-                        "distance": 6000,
+                        "distance": 1500,
                         "weight": 6,
                     },
                     {
                         "count": 1,
-                        "distance": 4000,
-                        "weight": 10,
-                    },
-                    {
-                        "count": 1,
-                        "distance": 3000,
-                        "weight": 10,
-                    },
-                    {
-                        "count": 1,
-                        "distance": 2000,
-                        "weight": 10,
-                    },
-                    {
-                        "count": 1,
                         "distance": 1000,
+                        "weight": 10,
+                    },
+                    {
+                        "count": 1,
+                        "distance": 750,
+                        "weight": 10,
+                    },
+                    {
+                        "count": 1,
+                        "distance": 500,
+                        "weight": 10,
+                    },
+                    {
+                        "count": 1,
+                        "distance": 250,
                         "weight": 5,
                     },
                 ],

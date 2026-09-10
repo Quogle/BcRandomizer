@@ -48,10 +48,10 @@ def _give_ability_weaken(stats,strength=10,time=10,weak_to=50,post_attack_time=-
     if scale_by_strength_of_weakness:
         if weak_to <= 25:
             strength -= 1
-            time -= 1
+            time -= 2
         if weak_to <= 10:
             strength -= 2
-            time -= 2
+            time -= 3
         if weak_to <= 1:
             strength -= 2
             time -= 2
@@ -59,7 +59,7 @@ def _give_ability_weaken(stats,strength=10,time=10,weak_to=50,post_attack_time=-
     time = simp.clamp(time)
     #now use attack cycle and the determiners to get the correct chance and duration
     chance = int(simp.clamp(strength + (attack_cycle*(5+strength))/75))
-    duration = int(3*time + attack_cycle*(time/15+((attack_cycle/300)**1.1)/5)) #I have zero clue what this looks like lmao (now that Ive looked it looks ok)
+    duration = int(3*time + attack_cycle*((0.65+time/25)**2)) #I have zero clue what this looks like lmao (now that Ive looked it looks ok)
     #apply it
     stats[e.s.weakenPercent] = weak_to
     stats[e.s.weakenChance] = chance
@@ -68,13 +68,15 @@ def _give_ability_weaken(stats,strength=10,time=10,weak_to=50,post_attack_time=-
 
 def _give_ability_freeze(stats,strength=10,time=10,post_attack_time=-1):
     """ gives a freeze of a calculated chance and duration to a unit and returns the stat array
-    \n 10 means what I consider to be average strength and time (dont ask what that means) """
+    \n 10 means what I consider to be average strength and time (dont ask what that means) 
+    \n default results in 15% + cycle/3 chance lasting 30f+83% of cycle
+    \n """
     attack_cycle = _get_stats_attack_cycle(stats,post_attack_time)
     #now use that strength and time to get correct chance and duration
     chance = (5+strength+attack_cycle/3) #get the base chance before I do any math on it
     chance = simp.clamp(int(chance),ub=10*(strength-2)) #clamp it to say 80% if its level 10 strength and lower each unit after that, must be strength 12 to get gauranteed freeze
     chance = simp.clamp(chance) #now properly clamp it for if its above 12 strength
-    duration = int(time*3 + attack_cycle*(0.6+time/5)*(0.9+strength/20))
+    duration = int(time*3 + attack_cycle*(0.5+time/30)*(0.9+strength/20))
     #apply it
     stats[e.s.freezeChance] = chance
     stats[e.s.freezeTime] = duration
@@ -88,7 +90,7 @@ def _give_ability_slow(stats,strength=10,time=10,post_attack_time=-1):
     chance = (10+strength+attack_cycle/3) #get the base chance before I do any math on it
     chance = simp.clamp(int(chance),ub=10*(strength-1)) #clamp it to say 90% if its level 10 strength and lower each unit after that, must be strength 11 to get gauranteed slow
     chance = simp.clamp(chance) #now properly clamp it for if its above 11 strength
-    duration = int(time*3 + attack_cycle*((0.8+time/5)**1.5)*(1+strength/20))
+    duration = int(time*3 + attack_cycle*((0.7+time/30)**1.5)*(1+strength/20))
     #apply it
     stats[e.s.freezeChance] = chance
     stats[e.s.freezeTime] = duration
@@ -383,7 +385,10 @@ def _give_ability_explosion(stats,likelihood=10,distanceness=10,post_attack_time
 def _give_ability_warp(stats,post_attack_time=-1,distanceness=10,slowness=10,likeliness=10,is_backwards=False):
     """ gives stats a warp and returns it 
     \ndistanceness determines the distance of the warp, higher means further backwards too
-    \nslowness determines how long the warp takes"""
+    \nslowness determines how long the warp takes
+    """
+    #input validation only needed for likeliness
+    likeliness = simp.clamp(likeliness,0,100)
     #first start by getting the units range + say 200
     shifted_range = stats[e.s.range] + 200
     #now determine the warp range ratio by dividing distanceness into chunks
@@ -428,12 +433,16 @@ def _give_ability_warp(stats,post_attack_time=-1,distanceness=10,slowness=10,lik
             range_ratio = 4.0
     #now get the actual warp range resulting from that
     warp_range = shifted_range*range_ratio #common units
-    #now determine the warp time
-    #Im gonna also just block this (do I even wanna consider attack cycle or just use hard numbers)
+    """
+    warp time is decided largely by the value of slowness,
+    but for each frame the attack cycle is longer than 150
+    the warp time is increased
+    particularly, warp time = (time ratio:purely from slowness)*((time scale:30+2% of cycle over 150)+(time boost:purely from slowness))
+    """
+    attack_cycle = _get_stats_attack_cycle(stats,post_attack_time)
     time_scale = 30
     attack_cycle_increase_minimum = 150 #this is the minimum amount before attack cycle will be added to the time scale
     cycle_scalor = 0.2 #this is the % amount thats added to the scale (after minimum)
-    attack_cycle = _get_stats_attack_cycle(stats,post_attack_time)
     time_scale += simp.clamp((attack_cycle-attack_cycle_increase_minimum)*cycle_scalor,0,400) #restrict it to not reduce and only increase by 400 max
     #now get the ratios to be mult with time scale and boost
     time_ratio = 1
@@ -478,9 +487,18 @@ def _give_ability_warp(stats,post_attack_time=-1,distanceness=10,slowness=10,lik
     stats[e.s.warpMax4x] = int(4*warp_range)
     return stats
 
-def _give_ability_barrier(stats,strength=10):
+#needs information on peon strength
+def _give_ability_barrier(stats,strength=10,balanced=True):
     """ gives the unit a barrier, doesnt scale with units hp
     \n strength below 1 results in a shitter barrier """
+    #balanced just means I block peons from getting absurdly strong barriers
+    if balanced:
+        if strength >= 17:
+            if stats[e.s.hp] <= 5000 and stats[e.s.range] < 150:
+                strength = 15
+        if strength >= 15:
+            if stats[e.s.hp] < 5000 and stats[e.s.range] < 120:
+                strength = 13
     #Im literally just gonna separate this into 8 blocks with hardcoded stats
     barrier_hp = 400 #this is prolly a decent shitter hp
     if strength >= 1:
@@ -655,6 +673,88 @@ def _give_ability_omni(stats,relative_size=10,blindspot_size=10):
 
 
 
+
+
+
+
+""" these functions are meant to be used in giving alien abilities, they work different than the usual give ability """
+#this could also be done in enemy info if I wanna fine tune it
+#needs information on peon strength
+def _alien_lethal(stats):
+    """ uses hp and range to set a units lethal chance """
+    #Im just gonna set it to 100 first and then only make it 50 if it passes conditions
+    stats[e.s.lethal] = 100
+    if stats[e.s.hp] < 5000:
+        if stats[e.s.range] < 150:
+            stats[e.s.lethal] == 50
+    return stats
+
+#this function desperately needs post attack time info to work properly
+def _alien_multihit(stats,multihit_decider=10,post_attack_time=-1):
+    """ gives stats multihit of some sort
+    \n decider isnt based on strength so its free to vary with disregard between 0-20 """
+    #first decide which type of multihit it is
+    #breaking it into 3 classes for now
+    if multihit_decider < 7:
+        mult_type = 0
+    elif multihit_decider < 14:
+        mult_type = 1
+    else: mult_type = 2
+    #ok now preface all the info needed to do this properly
+    #this func should never be called on anything with multiple attacks already
+    unit_attack = stats[e.s.attack]
+    unit_preatk = stats[e.s.preatk]
+    if post_attack_time == -1:
+        post_attack_time = 6 #make it function as though this is the case if missing info
+    unit_tba = stats[e.s.tba]
+    #set all the info to use in a branch but handle it all after it
+    #first type is two equal damage attacks in relatively long succession (this serves as the base case)
+    second_atk_ratio = 0.5
+    second_preatk = 6
+    third_atk_ratio = 0
+    third_preatk = -unit_preatk #this means it doesnt exist
+    #second type is one large hit followed by two weaker hits rapidly
+    if mult_type == 1:
+        second_atk_ratio = 0.1
+        second_preatk = 3
+        third_atk_ratio = 0.1
+        third_preatk = 6
+    #third type is 3 equal hits relatively slowly
+    if mult_type == 2:
+        second_atk_ratio = 0.33
+        third_atk_ratio = 0.33
+        second_preatk = 5
+        third_preatk = 10
+    #now fix possible post attack shenanigans
+    if unit_tba > 10 and (second_preatk > post_attack_time or third_preatk > post_attack_time): #if it has a real tba and also one of the attacks is post the attack time
+        #increase the damage ratio of the attack thats post the attack time
+        if second_preatk > post_attack_time:#this will always be first so Ill work with that being the case
+            second_atk_ratio = 0.6 #I really dunno what Im doing here but this means it does 40% damage which is prolly fine
+            third_atk_ratio = 0
+        elif third_preatk > post_attack_time:
+            third_atk_ratio = 0.5 #this means the first and second attack do 50% total
+            #gonna make it so you dont end up with a second attack that does most of the damage after the correct hit
+            if mult_type == 2:
+                second_atk_ratio = 0.17
+    #now set second and third attack damage and reduce first by that amount
+    second_damage = int(unit_attack*second_atk_ratio)
+    third_damage = int(unit_attack*third_atk_ratio)
+    first_damage = int(unit_attack-second_damage-third_damage)
+    #now set second and third actual times
+    second_time = int(unit_preatk+second_preatk)
+    third_time = int(unit_preatk+third_preatk)
+    #now set damage, attack time, and all abilities (I chose to make abilities always activate)
+    stats[e.s.attack] = first_damage
+    stats[e.s.multiDamage2] = second_damage
+    stats[e.s.multiDamage3] = third_damage
+    stats[e.s.multiPreAtk2] = second_time
+    stats[e.s.multiPreAtk3] = third_time
+    stats[e.s.multiHasAbility1] = 1
+    stats[e.s.multiHasAbility2] = 1
+    stats[e.s.multiHasAbility3] = 1
+    #should be all good
+    return stats
+     
 
 
 
