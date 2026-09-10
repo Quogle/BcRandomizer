@@ -12,7 +12,8 @@ dependencies = [
     "pycryptodome",
     "cryptography",
     "requests",
-    "tadbcmc"
+    "tadbcmc",
+    "PIL"
 ]
 
 [tool.setuptools.packages.find]
