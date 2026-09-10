@@ -8,7 +8,7 @@ import tadbcmc.core.seeded_randomization as srand
 
 
 
-
+#THIS IS MISSING CONFIG FOR REMOVING METALS
 def trait_randomization(stats,config=DEFAULT_CONFIG):
     """ randomizes the traits of stats according to config and returns it
     \n does nothing except edit traits, starred must be done elsewhere """
