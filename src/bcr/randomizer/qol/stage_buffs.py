@@ -63,11 +63,47 @@ def _fruit_stage_buffs(config=DEFAULT_CONFIG):
     if gaku: qol.growing_aku_buff()
     if gepic: qol.growing_epic_buff()
 
+#this is missing both aku/relic in island and non trait ability orbs in island
+def _orb_stage_buffs(config=DEFAULT_CONFIG):
+    """ does the orb stage buffs from config """
+    trait_abilities_in_island = config["qol"]["stage_changes"]["orb_stage_has_strong_massive_resist"]
+    other_abilities_in_island = config["qol"]["stage_changes"]["orb_stage_has_ability_orb"]
+    relic_aku_in_isle = config["qol"]["stage_changes"]["relic_aku_in_island"]
+    buff_orbs = config["qol"]["drop_buffs"]["orb_stage_buff"]
+    #do adding relic and aku first
+    #I dont currently have the logic for that
+
+    #now find out what the string is gonna be for orb stages
+    stage1_string_non_ab = "1Dattack82,1Ddefense82,1Cattack15,1Cdefense15"
+    stage1_string_ab = "1Dstrong1,1Dmassive1,1Dresist1"
+    stage2_string_non_ab = "1Dattack151,1Ddefense151,1Cattack34,1Cdefense34,1Battack6,1Bdefense6"
+    stage2_string_ab = "1Dstrong6,1Dmassive6,1Dresist6"
+    stage3_string_non_ab = "1Dattack65,1Ddefense65,1Cattack22,1Cdefense22,1Battack7,1Bdefense7"
+    stage3_string_ab = "1Dstrong4,1Dmassive4,1Dresist4"
+    #hard overwrite for if buff
+    if buff_orbs:
+        stage1_string_non_ab = "2Dattack50,2Ddefense50,1Cattack50,1Cdefense50"
+        stage2_string_non_ab = "3Dattack50,3Ddefense50,2Cattack50,2Cdefense50"
+        stage3_string_non_ab = "2Battack50,2Bdefense50,1Aattack50,1Adefense50"
+    if trait_abilities_in_island:
+        stage1_string_ab = "1Dstrong50,1Dmassive50,1Dresist50"
+        stage2_string_ab = "1Cstrong50,1Cmassive50,1Cresist50"
+        stage3_string_ab = "1Bstrong50,1Bmassive50,1Bresist50"
+    #ok now its good to do something
+    qol.orb_island_drop_buff(stage1_line=(stage1_string_non_ab+stage1_string_ab),stage2_line=(stage2_string_non_ab+stage2_string_ab),stage3_line=(stage3_string_non_ab+stage3_string_ab))
+    #I dont currently have the func for adding ability orbs to the metal stages
 
 
 
 
 
+    qol.orb_island_drop_buff()
+
+def _matt_stage_buffs(config=DEFAULT_CONFIG):
+    """ buffs the material stages according to config """
+    do_something = config["qol"]["drop_buffs"]["material_stage_buff"]
+    if do_something:
+        qol.material_stages_buff(3,5,9)
 
 
 
