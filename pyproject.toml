@@ -13,7 +13,7 @@ dependencies = [
     "cryptography",
     "requests",
     "tadbcmc",
-    "PIL"
+    "pillow"
 ]
 
 [tool.setuptools.packages.find]

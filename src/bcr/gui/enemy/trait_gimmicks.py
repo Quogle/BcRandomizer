@@ -1099,7 +1099,7 @@ class TraitGimmicks(QWidget):
         # Distance
         distance = NoWheelSpinBox()
         distance.setRange(0, 99999)
-        distance.setPrefix("Distance ×4: ")
+        distance.setPrefix("Distance: ")
 
         connect_value(
             distance,
