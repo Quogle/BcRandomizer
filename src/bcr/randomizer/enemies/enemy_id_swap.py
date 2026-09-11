@@ -57,6 +57,7 @@ initial chance dict:
 
 
 """
+#currently written code needs to be changed to include enemy bases, which can probably be done by running variant swap exclusively on those enemy bases that should swap
 
 
 
@@ -409,6 +410,9 @@ def _apply_app_swap_to_stages(app_swap,include_eoc=False):
             number_starting_lines = 2
         else:
             number_starting_lines = 1
+        #enemy base swapping
+        if stage_sche[number_starting_lines-1][d.animated_base] != 0:
+            stage_sche[number_starting_lines-1][d.animated_base] = app_swap[stage_sche[number_starting_lines-1][d.animated_base]][0]
         #now loop through each line from there till the end attempting to edit it
         for enemy_line in range(number_starting_lines,len(stage_sche)):
             enemy_id = enemy_line[d.enemy_id]
@@ -417,7 +421,9 @@ def _apply_app_swap_to_stages(app_swap,include_eoc=False):
                 edited = True
                 enemy_line[d.enemy_id] = app_swap[enemy_id][0]
                 new_mag = enemy_line[d.magnification]*app_swap[enemy_id][1]
-                enemy_line[d.magnification] = math.ceil(new_mag) #not a clue how slow this is but it should prevent any 0 mags
+                if new_mag < 1:
+                    new_mag = 1
+                enemy_line[d.magnification] = int(new_mag)
         if edited:
             gf.file_writer(stage_name,stage_sche)
     
