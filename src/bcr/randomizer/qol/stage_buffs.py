@@ -3,6 +3,30 @@ import tadbcmc.pieces.qol as qol
 import tadbcmc.data.enums.item as item
 
 
+#these functions should all be written so that they do nothing at all if none of their config options are on
+
+
+
+def stage_total(config=DEFAULT_CONFIG,log=None):
+    """ does all the stage buffs according to the config """
+    #some of these might need log as an argument in the future
+    _behemoth_stage_buffs(config=config)
+    _xp_stage_buffs(config=config)
+    _ticket_stage_buffs(config=config)
+    _fruit_stage_buffs(config=config)
+    _orb_stage_buffs(config=config,log=log)
+    _matt_stage_buffs(config=config)
+
+
+    """stages still missing that are part of config:
+    enigma buff
+    proving grounds buff
+    
+    stages still missing intended to be added in the future:
+    
+    """
+
+
 
 def _behemoth_stage_buffs(config=DEFAULT_CONFIG):
     """ buffs behemoth culling and enigma according to config """
@@ -63,16 +87,15 @@ def _fruit_stage_buffs(config=DEFAULT_CONFIG):
     if gaku: qol.growing_aku_buff()
     if gepic: qol.growing_epic_buff()
 
-#this is missing both aku/relic in island and non trait ability orbs in island
-def _orb_stage_buffs(config=DEFAULT_CONFIG):
+
+def _orb_stage_buffs(config=DEFAULT_CONFIG,log=None):
     """ does the orb stage buffs from config """
     trait_abilities_in_island = config["qol"]["stage_changes"]["orb_stage_has_strong_massive_resist"]
     other_abilities_in_island = config["qol"]["stage_changes"]["orb_stage_has_ability_orb"]
-    relic_aku_in_isle = config["qol"]["stage_changes"]["relic_aku_in_island"]
+    relic_aku_in_island = config["qol"]["stage_changes"]["relic_aku_in_island"]
     buff_orbs = config["qol"]["drop_buffs"]["orb_stage_buff"]
     #do adding relic and aku first
-    #I dont currently have the logic for that
-
+    if relic_aku_in_island: qol.relic_aku_in_island()
     #now find out what the string is gonna be for orb stages
     stage1_string_non_ab = "1Dattack82,1Ddefense82,1Cattack15,1Cdefense15"
     stage1_string_ab = "1Dstrong1,1Dmassive1,1Dresist1"
@@ -90,14 +113,16 @@ def _orb_stage_buffs(config=DEFAULT_CONFIG):
         stage2_string_ab = "1Cstrong50,1Cmassive50,1Cresist50"
         stage3_string_ab = "1Bstrong50,1Bmassive50,1Bresist50"
     #ok now its good to do something
-    qol.orb_island_drop_buff(stage1_line=(stage1_string_non_ab+stage1_string_ab),stage2_line=(stage2_string_non_ab+stage2_string_ab),stage3_line=(stage3_string_non_ab+stage3_string_ab))
-    #I dont currently have the func for adding ability orbs to the metal stages
+    output = qol.orb_island_drop_buff(stage1_line=(stage1_string_non_ab+stage1_string_ab),stage2_line=(stage2_string_non_ab+stage2_string_ab),stage3_line=(stage3_string_non_ab+stage3_string_ab))
+    if output != None and log != None:
+        log(output)
+    #now add abilities to metal orb stage
+    if other_abilities_in_island:
+        (stage1,stage2,stage3) = _part__get_metal_orb_data()
+        output = qol.ability_orbs_on_metal_in_island(stage1,stage2,stage3)
+        if output != None and log != None:
+            log(output)
 
-
-
-
-
-    qol.orb_island_drop_buff()
 
 def _matt_stage_buffs(config=DEFAULT_CONFIG):
     """ buffs the material stages according to config """
@@ -107,6 +132,71 @@ def _matt_stage_buffs(config=DEFAULT_CONFIG):
 
 
 
+
+
+
+
+
+
+
+
+
+""" parts of above funcs """
+
+def _part__get_metal_orb_data():
+    """ returns (stage1,stage2,stage3) for metal orb func """
+    if True:
+        itenum = item.drop_id #this is just to make the lines shorter but idk if thats necessary anymore
+        #resist orb stage
+        stage1 = []
+        for x in range(0,9):
+            stage1.append([2,0,50])
+        stage1[0][1] = itenum.orb_resist_freeze_d
+        stage1[1][1] = itenum.orb_resist_slow_d
+        stage1[2][1] = itenum.orb_resist_weaken_d
+        stage1[3][1] = itenum.orb_resist_knockback_d
+        stage1[4][1] = itenum.orb_resist_curse_d
+        stage1[5][1] = itenum.orb_resist_toxic_d
+        stage1[6][1] = itenum.orb_resist_wave_d
+        stage1[7][1] = itenum.orb_resist_surge_d
+        stage1[8][1] = itenum.orb_resist_explosion_d
+        #ones with reduced weights
+        stage1[5][2] = 30 #toxic
+        stage1[6][2] = 30 #wave
+        stage1[7][2] = 30 #surge
+        stage1[8][2] = 30 #explosion
+        #abilities fine to be earlier in the game
+        stage2 = []
+        for x in range(0,10):
+            stage2.append([2,0,50])
+        stage2[0][1] = itenum.orb_death_surge_d
+        stage2[1][1] = itenum.orb_counter_surge_d
+        stage2[2][1] = itenum.orb_cost_down_d
+        stage2[3][1] = itenum.orb_shortened_cooldown_d
+        stage2[4][1] = itenum.orb_cannon_recharge_d
+        stage2[5][1] = itenum.orb_dodge_attack_d
+        #ones with reduced weights
+        stage2[4][2] = 30 #cannon recharge
+        stage2[5][2] = 30 #dodge
+
+        #abilities that should be late game
+        stage3 = []
+        for x in range(0,10):
+            stage3.append([2,0,50])
+        stage3[0][1] = itenum.orb_sol_boost_d
+        stage3[1][1] = itenum.orb_ul_boost_d
+        stage3[2][1] = itenum.orb_bounty_up_d
+        stage3[3][1] = itenum.orb_cash_back_d
+        stage3[4][1] = itenum.orb_colossus_slayer_d
+        stage3[5][1] = itenum.orb_berserker_d
+        #ones with different weights
+        stage3[0][1] = 100 #sol
+        stage3[1][1] = 10 #ul
+        stage3[2][1] = 50 #bounty
+        stage3[3][1] = 50 #cash back
+        stage3[4][1] = 100 #colossus slayer
+        stage3[5][1] = 20 #berserker
+        return (stage1,stage2,stage3)
 
 
 

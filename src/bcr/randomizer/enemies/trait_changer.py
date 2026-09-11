@@ -63,6 +63,87 @@ def trait_randomization(stats,config=DEFAULT_CONFIG):
     return stats
 
 
+#THIS IS MISSING CONFIG FOR REMOVING METALS
+def trait_swap(stats,config=DEFAULT_CONFIG):
+    """ swaps the traits of stats according to config 
+    \n does nothing except edit the traits """
+    #first get the config options, its only metal right? (and untraited get trait)
+    remove_metal = True
+    give_untraited_traits = config["enemy"]["trait"]["untraited_get_trait"]
+    #this func is being written with the intent for specified swaps to exist in the future
+    #so in otherwords I can have multiple already specified swaps, including multiple traits swapping to the same
+    #(one trait swapping to multiple however is not allowed so I dont need to work with it in mind)
+    from_traits = []
+    to_traits = []
+    #assume specified swaps are done here
+
+    #now generate the new swaps
+    #start by getting this trait order
+    all_traits = []
+    for each in e.t:
+        all_traits.append(int(each)) #using int so I get the actual int not the enum type int
+    r = srand.randinst(4)
+    temp_tl = copy.deepcopy(all_traits)
+    this_trait_order = []
+    for x in range(0,len(all_traits)):
+        this_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+    #now get the traits missing from 'from' and 'to' starting by missing from both
+    not_in_from = []
+    not_in_to = []
+    #missing from both
+    for trait in this_trait_order:
+        if trait not in from_traits and trait not in to_traits:
+            not_in_from.append(trait)
+            not_in_to.append(trait)
+    #now get the ones that are only missing from one of the two
+    for trait in this_trait_order:
+        if trait not in from_traits and trait not in not_in_from:
+            not_in_from.append(trait)
+        if trait not in to_traits and trait not in not_in_to:
+            not_in_to.append(trait)
+    #so now we have all the missing traits with the ones missing from both at the start of each array
+    #not_in_from must always be equal length or smaller than not_in_to (its only smaller if specified makes it so)
+    #should be good to simply rotate not_in_from traits (metal will be handled later)
+    r = srand.randinst(99)
+    for x in range(1,r.randrange(1,len(not_in_from)-1)):
+        not_in_from.append(not_in_from.pop())
+    #now we should be all good to just fill out from and to with all the ones in the length of from
+    #however before that we need to log the length filled out by specified swaps for doing metal after this
+    user_specified_length = len(from_traits)
+    for x in range(0,len(not_in_from)):
+        from_traits.append(not_in_from[x])
+        to_traits.append(not_in_to[x])
+    #now all traits have been accounted for, however metal must be dealt with
+    #literally just if swapping to metal hasnt been specified by the user, make whatever swaps to metal swap to the same trait as metal currently swaps to
+    if remove_metal:
+        if int(e.t.metal) in to_traits and to_traits.index(int(e.t.metal)) >= user_specified_length:
+            #metal is always gonna end up in from traits so I dont need to check for that
+            index_metal_from = from_traits.index(int(e.t.metal))
+            index_metal_to = to_traits.index(int(e.t.metal))
+            #set to traits to the value from to traits at the position of metal in from traits
+            to_traits[index_metal_to] = to_traits[index_metal_from]
+    #all good to apply that to it now
+    #start by creating an array with traits and an array without traits
+    with_traits = copy.deepcopy(stats)
+    without_traits = copy.deepcopy(stats)
+    
+    for e_id in range(0,len(with_traits)):
+        #first step remove all traits and count how many there were in the process
+        number_of_traits = 0
+        for trait in from_traits: #from traits must have all traits right?
+            if without_traits[e_id][trait] == 1:
+                number_of_traits += 1
+                without_traits[e_id][trait] = 0
+        #now compare the two arrays to apply the swap
+        for trait_id in range(0,len(from_traits)):
+            if with_traits[e_id][from_traits[trait_id]] == 1:
+                without_traits[e_id][to_traits[trait_id]] = 1
+        #and now do something about untraited units
+        if give_untraited_traits and number_of_traits == 0:
+            untrait_rand = srand.randinst(304+35*e_id)
+            without_traits[e_id][to_traits[untrait_rand.randrange(0,len(to_traits))]] = 1 #this does mean that when multiple traits swap to the same trait untraited are more likely to swap to it, maybe thats good?
+    #ok should be all good to just return 'without traits'
+    return without_traits
 
 
 
