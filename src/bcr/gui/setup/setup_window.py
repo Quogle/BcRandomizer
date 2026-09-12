@@ -11,10 +11,12 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QPlainTextEdit,
     QProgressBar,
+    QSizePolicy,
 )
 
 from PySide6.QtCore import Signal, QThread
 from ..helpers.config_helpers import *
+from ..helpers.widgets import *
 from .randomize_thread import RandomizeThread
 
 class SetupWindow(QWidget):
@@ -68,8 +70,6 @@ class SetupWindow(QWidget):
 
         layout.addLayout(config_layout)
 
-        randomizer_layout = QHBoxLayout()
-
         ######## SEED INPUT FIELD ############################################################################
 
         seed_label = QLabel("Seed:")
@@ -82,6 +82,8 @@ class SetupWindow(QWidget):
             "seed",
         )
 
+        # ID INPUT ####
+
         id_label = QLabel("Mod ID:")
         self.id = QLineEdit()
 
@@ -91,18 +93,63 @@ class SetupWindow(QWidget):
             "id",
         )
 
+        # RANDOMIZE BUTTON ###
+
         randomize_button = QPushButton("Randomize")
 
         randomize_button.clicked.connect(
             self.randomize
         )
 
+        # MAX UNIT ID ###
+        max_unit_id_label = QLabel("Max Unit ID:")
+
+        self.max_unit_id = NoWheelSpinBox()
+        self.max_unit_id.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Fixed
+        )
+        self.max_unit_id.setMinimum(-1)
+        self.max_unit_id.setMaximum(9999)
+        self.max_unit_id.setSingleStep(1)
+        connect_value(
+            self.max_unit_id,
+            self.config["mod"],
+            "max_unit_id"
+        )
+
+        # MAX ENEMY ID ###
+        max_enemy_id_label = QLabel("Max Enemy ID:")
+
+        self.max_enemy_id = NoWheelSpinBox()
+        self.max_enemy_id.setSizePolicy(
+            QSizePolicy.Expanding,
+            QSizePolicy.Fixed
+        )
+        self.max_enemy_id.setMinimum(-1)
+        self.max_enemy_id.setMaximum(9999)
+        self.max_enemy_id.setSingleStep(1)
+        connect_value(
+            self.max_enemy_id,
+            self.config["mod"],
+            "max_enemy_id"
+        )
+
+        randomizer_layout = QHBoxLayout()
+        id_layout = QHBoxLayout()
+
         randomizer_layout.addWidget(seed_label)
         randomizer_layout.addWidget(self.seed)
         randomizer_layout.addWidget(id_label)
         randomizer_layout.addWidget(self.id)
 
+        id_layout.addWidget(max_unit_id_label)
+        id_layout.addWidget(self.max_unit_id)
+        id_layout.addWidget(max_enemy_id_label)
+        id_layout.addWidget(self.max_enemy_id)
+
         layout.addLayout(randomizer_layout)
+        layout.addLayout(id_layout)
         layout.addWidget(randomize_button)
 
         # console
@@ -164,6 +211,9 @@ class SetupWindow(QWidget):
                 else str(self.config["mod"]["seed"])
             )
             self.id.setText(self.config["mod"]["id"])
+            
+            self.max_unit_id.setValue(self.config["mod"]["max_unit_id"])
+            self.max_enemy_id.setValue(self.config["mod"]["max_enemy_id"])
 
             self.config_loaded.emit()
 
