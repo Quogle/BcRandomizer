@@ -385,6 +385,7 @@ DEFAULT_CONFIG = {
         },
     },
     "qol": {
+        "gold_cpu_buff": True,
         "behemoth_cube_buff": True,
         "enigma_buff": True,
         "weekday_specials": True,
