@@ -9,7 +9,7 @@ import copy
 
 
 #THIS IS MISSING THE ID OR A WAY TO GET IT FOR YOUCAN WARNING ENEMY
-def add_youcan_warning():
+def _add_youcan_warning():
     """ adds youcan warning enemy to all stages with a youcan
     \n doesnt consider config """
     youcan_id = 377 #its actually 375

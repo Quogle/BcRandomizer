@@ -22,9 +22,7 @@ from ..enemies import ability_altering as abal
 #maybe zombie balancing?
 
 
-config = {}
 
-config["enemy"]["trait_gimmicks"] = 0
 
 """ all these functions act on a single enemy and return it """
 def white_gimmick(stats:list,config=DEFAULT_CONFIG):
@@ -124,7 +122,7 @@ def floating_gimmick(stats:list,config=DEFAULT_CONFIG):
 def dark_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ changes kb and speed of dark enemies in stats and returns it
     \n does nothing if dark is off """
-    if not ["enemy"]["trait_gimmicks"]["dark"]["enabled"]:
+    if not config["enemy"]["trait_gimmicks"]["dark"]["enabled"]:
         return stats
     speed_boost_list = config["enemy"]["trait_gimmicks"]["dark"]["speed_boosts"]
     kb_mult = config["enemy"]["trait_gimmicks"]["dark"]["knockback_mult"]
