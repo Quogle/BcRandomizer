@@ -1,7 +1,9 @@
 DEFAULT_CONFIG = {
     "mod": {
         "seed": None,
-        "id": "bcrando"
+        "id": "bcrando",
+        "max_unit_id": -1,  # Highest unit id that can be selected for swapping. This is so enemies dont completely change every update. -1 to ignore this
+        "max_enemy_id": -1,  # Highest unit id that can be selected for swapping. This is so enemies dont completely change every update. -1 to ignore this
     },
     "enemy": {
         "randomization": {
@@ -11,7 +13,6 @@ DEFAULT_CONFIG = {
             "type": "Fully Random", 
             "keep_class": True,             # peons stay as peons, basically enemies will randomize into similar types ish kinda?????
             "variant_swap": False,          # enemies will randomize into their variants if they have any
-            "max_id": -1,                   # Highest enemy id that can be selected for swapping. This is so enemies dont completely change every update. -1 to ignore this
             "adjust_magnifications": True,  # Adjusts the new enemy's magnification to better match the original enemy's stats
             "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one
 

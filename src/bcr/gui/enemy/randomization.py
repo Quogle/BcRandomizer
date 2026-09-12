@@ -24,7 +24,6 @@ class EnemyRandomization(QWidget):
             rando_config["adjust_magnifications"]
         )
         self.include_eoc.setChecked(rando_config["include_eoc"])
-        self.max_id.setValue(rando_config["max_id"])
 
     def __init__ (self, config):
         super().__init__()
@@ -101,23 +100,5 @@ class EnemyRandomization(QWidget):
         self.layout.addWidget(self.include_eoc)
 
 
-        # Max ID
 
-        max_id_layout = QHBoxLayout()
-        max_id_label = QLabel("Max ID")
-
-        self.max_id = NoWheelSpinBox()
-        self.max_id.setMinimum(-1)
-        self.max_id.setMaximum(9999)
-        self.max_id.setSingleStep(1)
-        connect_value(
-            self.max_id,
-            rando_config,
-            "max_id"
-        )
-
-        max_id_layout.addWidget(max_id_label)
-        max_id_layout.addWidget(self.max_id)
-
-        self.layout.addLayout(max_id_layout)
 
