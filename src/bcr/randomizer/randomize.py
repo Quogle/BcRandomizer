@@ -1,5 +1,6 @@
 """ the central module for the game stats part of the randomizer\n
 everything that utilizes the players config to edit what ends up in download local must pass through here """
+from ..randomizer import file_local
 from ..config.defaults import DEFAULT_CONFIG
 
 

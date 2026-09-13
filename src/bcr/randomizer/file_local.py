@@ -1,3 +1,5 @@
+""" module responsible for setting the conditions required by tadbcmc\n
+doesnt need to be used just needs to be imported """
 import tadbcmc.core.file_handler as fh
 """ this module should be imported into any module actively running code that depends on tadbcmc
 it is required for file search to function correctly """
@@ -8,3 +10,4 @@ fh.set_file_dir(
     Vanilla_store="C:\\Users\\tad\\Documents\\code\\bcc_windows\\store",
     Modded_files="C:\\Users\\tad\\Documents\\code\\bcc_windows\\modded_files"
 )
+fh.set_search_function("all in one dir")
