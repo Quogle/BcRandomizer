@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QPushButton,
 )
 from PySide6.QtCore import Qt
-from src.bcr.gui.themes.dark import DARK_THEME
+from bcr.gui.themes.dark import DARK_THEME
 from .trait_gimmicks import TraitGimmicks
 from .randomization import EnemyRandomization
 from .ability import AbilityRandomization

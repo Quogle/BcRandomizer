@@ -15,7 +15,7 @@ from .enemy.enemy_window import EnemyWindow
 from .unit.unit_window import UnitWindow
 from .combo.combo_window import ComboWindow
 from .setup.setup_window import SetupWindow
-from src.bcr.gui.themes.dark import DARK_THEME
+from bcr.gui.themes.dark import DARK_THEME
 from ..config.defaults import DEFAULT_CONFIG
 
 
