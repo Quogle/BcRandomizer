@@ -14,6 +14,8 @@ from ...apk.packs.required_files import get_required_files
 from ...apk.edit_xml import edit_manifest
 from ...apk.replace_icon import replace_icon
 
+from ...randomizer import randomize as randomize_function
+
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
 DECRYPT_SPECIFICS = True
@@ -169,7 +171,9 @@ class RandomizeThread(QObject):
             exist_ok=True,
         )
 
-        # TODO RANDOMIZER CODE
+        # TODO RANDOMIZER CODE HEY DAB IM ADDING IT HERE
+        randomize_function.randomize_according_to_config(config=config,log=self.log.emit)
+
 
         self.log.emit(
             f"\nEncrypting: {pack_name}"

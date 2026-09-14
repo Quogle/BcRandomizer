@@ -51,7 +51,7 @@ def randomize_abilities(stats:List[List[int]],config=DEFAULT_CONFIG,log=None,pos
         max_enemy_number = split_at+1 #or is it +3
     #first half
     (giveable_ability_names,giveable_ability_checks,giveable_ability_weights,count_array) = _create_all_necessary_informations(info_dict,count_immunities,count_attack_types,second_half=False)
-    stats = _rand_abilities_of_half(stats,minimum_ab_count,count_array,giveable_ability_names,giveable_ability_checks,giveable_ability_weights,starting_id=0,ending_id=max_enemy_number,post_attack_anims=post_attack_anims)
+    stats = _rand_abilities_of_half(stats,minimum_ab_count,count_array,giveable_ability_names,giveable_ability_checks,giveable_ability_weights,starting_id=2,ending_id=max_enemy_number,post_attack_anims=post_attack_anims) #starting index is 2 because dont give the dummy enemies abilities lmao :sob
     #second half
     (giveable_ability_names,giveable_ability_checks,giveable_ability_weights,count_array) = _create_all_necessary_informations(info_dict,count_immunities,count_attack_types,second_half=True)
     stats = _rand_abilities_of_half(stats,minimum_ab_count,count_array,giveable_ability_names,giveable_ability_checks,giveable_ability_weights,starting_id=max_enemy_number,ending_id=-1,post_attack_anims=post_attack_anims)
@@ -69,7 +69,7 @@ def _process_config_for_rando(config=DEFAULT_CONFIG,log=None) -> Tuple[Dict[str,
     \n\tinfo_dict["name"]: [weight,check,apply in first half] """
     split_at = config["mod"]["max_enemy_id"]
     minimum_ab_count = config["enemy"]["ability"]["min_abilities"]
-    count_immunities = config["enemy"]["ability"]["count_imminities"]
+    count_immunities = config["enemy"]["ability"]["count_immunities"]
     count_attack_types = config["enemy"]["ability"]["count_attack_types"]
     w = config["enemy"]["ability"]["weights"]
     bools = config["enemy"]["ability"]["apply_before_split"]
@@ -164,7 +164,7 @@ def _create_all_necessary_informations(info_dict,count_immunities,count_attack_t
     #is there anything else to consider
     return (giveable_ability_names,giveable_ability_checks,giveable_ability_weights,count_array)
 
-def _rand_abilities_of_half(stats:list[list[int]],minimum_ab_count:int,count_array:list[int],give_names:list[str],give_checks:list[int],give_weights:list[int],starting_id=0,ending_id=-1,post_attack_anims=[]):
+def _rand_abilities_of_half(stats:list[list[int]],minimum_ab_count:int,count_array:list[int],give_names:list[str],give_checks:list[int],give_weights:list[int],starting_id=2,ending_id=-1,post_attack_anims=[]):
     """ apply the randomized abilities to enemies within the specified range """
     #these stupid abilities are annoying
     if "single_atk" in give_names: single_index = give_names.index("single_atk")

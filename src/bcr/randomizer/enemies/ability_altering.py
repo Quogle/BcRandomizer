@@ -158,6 +158,8 @@ def _give_ability_strengthen(stats,strength=10,earlyhood=10):
     else:
         #think Ill do earlyhood on a scale from 0-20 corresponding directly to kb counts
         kb_simulation = stats[e.s.kbs]
+        if kb_simulation < 1:
+            kb_simulation = 1 #stop /0 and negative problems
         early_ratio = simp.clamp(earlyhood,0,20)/20
         kb_ratio = int(kb_simulation*early_ratio)
         #now fix the boundaries
@@ -673,7 +675,7 @@ def _give_ability_omni(stats,relative_size=10,blindspot_size=10):
 #UNDONE
 def _give_ability_drain(stats,strength=10,likelihood=10,post_attack_time=-1):
     """ gives stats a drain and returns it """
-    pass
+    return stats
 
 
 

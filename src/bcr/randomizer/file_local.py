@@ -1,13 +1,13 @@
 """ module responsible for setting the conditions required by tadbcmc\n
 doesnt need to be used just needs to be imported """
 import tadbcmc.core.file_handler as fh
+import os
 """ this module should be imported into any module actively running code that depends on tadbcmc
 it is required for file search to function correctly """
-
 fh.set_file_dir(
-    DownloadLocal="C:\\Users\\tad\\Documents\\code\\bcc_windows\\mods\\quogle_npc\\patch",
-    Game_files="C:\\Users\\tad\\Documents\\code\\bcc_windows\\game",
-    Vanilla_store="C:\\Users\\tad\\Documents\\code\\bcc_windows\\store",
-    Modded_files="C:\\Users\\tad\\Documents\\code\\bcc_windows\\modded_files"
+    DownloadLocal=os.path.join("workspace","decrypted","DownloadLocal"),
+    Game_files="",
+    Vanilla_store=os.path.join("workspace","decrypted","vanilla_files"),
+    Modded_files=os.path.join("resources","assets","randomizer_assets")
 )
 fh.set_search_function("all in one dir")

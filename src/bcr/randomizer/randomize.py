@@ -9,6 +9,8 @@ def randomize_according_to_config(config=DEFAULT_CONFIG,log=None):
     """ anything regarding what ends up in download local MUST passs through this function
     \n config and log should be passed here """
     #I will add stuff here as I go
-
+    print("hey")
+    if log != None:
+        log("are u fr?")
 
 
