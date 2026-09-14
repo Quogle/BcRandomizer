@@ -294,7 +294,7 @@ def _general_swap(swap:List[int],unit_info:List[List[int]],maintain_grouping=Tru
             if unit_id in available_at_strength:
                 available_at_strength.remove(unit_id)
             #now its all fine and dandy to choose a unit and remove it from absent dict
-            second_r = rand.randinst(unit_id+300)
+            second_r = srand.randinst(unit_id+300)
             new_id = available_at_strength[second_r.randrange(0,len(available_at_strength))]
             swap[unit_id] = new_id
             absent_dict[str(new_strength)].remove(new_id)
