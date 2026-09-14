@@ -1,13 +1,14 @@
+""" because this module pulls from currently saved enemy stats and edits all stages in both vanilla and dl,\n
+it is probably best to fall after most 'general' changes to enemy stats happen\n
+but must necessarily be before any stages that should not be changed are added to dl """
 from tadbcmc.data.collated_info.enemy_info import *
 set_ENEMY_INFO_unlogged()
 import tadbcmc.core.simple_funcs as simp
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
 import tadbcmc.data.enums.unit_info as ui
-from ...config import defaults
 import tadbcmc.core.seeded_randomization as srand
 import copy
-from .balancing import early_rebalance #should it be early or middle? my guess is early since middle does nothing on its own and I would need it anyways
 import tadbcmc.data.enums.enemy as e
 import math
 import tadbcmc.core.stnmp as stnmp
@@ -34,52 +35,46 @@ whole game:
 
 
 """
-""" VARIABLE EXPLANATION
-swaps:
-    the value and index is the new id cat with index should become (a 300 at 2 means doge becomes whatever 300 is)
-    when initially made all units not to be randomized have their own index as the value
-    all units to be randomized have their value set to -1
-
-
-absent_dict:
-    this is all unit ids currently available for swapping to
-        each swap strength is an array of them
-
-balance scalor:
-    an array where each index is the scalor for proportion at index strength difference
-
-initial chance dict:
-    a dictionary populated with strengths
-        the value at each strength x is itself a dictionary of strengths y
-            contains only the strengths allowed for something of strength x to swap to
-                the value of each y is the result of the difference between x and y in balance scalor
-        the sum of each dictionaries values is 1 so they make for raw ratios
-
-
-"""
-#currently written code needs to be changed to include enemy bases, which can probably be done by running variant swap exclusively on those enemy bases that should swap
-
-"""
-algorithm:
- - treat each side of the id limit entirely distinctly
-first step is processing the data from ENEMY_INFO to contain the necessary information of [strength,included,variant_id]
-next step is to create the initial swap for this half
-    all included get set to -1, all excluded get set to self
-define variant swap:
-    act on all variants whos unit counts are greater than 1
-    randomize the order of units included from that variant, then duplicate and rotate the array to get the from and to arrays
-    apply the from to array
-now that variant swap is defined, first attacking enemy base variant swap must be run on this swap, if there is only one in this half set to self
-now if variant swap, run them to fill out the swap a bit
-now fill out the rest of the swap if general swap is on
-
-
-
-
+"""VARIABLE EXPLANATION:
+swap - a 1D array where the value x and index y means y swaps to x
+    while being made values that should not be swapped are set to themselves while things that have yet to find something to swap to are set to -1
+unit_info - a 2D array where the values [x,y,z] at index w refer to the x:swap_strength y:included_in_swap z:variant_id for a unit with id w
+scalor - a 1D array comprising the relative chances for something swapping to a strength difference of the value at difference index
+variant_dict - a dictionary of keys:variant_id values:list of unit_ids in that variant
+absent_dict - a dictionary of keys:swap_strengths and values:list of unit_ids yet to be used with that strength
+base_mult_dict - a dictionary with keys of each strength in this swap half where the value of key x is:
+    a dictionary with keys of each strength that strength x can swap to, as controlled by keep class and consider strength, where the value of key y is:
+        a float for the base chance of something of x strength swapping to y strength (the sum of floats is 1)
+appswap - a 2d array where the list [x,y] at index z means z swaps to x and its magnification is multiplied by y
 
 
 
 """
+""" per game algorithm
+do each side of the id split line seperately
+first get the unit info for all units in this swap half
+using that unit info create the initial swap with all units not included set to themself and all else set to -1
+start by running variant swap on attacking enemy bases as these cannot swap to anything but another enemy base (if they did not end up in variant swap due to lack of 2+ bases on this side of the dividing line then just set enemy bases to themself)
+now if variant swap enabled run variant swap:
+    for each variant list randomly order the list and then rotate a copy to create from and to lists and then apply them
+now if general swap enabled run general swap:
+    create a randomly ordered list of all units in swap that have yet to be placed
+    if that order, for each unit compute what strength it should swap to:
+        the relative chance of each strength is obtained by looping through all possible strengths base chances as specified in base_mult_dict and multiplying each float by the number of units currently remaing with that strength (as obtained from the lists in absent dicts)
+        now obtain all units at that strength (from absent dict) and choose a random one, set this unit to it and remove it from absent dict
+        last man standing ends up set to self
+now all remaing units not filled are set to self (likely just because general swap was not requested)
+applyable swap (appswap) is created, the formula for magnification is the square root of the product of hp and dpf ratios
+apply appswap to all files, currently eoc is not treated distinctly
+"""
+
+
+
+
+
+
+
+
 
 """ functions for establishing initial information """
 def _get_unit_information(info=ENEMY_INFO,starting_id=0,ending_id=-1) -> List[List[int]]:
