@@ -670,8 +670,10 @@ def _give_ability_omni(stats,relative_size=10,blindspot_size=10):
     stats[e.s.ldWidth] = int(-width)
     return stats
 
-
-
+#UNDONE
+def _give_ability_drain(stats,strength=10,likelihood=10,post_attack_time=-1):
+    """ gives stats a drain and returns it """
+    pass
 
 
 

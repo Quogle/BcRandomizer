@@ -1,17 +1,18 @@
+""" because this module pulls from currently saved enemy stats and edits all stages in both vanilla and dl,\n
+it is probably best to fall after most 'general' changes to enemy stats happen\n
+but must necessarily be before any stages that should not be changed are added to dl """
 from tadbcmc.data.collated_info.enemy_info import *
 set_ENEMY_INFO_unlogged()
 import tadbcmc.core.simple_funcs as simp
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
 import tadbcmc.data.enums.unit_info as ui
-from ...config import defaults
-import tadbcmc.core.seeded_randomization as rand
+import tadbcmc.core.seeded_randomization as srand
 import copy
-from .balancing import early_rebalance #should it be early or middle? my guess is early since middle does nothing on its own and I would need it anyways
 import tadbcmc.data.enums.enemy as e
 import math
 import tadbcmc.core.stnmp as stnmp
-
+from typing import Dict,List
 
 
 
@@ -34,30 +35,38 @@ whole game:
 
 
 """
-""" VARIABLE EXPLANATION
-swaps:
-    the value and index is the new id cat with index should become (a 300 at 2 means doge becomes whatever 300 is)
-    when initially made all units not to be randomized have their own index as the value
-    all units to be randomized have their value set to -1
+"""VARIABLE EXPLANATION:
+swap - a 1D array where the value x and index y means y swaps to x
+    while being made values that should not be swapped are set to themselves while things that have yet to find something to swap to are set to -1
+unit_info - a 2D array where the values [x,y,z] at index w refer to the x:swap_strength y:included_in_swap z:variant_id for a unit with id w
+scalor - a 1D array comprising the relative chances for something swapping to a strength difference of the value at difference index
+variant_dict - a dictionary of keys:variant_id values:list of unit_ids in that variant
+absent_dict - a dictionary of keys:swap_strengths and values:list of unit_ids yet to be used with that strength
+base_mult_dict - a dictionary with keys of each strength in this swap half where the value of key x is:
+    a dictionary with keys of each strength that strength x can swap to, as controlled by keep class and consider strength, where the value of key y is:
+        a float for the base chance of something of x strength swapping to y strength (the sum of floats is 1)
+appswap - a 2d array where the list [x,y] at index z means z swaps to x and its magnification is multiplied by y
 
-
-absent_dict:
-    this is all unit ids currently available for swapping to
-        each swap strength is an array of them
-
-balance scalor:
-    an array where each index is the scalor for proportion at index strength difference
-
-initial chance dict:
-    a dictionary populated with strengths
-        the value at each strength x is itself a dictionary of strengths y
-            contains only the strengths allowed for something of strength x to swap to
-                the value of each y is the result of the difference between x and y in balance scalor
-        the sum of each dictionaries values is 1 so they make for raw ratios
 
 
 """
-#currently written code needs to be changed to include enemy bases, which can probably be done by running variant swap exclusively on those enemy bases that should swap
+""" per game algorithm
+do each side of the id split line seperately
+first get the unit info for all units in this swap half
+using that unit info create the initial swap with all units not included set to themself and all else set to -1
+start by running variant swap on attacking enemy bases as these cannot swap to anything but another enemy base (if they did not end up in variant swap due to lack of 2+ bases on this side of the dividing line then just set enemy bases to themself)
+now if variant swap enabled run variant swap:
+    for each variant list randomly order the list and then rotate a copy to create from and to lists and then apply them
+now if general swap enabled run general swap:
+    create a randomly ordered list of all units in swap that have yet to be placed
+    if that order, for each unit compute what strength it should swap to:
+        the relative chance of each strength is obtained by looping through all possible strengths base chances as specified in base_mult_dict and multiplying each float by the number of units currently remaing with that strength (as obtained from the lists in absent dicts)
+        now obtain all units at that strength (from absent dict) and choose a random one, set this unit to it and remove it from absent dict
+        last man standing ends up set to self
+now all remaing units not filled are set to self (likely just because general swap was not requested)
+applyable swap (appswap) is created, the formula for magnification is the square root of the product of hp and dpf ratios
+apply appswap to all files, currently eoc is not treated distinctly
+"""
 
 
 
@@ -67,36 +76,83 @@ initial chance dict:
 
 
 
+""" functions for establishing initial information """
+def _get_unit_information(info=ENEMY_INFO,starting_id=0,ending_id=-1) -> List[List[int]]:
+    """ gets the information [strength,included,variant] for all units in range """
+    #first get the size of the swap info
+    if ending_id == -1:
+        ending_id = len(info)
+    size = ending_id-starting_id
+    #now get the swap info [strength,included,variant]
+    unit_info = []
+    for u_id in range(0,size): #the actual position in info is NOT u_id
+        real_id = starting_id+u_id
+        this_info = [-1,True,0]
+        this_info[0] = info[real_id][ui.e.swap_strength]
+        this_info[1] = info[real_id][ui.e.included_in_swap]
+        this_info[2] = info[real_id][ui.e.variant_id]
+        unit_info.append(this_info)
+    return unit_info
 
+def _get_strength_base_mult_dict(unit_info,maintain_grouping,consider_strength) -> Dict[str,Dict[str,float]]:
+    """ gets the dictionary where at each strength is a dictionary containing float multipliers for each strength
+    \n the floats in each dict sum to 1 """
+    #first get the scalor to use for setting the multiples
+    scalor = _get_scalor_array(consider_strength)
+    #get which strengths are even used
+    used_swap_strengths = []
+    for u_id in range(0,len(unit_info)):
+        if unit_info[u_id][0] not in used_swap_strengths:
+            used_swap_strengths.append(unit_info[u_id][0])
+    used_swap_strengths.sort()
+    #now create the dict
+    base_mult_dict = {}
+    for strength in used_swap_strengths:
+        #first step is determining what groups it can even swap to
+        #lower bound is the lowest group allowed, upper bound is 1 beyond the highest group allowed
+        if maintain_grouping:
+            lower_bound = 10*int(strength/10)
+            upper_bound = lower_bound + 10
+        else:
+            lower_bound = simp.clamp(strength-9,0,100)
+            upper_bound = lower_bound + 19
+        #patch for chaos
+        if not consider_strength:
+            lower_bound = used_swap_strengths[0]
+            upper_bound = used_swap_strengths[-1] + 1
+        #now create the dictionary containing only those groups
+        this_dict = {}
+        for x in range(lower_bound,upper_bound):
+            if x in used_swap_strengths: #no sense in including anything that doesnt exist
+                diff = abs(x-strength)
+                if diff >= 10: #this is just for chaos mode
+                    diff = 10
+                this_dict[str(x)] = scalor[diff]
+        #now get the sum of all in that dict so the total sum can be set to 1
+        sum = 0
+        for each in this_dict:
+            sum += this_dict[each]
+        for each in this_dict:
+            this_dict[each] *= (1/sum) #sets total sum to 1
+        #now set it as the dict under this strength
+        base_mult_dict[str(strength)] = this_dict
+    #should be all good
+    return base_mult_dict
 
-
-
-
-
-
-    
-
-
-
-
-""" functions for getting initial information """
-
-
-
-def _get_initial_balance_scalor(chaos=False):
+def _get_scalor_array(consider_strength=True) -> List[float]:
     """ gets the balance array to scale the chance of groups by
     \n index in array is the difference between the swap strengths
-    \n caps out at 9 difference """
+    \n len(array) = 11 """
     balance_scalor = []
     for x in range(0,10):
         scale = 1/((0.9 + 0.20*x)**2)-0.01*x
         balance_scalor.append(scale)
     balance_scalor.append(0) #this is so anything outside the range can just call to -1 and it nullifies the chance
-    if chaos: #set all proportions to 1
+    if not consider_strength: #set all proportions to 1
         for x in range(0,len(balance_scalor)):
             balance_scalor[x] = 1
     return balance_scalor
-    """ relative proportions:
+    """ relative proportions when considering strength:
     0:1.23x
     1:0.82x
     2:0.57x
@@ -110,86 +166,38 @@ def _get_initial_balance_scalor(chaos=False):
     10:0x
     """
 
-def _get_initial_chance_dict(balance_scalor=_get_initial_balance_scalor(),maintain_grouping=True,chaos=False):
-    """ makes a base chance dict for each strength
-    \n so a unit with a strength of 15 will call dict["15"] and get a dictionary with say 11-19 as its keys
-     each key has its distance from 15 used to set the base amount
-    \n the sum of the initial chances is 1 (so it can be looped through for a proportion that ignores all else) """
-    #get which ids are even used
-    used_swap_strengths = []
-    for each in ENEMY_INFO:
-        if each[ui.e.swap_strength] not in used_swap_strengths:
-            used_swap_strengths.append(each[ui.e.swap_strength])
-    if -1 in used_swap_strengths:
-        used_swap_strengths.remove(-1)
-    used_swap_strengths.sort()
-    #now create the initial chance dict
-    initial_chance_dict = {}
-    for strength in used_swap_strengths:
-        #first step is determining what groups it can even swap to
-        #lower bound is the lowest group allowed, upper bound is 1 beyond the highest group allowed
-        if maintain_grouping:
-            lower_bound = 10*int(strength/10)
-            upper_bound = lower_bound + 10
-        else:
-            lower_bound = simp.clamp(strength-9,0,100)
-            upper_bound = lower_bound + 19
-        #patch for chaos
-        if chaos:
-            lower_bound = used_swap_strengths[0]
-            upper_bound = used_swap_strengths[-1] + 1
-        #now create the dictionary containing only those groups
-        this_dict = {}
-        for x in range(lower_bound,upper_bound):
-            if x in used_swap_strengths: #no sense in including anything that doesnt exist
-                diff = abs(x-strength)
-                if diff >= 10: #this is just for chaos mode
-                    diff = 10
-                this_dict[str(x)] = balance_scalor[diff]
-        #now get the sum of all in that dict so the total sum can be set to 1
-        sum = 0
-        for each in this_dict:
-            sum += this_dict[each]
-        for each in this_dict:
-            this_dict[each] *= (1/sum) #sets total sum to 1
-        #now set it as the dict under this strength
-        initial_chance_dict[str(strength)] = this_dict
-    #should be all good
-    return initial_chance_dict
-
-def _get_initial_swaps():
-    """ gets the initial swap array where entities included in the swap are -1
-    \n collabs and things with a swap strength of -1 are excluded by putting their id at their own index (so they swap to themself) """
-    swaps = []
-    vanilla_stats = gf.file_reader(fn.ENEMY_STATS,vanilla=True)
-    for x in range(0,len(vanilla_stats)):
-        swaps.append(-1)
-        if ENEMY_INFO[x][ui.e.collab] == 1:
-            swaps[-1] = x
-        if ENEMY_INFO[x][ui.e.swap_strength] < 0: #are these two conditions alone enough?
-            swaps[-1] = x
-    return swaps
-
-def _get_initial_variant_dict(start_from=0,run_till=-1):
-    """ gets a dictionary where the values at each key is an array of unit id in that variant
-    \n so doge variant 1 would be [2,48,169,...] for doge ddark shib and so on"""
+def _get_variant_dict(swap_info:list) -> Dict[str,List[int]]:
+    """ gets all the variants in in swap info
+    \n discards are variants with only one unit included """
     variant_dict = {}
-    if run_till == -1:
-        end_point = len(ENEMY_INFO)
-    else:
-        end_point = run_till + 1
-    for e_id in range(start_from,end_point):
-        e_var = ENEMY_INFO[e_id][ui.e.variant_id]
-        if e_var > 0: #variants should only be above 0
-            if str(e_var) not in variant_dict:
-                variant_dict[str(e_var)] = []
-            variant_dict[str(e_var)].append(e_id)
+    for u_id in range(0,len(swap_info)):
+        this_variant = str(swap_info[u_id][2])
+        included = swap_info[u_id][1]
+        if included:
+            if this_variant not in variant_dict:
+                variant_dict[this_variant] = []
+            variant_dict[this_variant].append(u_id)
+    #now remove all with only one variant
+    for each in variant_dict:
+        if len(variant_dict[each]) < 2:
+            variant_dict.pop(each)
+    #that should be the full variant dict for this half
     return variant_dict
 
+def _get_initial_swap(unit_info) -> List[int]:
+    """ gets the initial swap array for this half where entities included in the swap are -1
+    \n this not to be swapped are excluded by putting their id at their own index (so they swap to themself) """
+    swaps = []
+    for u_id in range(0,len(unit_info)):
+        #if its not allowed set it equal to itself
+        if unit_info[u_id][1]:
+            swaps.append(-1)
+        else:
+            swaps.append(u_id)
+    return swaps
 
-""" parts of completing a swap array """
-
-def _get_unit_look_order(swap):
+""" initial information for filling out a general swap """
+def _get_unit_look_order(swap) -> List[int]:
     """ gets a randomized order of indexes that still need to be filled """
     #get the list of indexes that need filling
     missing_units = []
@@ -198,91 +206,87 @@ def _get_unit_look_order(swap):
             missing_units.append(x)
     #now randomize its order
     randomized_order = []
-    r = rand.randinst(87)
+    r = srand.randinst(807)
     while len(missing_units) > 0:
         randomized_order.append(missing_units.pop(r.randrange(0,len(missing_units))))
     #all set
     return randomized_order
 
-def _get_inital_absent_dict(swap):
+def _get_inital_absent_dict(swap_info,swap) -> Dict[str,List[int]]:
     """ gets a dictionary of all currently unused unit ids at each power """
     absent_dict = {}
     #first get all the unused units
     units = []
-    for x in range(0,len(swap)):
-        if x not in swap:
-            units.append(x)
+    for u_id in range(0,len(swap)):
+        if u_id not in swap:
+            units.append(u_id)
     #now add each of those unit to arrays in their respective powers
-    for each in units:
-        this_strength = str(ENEMY_INFO[each][ui.e.swap_strength])
+    for u_id in units:
+        this_strength = str(swap_info[u_id][0])
         if this_strength not in absent_dict:
             absent_dict[this_strength] = []
-        absent_dict[this_strength].append(each)
-    #now kill all outliers that shouldnt be
-    if "-1" in absent_dict:
-        absent_dict.pop("-1")
+        absent_dict[this_strength].append(u_id)
     #should be all good
     return absent_dict
 
-def _get_this_units_new_strength(unit_id,absent_dict,initial_chance_dict,random_number=0,debug=False):
+""" parts of completing a general swap """
+def _get_this_units_new_strength(unit_id:int,self_strength:int,absent_dict:Dict[str,List[int]],base_mult_dict:Dict[str,Dict[str,float]],random_number=0,log=None):
     """ determines what strength this unit is swapping to
     \n takes a random number between 0 and 100,000 """
     """ 
-    works by setting each allowed grouping as (groupings size)*(grouping difference in balance scalor)
+    works by setting each allowed strength as (strength unit count)*(strength base mult)
     then these chances are adjusted to sum to 100k and where random number falls in that range determines the strength
-     """
-    #first step is determining what groups it can even swap to
-    this_unit_strength = ENEMY_INFO[unit_id][ui.e.swap_strength]
-    chance_dict = copy.deepcopy(initial_chance_dict[str(this_unit_strength)])
-    #get a dict with identical keys where the values are the number of swappable units in each strength
-    count_dict = copy.deepcopy(chance_dict)
-    for each in count_dict:
-        number_of_units = len(absent_dict[each])
-        if unit_id in absent_dict[each]: #dont count self
-            number_of_units -= 1
-        count_dict[each] = number_of_units
-    #now multiply those by the number of units to scale the chance of each group linearly by its size
-    for each in chance_dict:
-        chance_dict[each] *= count_dict[each]
+    """
+    #first snag the base mult for this strength
+    chance_dict = copy.deepcopy(base_mult_dict[str(self_strength)])
+    #now multiply each of those chances by the number of units at that strength, count the total number of units
+    for strength in chance_dict:
+        count = len(absent_dict[strength])
+        if unit_id in absent_dict[strength]:
+            count -= 1
+        chance_dict[strength] *= count
+        total_unit_number += count
     #now get the sum of chances, and multiply each chance by 100/sum in order to scale it to 100
     sum = 0
     for each in chance_dict:
         sum += chance_dict[each]
     if sum == 0:
-        if debug:
-            print("there were no units for " + str(unit_id) + " to swap to")
+        if log != None:
+            log("there were no enemies for " + str(unit_id) + " to swap to, it is common to see 1-2 of these errors")
         return -1
     for each in chance_dict:
-        chance_dict[each] *= (100000/sum)
+        chance_dict[each] *= (100000/sum) #maybe I should reduce this by one for fp errors?
     #now get a random number between 0-100000 and loop through chance dict until its in that range and return it
     for each in chance_dict:
         if random_number <= chance_dict[each]:
             return int(each)
         else:
             random_number -= chance_dict[each]
-    if debug:
-        print("failed to properly reduce random number")
-        print("remainder: " + str(random_number))
+    if log != None:
+        log("failed to properly reduce random number in _get_this_units_new_strength (e)")
+        log("remainder: " + str(random_number))
     return -1
 
-def _populate_swap(swaps,balance_scalor=_get_initial_balance_scalor(),initial_chance_dict=_get_initial_chance_dict(),maintain_grouping=True,debug=False):
+def _general_swap(swap:List[int],unit_info:List[List[int]],maintain_grouping=True,consider_strength=True,log=None):
     """ fills out all remaining entries in the swap and returns """
-    #fuck pythong
-    swap = copy.deepcopy(swaps)
+    #fuck python
+    swap = copy.deepcopy(swap)
     #get the order of indexes to fill
     unit_order = _get_unit_look_order(swap)
-    #get the absent dict
+    #get the absent dict and base mult dict
     absent_dict = _get_inital_absent_dict(swap)
+    base_mult_dict = _get_strength_base_mult_dict(unit_info,maintain_grouping,consider_strength)
     #ok so from here on out I assume that all the units available for swapping to are also the units needing swapping from
     #I think this is a fine assumption because no matter how I do this it literally cant work if that isnt the case
     for unit_id in unit_order:
-        r = rand.randinst(unit_id+100) #this is prolly fine
+        own_strength = unit_info[unit_id][0]
+        r = srand.randinst(unit_id+100) #this is prolly fine
         #first step is getting the strength to swap to
-        new_strength = _get_this_units_new_strength(unit_id,absent_dict,balance_scalor,initial_chance_dict,maintain_grouping,r.randrange(0,100000),debug=debug)
+        new_strength = _get_this_units_new_strength(unit_id,own_strength,absent_dict,base_mult_dict,r.randrange(0,100000),log)
         #what do I do when it fails? just set it to itself I guess
         if new_strength == -1:
-            if debug:
-                print("forced to set " + str(unit_id) + " to self")
+            if log != None:
+                log("forced to set " + str(unit_id) + " to self")
             swap[unit_id] = unit_id
         else:
             #now I should be good to duplicate the strength array and remove self from it
@@ -290,51 +294,102 @@ def _populate_swap(swaps,balance_scalor=_get_initial_balance_scalor(),initial_ch
             if unit_id in available_at_strength:
                 available_at_strength.remove(unit_id)
             #now its all fine and dandy to choose a unit and remove it from absent dict
-            second_r = rand.randinst(unit_id+300)
+            second_r = srand.randinst(unit_id+300)
             new_id = available_at_strength[second_r.randrange(0,len(available_at_strength))]
             swap[unit_id] = new_id
             absent_dict[str(new_strength)].remove(new_id)
     #all good
     return swap
 
-def _populate_variants(swaps,variant_dict,shift_index=0):
-    """ populates a swap by completing the variants
-    \n shift index is the amount to reduce the index by, so for swap2 this should be the length of swap1 """
-    r = rand.randinst(104)
-    for each in variant_dict:
-        this_vswap = _process_variant(variant_dict[each],r.randrange(0,1000))
-        #now actually set those values in swap
-        for x in range(0,len(this_vswap[0])):
-            swaps[this_vswap[0][x]-shift_index] = this_vswap[1][x]
-    #should be all good
-    return swaps
 
-def _process_variant(variant,random_number):
-    """ turns an array of variants [x,y,z] int an array [[x,y,z],[y,z,x]] """
-    #first randomly order the array
-    r = rand.randinst(random_number)
-    new_order = []
-    to_add = copy.deepcopy(variant)
-    for x in range(0,len(to_add)):
-        new_order.append(to_add.pop(r.randrange(0,len(to_add))))
-    #now create a new array and rotate that by a random number less than the length of the array
-    to_become = copy.deepcopy(new_order)
-    for x in range(0,r.randrange(0,len(new_order))):
-        to_become.append(to_become.pop(0)) #this will prolly die if theres an empty array on variant for some reason
-    #should be all good
-    return [new_order,to_become]
+""" parts of completing a variant swap """
+def _process_variant(swap:List[int],variant_list:List[int],random_number:int):
+    """ takes a swap and a list of all ids at that variant and fills out the swap with that variant """
+    r = srand.randinst(random_number)
+    #first get the before/after array in the usual random order rotated fasion
+    before = []
+    temp_l = copy.deepcopy(variant_list)
+    for x in range(0,len(temp_l)):
+        before.append(temp_l.pop(r.randrange(0,len(temp_l))))
+    after = copy.deepcopy(before)
+    after.append(after.pop(0)) #it only needs to be rotated one entry
+    #now apply before/after to swap and return it
+    for x in range(0,len(before)):
+        swap[before[x]] = after[x]
+    return swap
 
+def _process_all_variants(swap:List[int],variant_dict:Dict[str,List[int]],random_number:int):
+    """ fills out swap by processing all variants in variant dict and returns swap """
+    r = srand.randinst(random_number)
+    #for each variant just process them individually
+    for variant in variant_dict:
+        this_random_number = r.randrange(0,1000)
+        swap = _process_variant(swap,variant_dict[variant],this_random_number)
+    return swap
 
+""" full function for creating a swap half """
+def create_swap_half(starting_id=0,ending_id=-1,maintain_grouping=True,consider_strength=True,general_swap=False,variant_swap=False,log=None):
+    """ creates the swap across input unit ids from scratch """
+    #first step is getting the correct unit info
+    unit_info = _get_unit_information(ENEMY_INFO,starting_id,ending_id)
+    #now get all the initial information resulting from it
+    swap = _get_initial_swap(unit_info)
+    variant_dict = _get_variant_dict(unit_info)
+    #now first step in filling out the swap is enemy bases
+    #manually inputting attacking bases for now
+    if "94" not in variant_dict:
+        #if it isnt in variant dict I have to do this manually
+        #just set all unit ids with a variant id of 94 to themself
+        for unit_id in range(0,len(swap)):
+            if unit_info[unit_id][2] == 94:
+                swap[unit_id] = unit_id
+    else:
+        swap = _process_variant(swap,variant_dict.pop("94"),94)
+    #now all other variants are good to be filled in
+    if variant_swap:
+        swap = _process_all_variants(swap,variant_dict,603)
+    #now general swap is good to be done
+    if general_swap:
+        swap = _general_swap(swap,unit_info,maintain_grouping,consider_strength,log)
+    #now all remaining entries should be set to themself
+    for unit_id in range(0,len(swap)):
+        if swap[unit_id] == -1:
+            swap[unit_id] = unit_id
+    #now shift all the unit ids up to where they should be
+    for unit_id in range(0,len(swap)):
+        swap[unit_id] = unit_id + starting_id
+    #should be all good to return this swap
+    return swap
 
+#please dont call this function if both variant and general swap are off but per game is on that is a massive waste of time
+""" full per game function """
+def swap_per_game(first_enemy_not_considered=-1,variant_swap=False,general_swap=False,maintain_grouping=True,consider_strength=True,adjust_mags=True,include_eoc=False,log=None,post_attack_anims=[]):
+    """ creates a swap for the whole game and applies it """
+    #first step, create the two halves of the total swap
+    swap1 = create_swap_half(0,first_enemy_not_considered,maintain_grouping,consider_strength,general_swap,variant_swap,log)
+    if first_enemy_not_considered == -1:
+        swap = swap1
+    else:
+        swap2 = create_swap_half(first_enemy_not_considered,-1,maintain_grouping,consider_strength,general_swap,variant_swap,log)
+        swap = swap1 + swap2
+    #now turn that swap into an applyable swap
+    app_swap = _turn_swap_into_applyable_swap(swap,balance_mag=adjust_mags,post_attack_anims=post_attack_anims)
+    #now apply that swap to all the files
+    #for now it is using the eoc bool, when I make eoc actually use different enemies I need to have it be entirely separate since they arent goint to swap to the right enemy otherwise
+    _apply_app_swap_to_stages(app_swap,include_eoc)
+    
+
+""" full per stage function """
+#Ill do this later
 
 
 """ parts for calculating stats """
 
-def _turn_swap_into_applyable_swap(swap,balance_mag=True,config=defaults.DEFAULT_CONFIG,post_attack_anims=[]):
+def _turn_swap_into_applyable_swap(swap,balance_mag=True,post_attack_anims=[]):
     """ takes a swap array and turns it into an equal length array
     \n each index contains [id to swap to,amount to multiply mag by] """
-    #first step is getting the correct stat array to use
-    estat = early_rebalance(config)
+    #first step is getting the correct stat array to use (Ive decided it should be the actually current version of enemy stats)
+    estat = gf.file_reader(fn.ENEMY_STATS)
     #now get which of the two lists is shorter
     shorter = len(estat)
     if len(swap) < shorter:
@@ -427,63 +482,6 @@ def _apply_app_swap_to_stages(app_swap,include_eoc=False):
         if edited:
             gf.file_writer(stage_name,stage_sche)
     
-
-
-
-
-
-
-
-
-
-""" full parts """
-
-def _do_id_swap(debug=False,balance_mag=True,maintain_grouping=True,split_id=-1,swap_eoc=False,variant_swap=False,config=defaults.DEFAULT_CONFIG,post_attack_anims=[],chaos=False):
-    """ does all the id swap things """
-    #first get the swap array and split it into its respective parts
-    swap = _get_initial_swaps()
-    if split_id == -1:
-        swap1 = copy.deepcopy(swap)
-        swap2 = []
-    else:
-        swap1 = []
-        swap2 = []
-        for x in range(0,len(swap)):
-            if x <= split_id: #this means it goes up to and including split id
-                swap1.append(swap[x])
-            else:
-                swap2.append(swap[x])
-    #I dont think variant swap will use any of the chance stuff
-    if variant_swap:
-        #first get variant dict
-        varianct_dict = _get_initial_variant_dict(0,split_id)
-        swap1 = _populate_variants(swap1,varianct_dict)
-        varianct_dict = _get_initial_variant_dict(split_id)
-        swap2 = _populate_variants(swap2,varianct_dict,shift_index=len(swap1))
-    #now get balance scalor and init chance dict
-    balance_scalor = _get_initial_balance_scalor(chaos)
-    init_chance_dict = _get_initial_chance_dict(balance_scalor,maintain_grouping,chaos)
-
-    #now complete the rest of the swaps and recombine
-    swap1 = _populate_swap(swap1,balance_scalor,init_chance_dict,maintain_grouping,debug)
-    swap2 = _populate_swap(swap2,balance_scalor,init_chance_dict,maintain_grouping,debug)
-    swap = swap1 + swap2
-    #and now get the applyable version
-    app_swap = _turn_swap_into_applyable_swap(swap,balance_mag,config,post_attack_anims)
-    #and now apply it to nearly every stage in the game!
-    _apply_app_swap_to_stages(app_swap,swap_eoc)
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

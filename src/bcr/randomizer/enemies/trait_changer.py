@@ -8,142 +8,137 @@ import tadbcmc.core.seeded_randomization as srand
 
 
 
-#THIS IS MISSING CONFIG FOR REMOVING METALS
-def trait_randomization(stats,config=DEFAULT_CONFIG):
+#THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
+def trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
     """ randomizes the traits of stats according to config and returns it
     \n does nothing except edit traits, starred must be done elsewhere """
-    """ 
-    this works by getting all the traits a unit does and doesnt have and then
-    measuring the length of has traits to get how many it should have after its all done
-    then it recombines hasnt and has traits with hasnt in fronts
-    and loops through that array adding traits until the number of traits it should have is reached
+    """
+    start by getting all traits, and all allowed traits
+    for each unit:
+        randomize the order to look through traits
+        log the  traits a unit has and then the number (adding 1 if 0 and untraited get trait)
+        in the randomized order, for each trait in allowed that a unit didnt og have add it and reduce trait count till 0
+        if trait count still > 0, for each trait in allowed that a unit did og have add it and reduce trait count till 0
+        if a unit still has remaining traits to be added ignore it
     """
     #first get the config options needed
     give_untraited_traits = config["enemy"]["trait"]["untraited_get_trait"]
     remove_metal = config #idk where this is rn
-    #initialize the arrays
+    trait_bools = [] #this is how Im turning traits of but its just all gonna be true until I know what Im doing
+    #now get all and allowed
     all_traits = []
-    for trait in e.t:
-        all_traits.append(int(trait))
-    metal = int(e.t.metal) #this is here cause its easier to have this as a distinct variable since I dont have to worry about accidentally comparing an int to an enum of int type
-    for e_id in range(0,len(stats)):
-        #first get this units srand
-        r = srand.randinst(240+57*e_id)
-        #first step is get the order of traits to look in for this unit
-        temp_traits = copy.deepcopy(all_traits)
-        this_trait_order = []
-        for x in range(0,len(temp_traits)):
-            this_trait_order.append(temp_traits.pop(r.randrange(0,len(temp_traits))))
-        #now in that order get all the traits a unit currently has and hasnt
+    for each in e.t:
+        all_traits.append(int(each))
+        trait_bools.append(True)
+    allowed = []
+    disallowed = []
+    for trait_id in range(0,len(all_traits)):
+        if trait_bools[trait_id]:
+            allowed.append(all_traits[trait_id])
+        else:
+            disallowed.append(all_traits[trait_id])
+    if len(allowed) == 0:
+        if log != None:
+            log("trait randomization was attempted with 0 allowed traits")
+    #now create the before and after arrays
+    for u_id in range(0,len(stats)):
+        #start by getting this units trait look order
+        r = srand.randinst(240+57*u_id)
+        trait_look_order = _get_this_unit_look_order(allowed,disallowed,r)
+        #count and log traits as theyre being removed
         has_traits = []
-        hasnt_traits = []
-        for trait in this_trait_order:
-            if stats[e_id][trait] == 1:
+        for trait in trait_look_order:
+            if stats[u_id][trait] == 1:
                 has_traits.append(trait)
-            else:
-                hasnt_traits.append(trait)
-        number_of_traits = len(has_traits) #this is for later
-        #now create an array thats a combo of hasnt + has
-        new_trait_array = copy.deepcopy(hasnt_traits + has_traits)
-        #if removing metals do it here
-        if remove_metal and metal in new_trait_array:
-            new_trait_array.remove(metal)
-        #also give untraited things a trait here
+                stats[u_id][trait] = 0
+        number_of_traits = len(has_traits)
+        #fix for untraited things
         if give_untraited_traits and number_of_traits == 0:
             number_of_traits = 1
-        #now removal all traits
-        for trait in this_trait_order:
-            stats[e_id][trait] = 0
-        #now give a trait according to the amount of traits a unit had before
-        for trait in new_trait_array:
+        #now give hasnt traits
+        for trait in trait_look_order:
             if number_of_traits > 0:
-                number_of_traits -= 1
-                stats[e_id][trait] = 1
-        #should be all good
+                if trait not in has_traits and trait in allowed:
+                    number_of_traits -= 1
+                    stats[u_id][trait] = 1
+            else:
+                break
+        #now give has traits
+        for trait in trait_look_order:
+            if number_of_traits > 0:
+                if trait in has_traits and trait in allowed:
+                    number_of_traits -= 1
+                    stats[u_id][trait] = 1
+            else:
+                break
+        #there shouldnt be anything to do if the number of traits is still greater than 0
+        #so this should be all good
     return stats
 
 
-#THIS IS MISSING CONFIG FOR REMOVING METALS
-def trait_swap(stats,config=DEFAULT_CONFIG):
+
+#THIS IS MISSING METHO FOR DETERMINING WHAT TRAITS ARE ALLOWED
+def trait_swap(stats,config=DEFAULT_CONFIG,log=None):
     """ swaps the traits of stats according to config 
     \n does nothing except edit the traits """
     #first get the config options, its only metal right? (and untraited get trait)
     remove_metal = True
     give_untraited_traits = config["enemy"]["trait"]["untraited_get_trait"]
+    #to finish the config information I need to determine the traits allowed and the order to look at them
+    all_traits = []
+    trait_bools = []
+    for each in e.t:
+        all_traits.append(int(each))
+        trait_bools.append(True)
+    #now get allowed and disallowed
+    allowed = []
+    disallowed = []
+    for trait_id in range(0,len(all_traits)):
+        if trait_bools[trait_id]:
+            allowed.append(all_traits[trait_id])
+        else:
+            disallowed.append(all_traits[trait_id])
+    if len(allowed) == 0:
+        if log != None:
+            log("trait swap was attempted with 0 allowed traits")
+        return stats #this function cant work with 0 traits allowed to this goes here
+    #now get the order
+    trait_look_order = _get_this_unit_look_order(allowed,disallowed,srand.randinst(4))
     #this func is being written with the intent for specified swaps to exist in the future
     #so in otherwords I can have multiple already specified swaps, including multiple traits swapping to the same
     #(one trait swapping to multiple however is not allowed so I dont need to work with it in mind)
     from_traits = []
     to_traits = []
     #assume specified swaps are done here
-
-    #now generate the new swaps
-    #start by getting this trait order
-    all_traits = []
-    for each in e.t:
-        all_traits.append(int(each)) #using int so I get the actual int not the enum type int
-    r = srand.randinst(4)
-    temp_tl = copy.deepcopy(all_traits)
-    this_trait_order = []
-    for x in range(0,len(all_traits)):
-        this_trait_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
-    #now get the traits missing from 'from' and 'to' starting by missing from both
-    not_in_from = []
-    not_in_to = []
-    #missing from both
-    for trait in this_trait_order:
-        if trait not in from_traits and trait not in to_traits:
-            not_in_from.append(trait)
-            not_in_to.append(trait)
-    #now get the ones that are only missing from one of the two
-    for trait in this_trait_order:
-        if trait not in from_traits and trait not in not_in_from:
-            not_in_from.append(trait)
-        if trait not in to_traits and trait not in not_in_to:
-            not_in_to.append(trait)
-    #so now we have all the missing traits with the ones missing from both at the start of each array
-    #not_in_from must always be equal length or smaller than not_in_to (its only smaller if specified makes it so)
-    #should be good to simply rotate not_in_from traits (metal will be handled later)
-    r = srand.randinst(99)
-    for x in range(1,r.randrange(1,len(not_in_from)-1)):
-        not_in_from.append(not_in_from.pop())
-    #now we should be all good to just fill out from and to with all the ones in the length of from
-    #however before that we need to log the length filled out by specified swaps for doing metal after this
-    user_specified_length = len(from_traits)
-    for x in range(0,len(not_in_from)):
-        from_traits.append(not_in_from[x])
-        to_traits.append(not_in_to[x])
-    #now all traits have been accounted for, however metal must be dealt with
-    #literally just if swapping to metal hasnt been specified by the user, make whatever swaps to metal swap to the same trait as metal currently swaps to
-    if remove_metal:
-        if int(e.t.metal) in to_traits and to_traits.index(int(e.t.metal)) >= user_specified_length:
-            #metal is always gonna end up in from traits so I dont need to check for that
-            index_metal_from = from_traits.index(int(e.t.metal))
-            index_metal_to = to_traits.index(int(e.t.metal))
-            #set to traits to the value from to traits at the position of metal in from traits
-            to_traits[index_metal_to] = to_traits[index_metal_from]
-    #all good to apply that to it now
-    #start by creating an array with traits and an array without traits
-    with_traits = copy.deepcopy(stats)
-    without_traits = copy.deepcopy(stats)
     
-    for e_id in range(0,len(with_traits)):
-        #first step remove all traits and count how many there were in the process
-        number_of_traits = 0
-        for trait in from_traits: #from traits must have all traits right?
-            if without_traits[e_id][trait] == 1:
-                number_of_traits += 1
-                without_traits[e_id][trait] = 0
-        #now compare the two arrays to apply the swap
+    #now fill out those arrays (based on len of allowed traitss)
+    if len(allowed) == 0:
+        pass #nothing needs to be done
+    elif len(allowed) == 1:
+        (from_traits,to_traits) = _fill_swap_allowed_len_1(from_traits,to_traits,trait_look_order,allowed)
+    else:
+        (from_traits,to_traits) = _fill_swap_allowed_len_morethan_1(from_traits,to_traits,trait_look_order,allowed)
+    #now apply that array
+    before = copy.deepcopy(stats)
+    after = copy.deepcopy(stats)
+    for u_id in range(0,len(after)):
+        #wipe all traits
+        for trait in trait_look_order:
+            after[u_id][trait] = 0
+        #now swap all traits in the from array
+        has_no_trait = True
         for trait_id in range(0,len(from_traits)):
-            if with_traits[e_id][from_traits[trait_id]] == 1:
-                without_traits[e_id][to_traits[trait_id]] = 1
-        #and now do something about untraited units
-        if give_untraited_traits and number_of_traits == 0:
-            untrait_rand = srand.randinst(304+35*e_id)
-            without_traits[e_id][to_traits[untrait_rand.randrange(0,len(to_traits))]] = 1 #this does mean that when multiple traits swap to the same trait untraited are more likely to swap to it, maybe thats good?
-    #ok should be all good to just return 'without traits'
-    return without_traits
+            if before[u_id][from_traits[trait_id]] == 1:
+                has_no_trait = False
+                after[u_id][to_traits[trait_id]] = 1
+        #now do give untraited trait
+        if give_untraited_traits and has_no_trait:
+            #just pick a random one from allowed and give it
+            if len(allowed) > 0:
+                r = srand.randinst(85+16*u_id)
+                after[u_id][allowed[r.randrange(0,len(allowed))]] = 1
+        #should be all good?
+    return after
 
 
 
@@ -151,11 +146,97 @@ def trait_swap(stats,config=DEFAULT_CONFIG):
 
 
 
+def _get_this_unit_look_order(allowed:list,disallowed:list,r:srand.randinst):
+    """ gets the trait look order for this unit """
+    trait_look_order = []
+    #start with allowed
+    temp_tl = copy.deepcopy(allowed)
+    for x in range(0,len(temp_tl)):
+        trait_look_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+    #now do all the remaining
+    temp_tl = copy.deepcopy(disallowed)
+    for x in range(0,len(temp_tl)):
+        trait_look_order.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+    return trait_look_order
 
+def _fill_swap_allowed_len_1(from_traits,to_traits,trait_look_order,allowed):
+    """ func for filling out swap when the number of allowed traits is one """
+    #since I am aware it is one I can literally just populate to traits with it and slap all from traits in as well
+    while len(to_traits) < len(trait_look_order):
+        to_traits.append(allowed[0])
+    for trait in trait_look_order:
+        if trait not in from_traits:
+            from_traits.append(trait)
+    #done!
+    return (from_traits,to_traits)
 
-
-
-
-
+def _fill_swap_allowed_len_morethan_1(from_traits,to_traits,trait_look_order,allowed):
+    """ func for filling out swap when the number of allowed traits is more than one """
+    #start by getting all the allowed not in to traits
+    missing_to = []
+    for trait in trait_look_order:
+        if trait in allowed and trait not in to_traits:
+            missing_to.append(trait)
+    #now make it the right length by adding or removing allowed traits
+    if len(missing_to) + len(to_traits) >= len(trait_look_order):
+        #if missing to is longer than it should be remove the extras
+        while len(missing_to) + len(to_traits) > trait_look_order:
+            missing_to.pop(0)
+    else:
+        #if missing to is shorter than it should be loop through allowed traits adding them
+        cur_pos = -1
+        while len(missing_to) + len(to_traits) < len(trait_look_order):
+            cur_pos += 1
+            if cur_pos >= len(trait_look_order):
+                cur_pos = 0
+            if trait_look_order[cur_pos] in allowed:
+                missing_to.append(trait_look_order[cur_pos])
+    #now randomize its order to prevent linkage
+    temp_tl = copy.deepcopy(missing_to)
+    missing_to = []
+    r = srand.randinst(874)
+    for x in range(0,len(temp_tl)):
+        missing_to.append(temp_tl.pop(r.randrange(0,len(temp_tl))))
+    #now get all the missing from traits
+    missing_from = []
+    for trait in trait_look_order:
+        if trait not in from_traits:
+            missing_from.append(trait)
+    #edge case for if the len of missing from is 1 but that is the trait in missing to
+    if len(missing_from) == 1 and missing_to[0] == missing_from[0]:
+        #just change what it is to the first allowed trait it isnt
+        for trait in trait_look_order:
+            if trait in allowed and trait != missing_to[0]:
+                missing_to[0] = trait
+    #now separate missing from into its two constituent parts
+    missing_from_not_in_missing_to = []
+    missing_from_in_missing_to = []
+    for trait in missing_from:
+        if trait not in missing_to:
+            missing_from_not_in_missing_to.append(trait)
+        else:
+            missing_from_in_missing_to.append(trait)
+    #now place the values from in missing to first
+    #start by setting all the values in missing from to -1 now
+    for x in range(0,len(missing_from)):
+        missing_from[x] = 1
+    #now loop it
+    for trait in missing_from_in_missing_to:
+        index = missing_to.index(trait)
+        while missing_to[index] == trait:
+            index = (index + 1) % len(missing_to)
+        #set it at the new index
+        missing_from[index] = trait
+    #now loop the ones that arent also in missing to
+    for trait in missing_from_not_in_missing_to:
+        index = 0
+        while missing_to[index] != -1:
+            index = (index + 1) % len(missing_to)
+        #set it at new index
+        missing_from[index] = trait
+    #now just slap those arrays on from traits and to traits
+    from_traits = from_traits + missing_from
+    to_traits = to_traits + to_traits
+    return (from_traits,to_traits)
 
 

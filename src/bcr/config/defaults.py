@@ -8,18 +8,22 @@ DEFAULT_CONFIG = {
     "enemy": {
         "randomization": {
             # None          -   Enemies are not randomized
-            # ID Swap       -   Every instance of doge is randomized into ____, etc
-            # Fully Random  -   Randomization is different for every stage
-            "type": "Fully Random", 
-            "keep_class": True,             # peons stay as peons, basically enemies will randomize into similar types ish kinda?????
-            "variant_swap": False,          # enemies will randomize into their variants if they have any
+            # Per Game      -   Every instance of doge is randomized into ____, etc
+            # Per Stage     -   Randomization is different for every stage
+            "type": "None", 
+            #these are two distinct groups, variant swap is one, general swap is another, one can be on while the other is off, or both can be on, or neither
+            "variant_swap":False,           # enemies will swap to their categorized in tadbcmc variant (this is also how enemy bases swap regardless of this bool)
+            "general_swap":True,            # enemies will swap to other enemies regardless of variant, (done after variant so if both on variants are done first and all remaining enemies are randomzied amongst themselves)
+            "consider_strength":True,       # general swap: tries to keep the 'strength' of enemies from differing too much
+            "keep_class": True,             # general swap: peons stay as peons, basically enemies will randomize into similar types ish kinda?????
             "adjust_magnifications": True,  # Adjusts the new enemy's magnification to better match the original enemy's stats
-            "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one
-
+            "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one (in the future we will be able to use this properly, will probably need to make barrier not exist tho)
         },
         "ability": {
             "randomize_abilities": False, # Randomizes enemy abilities, keeps the original amount
             "min_abilities": 0, # Minimum number of abilities an enemy can have
+            "count_immunities":False, #whether or not immunities are counted for number of abilities a unit has
+            "count_attack_types":False, #whether or not multihit(just learned multihit isnt marked as an ability) and ld/omni are counted for number of abilities a unit has
             "weights": {
                 "weaken" : 0,
                 "freeze": 0,
@@ -53,7 +57,52 @@ DEFAULT_CONFIG = {
                 "explosion_immune": 0,
                 "warp_immune": 0,
                 "curse_immune": 0,
-                "toxic_immune": 0,
+                "toxic": 0,
+                "drain":0,
+                "self_destruct":0,
+                "death_surge":0,
+                "barrier":0,
+                "shield":0,
+            },
+            "apply_before_split": {
+                "weaken" : True,
+                "freeze": True,
+                "slow": True,
+                "knockback": True,
+                "warp": True,
+                "curse": True,
+                "dodge": True,
+                "strengthen": True,
+                "survive": True,
+                "base_destroy": True,
+                "crit": True,
+                "savage": True,
+                "wave": True,
+                "mini_wave": True,
+                "surge": True,
+                "mini_surge": True,
+                "explosion": True,
+                "counter_surge": True,
+                "wave_block": True,
+                "single_atk": True,
+                "area_atk": True,
+                "long_distance": True,
+                "omni_strike": True,
+                "weaken_immune": True,
+                "freeze_immune": True,
+                "slow_immune": True,
+                "kb_immune": True,
+                "wave_immune": True,
+                "surge_immune": True,
+                "explosion_immune": True,
+                "warp_immune": True,
+                "curse_immune": True,
+                "toxic": True,
+                "drain":True,
+                "self_destruct":True,
+                "death_surge":True,
+                "barrier":True,
+                "shield":True,
             },
         },
         "trait":{
@@ -350,38 +399,17 @@ DEFAULT_CONFIG = {
             "behemoth_rebalance": False,
             "old_zombies": True,
             "buff_weak_aliens": True,
-            # the old config had buff aliens for story and for sol/events as seperate options idk if we keep
             "remove_itf_crystals": True,
             "remove_cotc_crystals": True,
         },
         "unit_reworks": {
             "courier": True,
-            "jurassic": True,
-            "space": True,
-            "jumprope": True,
-            "hurricat": True,
-            "waitress": True,
-            "aku_researcher": True,
-            "backhoe": True,
-            "mint": True,
-            "punt": True,
-            "merc": True,
-            "capsule": True,
-            "racism_cow": True,
-            "reaper": True,
-            "million_dollar": True,
+            "critters":True,
+            "collabs":True,
             "cop": True,
-            "paladin": True,
-            "cat_clan": True,
-            "verbena": True,
-            "hayabusa": True,
-            "moneko": True,
-            "neneko": True,
-            "summer_neneko": True,
-            "new_year_neneko": True,
-            "valentine_neneko": True,
-            "easter_neneko": True,
-            "cmoneko": True,
+            "monenekos":True,
+            "lugas":True,
+            "seasonals":True,
         },
     },
     "qol": {
