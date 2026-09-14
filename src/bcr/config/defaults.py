@@ -8,14 +8,16 @@ DEFAULT_CONFIG = {
     "enemy": {
         "randomization": {
             # None          -   Enemies are not randomized
-            # ID Swap       -   Every instance of doge is randomized into ____, etc
-            # Fully Random  -   Randomization is different for every stage
-            "type": "Fully Random", 
-            "keep_class": True,             # peons stay as peons, basically enemies will randomize into similar types ish kinda?????
-            "variant_swap": False,          # enemies will randomize into their variants if they have any
+            # Per Game      -   Every instance of doge is randomized into ____, etc
+            # Per Stage     -   Randomization is different for every stage
+            "type": "None", 
+            #these are two distinct groups, variant swap is one, general swap is another, one can be on while the other is off, or both can be on, or neither
+            "variant_swap":False,           # enemies will swap to their categorized in tadbcmc variant (this is also how enemy bases swap regardless of this bool)
+            "general_swap":True,            # enemies will swap to other enemies regardless of variant, (done after variant so if both on variants are done first and all remaining enemies are randomzied amongst themselves)
+            "consider_strength":True,       # general swap: tries to keep the 'strength' of enemies from differing too much
+            "keep_class": True,             # general swap: peons stay as peons, basically enemies will randomize into similar types ish kinda?????
             "adjust_magnifications": True,  # Adjusts the new enemy's magnification to better match the original enemy's stats
-            "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one
-
+            "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one (in the future we will be able to use this properly, will probably need to make barrier not exist tho)
         },
         "ability": {
             "randomize_abilities": False, # Randomizes enemy abilities, keeps the original amount
