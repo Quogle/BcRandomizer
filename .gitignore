@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -654,7 +653,7 @@ workspace/
 *.test*.py
 self_install.py
 self_upload.py
-!resources\tools\windows\*
+
 
 
 
