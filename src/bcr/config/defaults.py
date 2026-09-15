@@ -331,11 +331,14 @@ DEFAULT_CONFIG = {
         }
     },
     "catcombo": {
+        "number_of_effects":27, #this is the number of effects to randomize between (27 is the amount logged currently)
+        "strength_of_downs":100, #100%, means they are unchanged?
         "randomize": {
             "enabled": True, # Randomize Cat Combos
             "units": True, # Randomize the units within catcombos
-            "multipliers": True, # Randomize Combo Size DOWN, SM, M, L, XL
+            "size": True, # Randomize Combo Size DOWN, SM, M, L, XL
             "effects": True, # Randomize the effect of each combo
+            "allowed_abnormal_effects":False, #Im including immune to waves and deploy cost down aswell as collab combos and unused in this
             "max_uber_count": 1, # Maximum amount of ubers / legend rares that can be put in a combo
         },
         "blacklist": {
@@ -346,13 +349,13 @@ DEFAULT_CONFIG = {
         },
         "size": {
             "keep_unit_count": True, # combos stay the sam amount of units
-                "custom_count_weights": {
+            "custom_count_weights": {
                     "1": 10,
                     "2": 25,
                     "3": 35,
                     "4": 20,
                     "5": 10,
-                },
+            },
            "custom_mult_weights": {
                 1: {
                     "sm": 1,
@@ -390,7 +393,13 @@ DEFAULT_CONFIG = {
                     "down": 1,
                 }
             }
-        }
+        },
+        "all_unit_down_combos": {
+            "enabled":True,
+            #I think they should always be excluded, makes it simpler for witch/zombie fix too"include_killer/slayer":False, #whether things like with killer and kaijin slayer are included
+            "include_abnormal_effects":True, #whether to include unused/normally restricted effects like worker efficiency and unit cost down
+            "weaken_down_combos_by":50 #weakens down combos by this amount if down combos are enabled, 100 means 100% so they arent affected (default is they are half as strong)
+        },
     },
     "gameplay": {
         "modifications": {
