@@ -654,7 +654,7 @@ workspace/
 *.test*.py
 self_install.py
 self_upload.py
-
+!resources\tools\windows\*
 
 
 
