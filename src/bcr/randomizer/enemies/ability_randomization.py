@@ -1,4 +1,4 @@
-from ..enemies import ability_altering as abal
+from . import ability_altering as abal
 import tadbcmc.data.enums.enemy as e
 from ...config.defaults import DEFAULT_CONFIG
 import copy

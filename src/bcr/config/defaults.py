@@ -401,6 +401,7 @@ DEFAULT_CONFIG = {
             "buff_weak_aliens": True,
             "remove_itf_crystals": True,
             "remove_cotc_crystals": True,
+            "leave_strong_aliens_in_eoc":True,
         },
         "unit_reworks": {
             "courier": True,
@@ -449,6 +450,7 @@ DEFAULT_CONFIG = {
             "megablitz_buff": True,
             "colosseum_buff": True,
             "merciless_xp_buff": True,
+            "bonanza_xp_buff":True,
             "material_stage_buff": True,
             "proving_grounds_buff": True,
             "hate_metal_hippoe_buff": True,
