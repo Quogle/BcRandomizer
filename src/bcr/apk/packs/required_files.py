@@ -39,6 +39,7 @@ def add_unit_requirements(config, requirements):
     requirements["local"].add("unitLimit.csv")
     requirements["local"].add("Nyancombo_en.csv")
     requirements["local"].add("NyancomboData.csv")
+    requirements["local"].add("NyancomboParam.tsv")
 
     requirements["local"].add(r"^Unit_Explanation\d{3}_en\.csv$")  # Unit_Explanation001_en.csv
 
