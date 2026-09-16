@@ -54,4 +54,9 @@ def sign_apk(input_apk,output_apk):
         check=True,
     )
 
+    idsig = Path(f"{output_apk}.idsig")
+
+    if idsig.exists():
+        idsig.unlink()
+
     return output_apk
