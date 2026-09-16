@@ -56,7 +56,7 @@ rem frameworkdir must not end with a dir sep.
 set "frameworkdir=%frameworkdir:~0,-1%"
 
 if exist "%frameworkdir%\%jarfile%" goto JarFileOk
-    set "frameworkdir=%~dp0lib"
+    set "frameworkdir=%~dp0..\lib"
 
 if exist "%frameworkdir%\%jarfile%" goto JarFileOk
     set "frameworkdir=%~dp0..\framework"

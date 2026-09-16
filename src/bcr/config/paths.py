@@ -13,10 +13,20 @@ else:
     BASE_DIR = Path(__file__).resolve().parents[3]
 
 # Tool Paths
+if sys.platform == "win32":
+    ZIPALIGN_PATH = TOOLS_DIR/"windows"/"zipalign.exe"
+    APKSIGNER_PATH = TOOLS_DIR/"windows"/"apksigner.bat"
+elif sys.platform == "linux":
+    ZIPALIGN_PATH = TOOLS_DIR/"linux"/"zipalign"
+    APKSIGNER_PATH = TOOLS_DIR/"linux"/"apksigner"
+elif sys.platform == "darwin":
+    ZIPALIGN_PATH = TOOLS_DIR/"macos"/"zipalign"
+    APKSIGNER_PATH = TOOLS_DIR/"macos"/"apksigner"
+
 APKTOOL_PATH = TOOLS_DIR/"apktool.jar"
-ZIPALIGN_PATH = TOOLS_DIR/"windows"/"build-tools"/"zipalign.exe"
-APKSIGNER_PATH = (TOOLS_DIR/"windows"/"build-tools"/"apksigner.bat")
 KEYSTORE_PATH = (TOOLS_DIR/"keystore"/"bcrando.jks")
+
+
 
 
 # Decompiled Apk Paths
