@@ -14,6 +14,7 @@ from bcr.gui.themes.dark import DARK_THEME
 from .randomize import ComboRandomization
 from .blacklist import ComboBlacklist
 from .size import ComboSize
+from .down_combo import AllDownCombo
 
 class ComboWindow(QWidget):
     def refresh_from_config(self):
@@ -69,3 +70,13 @@ class ComboWindow(QWidget):
         combo_size_layout.addWidget(self.combo_size)
 
         content_layout.addWidget(combo_size)
+
+        ################ All Unit DOWN ###########################################################################
+
+        all_down = QGroupBox("All Unit DOWN Combos")
+        all_down_layout = QVBoxLayout(all_down)
+
+        self.all_down = AllDownCombo(self.config)
+        all_down_layout.addWidget(self.all_down)
+
+        content_layout.addWidget(all_down)
