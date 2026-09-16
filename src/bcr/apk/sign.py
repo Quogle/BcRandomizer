@@ -1,20 +1,6 @@
 from pathlib import Path
 import subprocess
-import sys
-
-
-if getattr(sys, "frozen", False):
-    TOOLS_DIR = Path(sys._MEIPASS) / "resources" / "tools"
-else:
-    TOOLS_DIR = Path(__file__).resolve().parents[3] / "resources" / "tools"
-
-APKSIGNER_PATH = (
-    TOOLS_DIR/"windows"/"build-tools"/"apksigner.bat"
-)
-
-KEYSTORE_PATH = (
-    TOOLS_DIR/"keystore"/"bcrando.jks"
-)
+from ..config.paths import *
 
 
 def sign_apk(input_apk,output_apk):

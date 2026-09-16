@@ -18,6 +18,8 @@ from PySide6.QtCore import Signal, QThread
 from ..helpers.config_helpers import *
 from ..helpers.widgets import *
 from .randomize_thread import RandomizeThread
+from PySide6.QtGui import QRegularExpressionValidator
+from PySide6.QtCore import QRegularExpression
 
 class SetupWindow(QWidget):
 
@@ -86,6 +88,8 @@ class SetupWindow(QWidget):
 
         id_label = QLabel("Mod ID:")
         self.id = QLineEdit()
+
+        self.id.setValidator(QRegularExpressionValidator(QRegularExpression(r"\S*")))
 
         connect_line_edit(
             self.id,

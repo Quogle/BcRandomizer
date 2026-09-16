@@ -1,18 +1,8 @@
 import random
 import shutil
-from pathlib import Path
-import sys
-
-if getattr(sys, "frozen", False):
-    BASE_DIR = Path(sys._MEIPASS)
-else:
-    BASE_DIR = Path(__file__).resolve().parents[3]
-
+from ..config.paths import *
 
 ICON_XL = BASE_DIR / "resources" / "assets" / "apk_icons_xl"
-WORKSPACE = Path("workspace")
-DECOMPILED = WORKSPACE / "decoded"
-RES = DECOMPILED / "res"
 
 UNIT = ["cat", "tank", "axe", "gross", "cow", "bird", "fish", "lizard", "titan", "super"]
 TRAIT = ["red", "floating", "black", "angel", "alien", "zombie", "relic", "aku"]

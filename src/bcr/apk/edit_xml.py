@@ -1,8 +1,7 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from ..config.paths import *
 
-WORKSPACE = Path("workspace")
-DECOMPILED = WORKSPACE / "decoded"
 MANIFEST = DECOMPILED / "AndroidManifest.xml"
 APP_NAME = "BCR"
 
@@ -18,7 +17,6 @@ PERMS_WITHOUT_PREFIX_LIST = [
 
 PERMS_WITH_PREFIX_LIST = [
     "jp.co.ponos.battlecatsen.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
-    "jp.co.ponos.battlecatsen.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
 ]
 
 def edit_manifest(mod_id):
