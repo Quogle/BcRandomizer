@@ -19,7 +19,7 @@ class ComboRandomization(QWidget):
         randomize_config = self.config["catcombo"]["randomize"]
         self.enabled.setChecked(randomize_config["enabled"])
         self.units.setChecked(randomize_config["units"])
-        self.multipliers.setChecked(randomize_config["multipliers"])
+        self.level.setChecked(randomize_config["level"])
         self.effects.setChecked(randomize_config["effects"])
         self.max_uber_count.setValue(randomize_config["max_uber_count"])
 
@@ -53,15 +53,15 @@ class ComboRandomization(QWidget):
 
         self.layout.addWidget(self.units)
 
-        # Randomize Combo Multipliers
-        self.multipliers = QCheckBox("Randomize Multipliers")
+        # Randomize Combo level
+        self.level = QCheckBox("Randomize Level")
         connect_checkbox(
-            self.multipliers,
+            self.level,
             randomize_config,
-            "multipliers"
+            "level"
         )
 
-        self.layout.addWidget(self.multipliers)
+        self.layout.addWidget(self.level)
 
         # Randomize Combo Effects
         self.effects = QCheckBox("Randomize Effects")

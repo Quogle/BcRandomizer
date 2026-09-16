@@ -336,7 +336,7 @@ DEFAULT_CONFIG = {
         "randomize": {
             "enabled": True, # Randomize Cat Combos
             "units": True, # Randomize the units within catcombos
-            "size": True, # Randomize Combo Size DOWN, SM, M, L, XL
+            "level": True, # Randomize Combo Size DOWN, SM, M, L, XL
             "effects": True, # Randomize the effect of each combo
             "allowed_abnormal_effects":False, #Im including immune to waves and deploy cost down aswell as collab combos and unused in this
             "max_uber_count": 1, # Maximum amount of ubers / legend rares that can be put in a combo

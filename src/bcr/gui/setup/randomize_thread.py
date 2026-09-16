@@ -52,7 +52,7 @@ class RandomizeThread(QObject):
         decrypted_directory = workspace / "decrypted"
         rebuilt_apk = workspace / "rebuilt.apk"
         aligned_apk = workspace / "aligned.apk"
-        signed_apk = workspace / "signed.apk"
+        signed_apk = Path(f"{self.config['mod']['id']}.apk")
 
         self.log.emit("Extracting APK...")
 
@@ -210,7 +210,7 @@ class RandomizeThread(QObject):
         self.log.emit("Signing APK")
 
         sign_apk(aligned_apk,signed_apk,)
-
-        self.html_log.emit('<span style="color: lime;">Randomization Complete.</span>')
         self.log.emit(f"Signed APK: {signed_apk}")
+        
+        self.html_log.emit('<span style="color: lime;">Randomization Complete.</span>')
         self.html_log.emit('<span style="color: orange;">MAKE SURE TO SAVE YOUR CONFIG IF YOU HAVENT!</span>')

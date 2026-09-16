@@ -1,7 +1,12 @@
 from pathlib import Path
 import subprocess
+import sys
 
-TOOLS_DIR = Path(__file__).resolve().parents[3]/"resources"/"tools"
+
+if getattr(sys, "frozen", False):
+    TOOLS_DIR = Path(sys._MEIPASS) / "resources" / "tools"
+else:
+    TOOLS_DIR = Path(__file__).resolve().parents[3] / "resources" / "tools"
 
 APKSIGNER_PATH = (
     TOOLS_DIR/"windows"/"build-tools"/"apksigner.bat"
@@ -53,5 +58,10 @@ def sign_apk(input_apk,output_apk):
         command,
         check=True,
     )
+
+    idsig = Path(f"{output_apk}.idsig")
+
+    if idsig.exists():
+        idsig.unlink()
 
     return output_apk
