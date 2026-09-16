@@ -77,7 +77,7 @@ def trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
 
 
 
-#THIS IS MISSING METHO FOR DETERMINING WHAT TRAITS ARE ALLOWED
+#THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
 def trait_swap(stats,config=DEFAULT_CONFIG,log=None):
     """ swaps the traits of stats according to config 
     \n does nothing except edit the traits """

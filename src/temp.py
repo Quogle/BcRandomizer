@@ -1,3 +1,4 @@
+
 from bcr.gui.main_window import main
 #main()
 from bcr.randomizer import randomize

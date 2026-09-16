@@ -21,7 +21,7 @@ def do_combos(config=DEFAULT_CONFIG):
     #randomize needs to run first and it just needs config passed to it anyways
     _randomize_combos(config=config)
     #now edit param
-    
+    _edit_params(config=config)
     #dunno what Im doing with this currently
     #now do down combos
     _all_down_central(config=config)
