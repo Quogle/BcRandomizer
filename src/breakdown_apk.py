@@ -2,7 +2,7 @@ from bcr.apk.extract import extract_apk
 from bcr.apk.packs.decrypt import decrypt_packs
 from bcr.apk.server.downloader import download_server_files,process_server_files
 import os
-
+from pathlib import Path
 
 def _decrypt_apk(apk_path,output_dir):
     """decrypts the apk at specified path to other specified path"""
@@ -41,32 +41,38 @@ def _decrypt_local_packs(dir_with_packs,output_dir,henry_style_output=False):
                 output_directory=this_dir,
             )
 
-def _download_and_decrypt_server_files():
+def _download_and_decrypt_server_files(decoded_apk_dir:Path,server_packs:Path,decrypted_dir:Path):
     """ if henry it will output each server file into a dir of its own name """
-    apk_lib_path = lib_path = (
-                        decoded_directory
-                        / "lib"
-                        / "x86_64"
-                        / "libnative-lib.so"
+    apk_lib_path = os.path.join(
+                        decoded_apk_dir,
+                        "lib",
+                        "x86_64",
+                        "libnative-lib.so",
                     )
+    tsv_paths = sorted(decoded_apk_dir.rglob("download_*.tsv")) #not a fuckin clue how this works
+    #start by downloading all the server files?
+    download_server_files(
+        lib_path=apk_lib_path,
+        tsv_paths=tsv_paths,
+        country_code="en",
+        output_directory=server_packs,
+    )
+    #now get all of them
+    server_pack_paths = list(
+        server_packs.rglob("*.pack")
+    )
+    #now decrypt them
+    decrypt_packs(
+        pack_paths=server_pack_paths,
+        cc="en",
+        output_directory=os.path.join(decrypted_dir,"server")
+    )
 
 
 
-download_server_files(
-                    lib_path=lib_path,
-                    tsv_paths=tsv_paths,
-                    country_code="en",
-                    output_directory=server_directory,
-                )
-decrypt_packs(
-                    pack_paths=server_pack_paths,
-                    cc="en",
-                    output_directory=decrypted_directory / "server",
-                )
-
-
-
-
+def breakdown_apk(apk_path,output_dir,henry_style=False):
+    """ breaks down the apk and decrypts all the pack files """
+    _decrypt_apk(apk_path=apk_path)
 
 
 

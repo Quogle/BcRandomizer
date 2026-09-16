@@ -22,9 +22,27 @@ from ..enemies import ability_altering as abal
 #maybe zombie balancing?
 
 
+def apply_all_gimmicks(stats:list[list],config=DEFAULT_CONFIG,post_attack_anim=[]):
+    """ applies all the trait gimmicks to stats and returns it """
+    #idk what order exactly I intend to do this in
+    stats = white_gimmick(stats=stats,config=config)
+    #dark before red?
+    stats = dark_gimmick(stats=stats,config=config)
+    stats = red_gimmick(stats=stats,config=config)
+    #few abilities before more general ones
+    stats = floating_gimmick(stats=stats,config=config)
+    stats = relic_gimmick(stats=stats,config=config,post_attack_info=post_attack_anim)
+    stats = angel_gimmick(stats=stats,config=config,post_attack_info=post_attack_anim)
+    stats = zombie_gimmick(stats=stats,config=config)
+    #these two should prolly be last
+    stats = aku_gimmick(stats=stats,config=config,post_attack_info=post_attack_anim)
+    stats = alien_gimmick(stats=stats,config=config,post_attack_info=post_attack_anim)
+    #because of its absense this will be last
+    stats = metal_gimmick(stats,config=config)
+    #that should be all?
+    return stats
 
 
-""" all these functions act on a single enemy and return it """
 def white_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ gives all white units sage
     \n does nothing if white is off """
@@ -177,7 +195,7 @@ def dark_gimmick(stats:list,config=DEFAULT_CONFIG):
     return stats
 
 #not done!!!!!
-def angel_gimmick(stats:list,config=DEFAULT_CONFIG):
+def angel_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     """ skipping for now since idk what were doing with angels """
     pass
 

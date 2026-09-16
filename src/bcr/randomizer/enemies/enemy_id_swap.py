@@ -2,7 +2,7 @@
 it is probably best to fall after most 'general' changes to enemy stats happen\n
 but must necessarily be before any stages that should not be changed are added to dl """
 from tadbcmc.data.collated_info.enemy_info import *
-set_ENEMY_INFO_unlogged()
+ENEMY_INFO_extend_w_defaults()
 import tadbcmc.core.simple_funcs as simp
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
@@ -13,7 +13,7 @@ import tadbcmc.data.enums.enemy as e
 import math
 import tadbcmc.core.stnmp as stnmp
 from typing import Dict,List
-
+from ...config.defaults import DEFAULT_CONFIG
 
 
 
@@ -69,9 +69,11 @@ apply appswap to all files, currently eoc is not treated distinctly
 """
 
 
-
-
-
+#total function, currently not hooked up in any way
+def do_enemy_swap(config=DEFAULT_CONFIG,log=None,post_attack_anims=[]):
+    """ controlling function for all things enemy id swap related
+    \n currently doesnt actually do anything """
+    
 
 
 
@@ -328,7 +330,7 @@ def _process_all_variants(swap:List[int],variant_dict:Dict[str,List[int]],random
     return swap
 
 """ full function for creating a swap half """
-def create_swap_half(starting_id=0,ending_id=-1,maintain_grouping=True,consider_strength=True,general_swap=False,variant_swap=False,log=None):
+def _create_swap_half(starting_id=0,ending_id=-1,maintain_grouping=True,consider_strength=True,general_swap=False,variant_swap=False,log=None):
     """ creates the swap across input unit ids from scratch """
     #first step is getting the correct unit info
     unit_info = _get_unit_information(ENEMY_INFO,starting_id,ending_id)
@@ -363,14 +365,14 @@ def create_swap_half(starting_id=0,ending_id=-1,maintain_grouping=True,consider_
 
 #please dont call this function if both variant and general swap are off but per game is on that is a massive waste of time
 """ full per game function """
-def swap_per_game(first_enemy_not_considered=-1,variant_swap=False,general_swap=False,maintain_grouping=True,consider_strength=True,adjust_mags=True,include_eoc=False,log=None,post_attack_anims=[]):
+def _swap_per_game(first_enemy_not_considered=-1,variant_swap=False,general_swap=False,maintain_grouping=True,consider_strength=True,adjust_mags=True,include_eoc=False,log=None,post_attack_anims=[]):
     """ creates a swap for the whole game and applies it """
     #first step, create the two halves of the total swap
-    swap1 = create_swap_half(0,first_enemy_not_considered,maintain_grouping,consider_strength,general_swap,variant_swap,log)
+    swap1 = _create_swap_half(0,first_enemy_not_considered,maintain_grouping,consider_strength,general_swap,variant_swap,log)
     if first_enemy_not_considered == -1:
         swap = swap1
     else:
-        swap2 = create_swap_half(first_enemy_not_considered,-1,maintain_grouping,consider_strength,general_swap,variant_swap,log)
+        swap2 = _create_swap_half(first_enemy_not_considered,-1,maintain_grouping,consider_strength,general_swap,variant_swap,log)
         swap = swap1 + swap2
     #now turn that swap into an applyable swap
     app_swap = _turn_swap_into_applyable_swap(swap,balance_mag=adjust_mags,post_attack_anims=post_attack_anims)

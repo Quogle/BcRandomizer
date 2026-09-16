@@ -3,13 +3,23 @@ from ...config.defaults import DEFAULT_CONFIG
 import copy
 import tadbcmc.core.seeded_randomization as srand
 
-
-
-
+#do I handle starred in this function?
+def change_traits_according_to_config(stats,config=DEFAULT_CONFIG,log=None):
+    """ changes traits according to the method desired in config
+    \n also gives starred alien """
+    change_means = config["enemy"]["trait"]["randomization_mode"]
+    if change_means == "randomize":
+        stats = _trait_randomization(stats=stats,config=config,log=log)
+    elif change_means == "swap":
+        stats = _trait_swap(stats,config=config,log=log)
+    else:
+        return stats
+    #is there anything else to do here?
+    return stats
 
 
 #THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
-def trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
+def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
     """ randomizes the traits of stats according to config and returns it
     \n does nothing except edit traits, starred must be done elsewhere """
     """
@@ -78,7 +88,7 @@ def trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
 
 
 #THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
-def trait_swap(stats,config=DEFAULT_CONFIG,log=None):
+def _trait_swap(stats,config=DEFAULT_CONFIG,log=None):
     """ swaps the traits of stats according to config 
     \n does nothing except edit the traits """
     #first get the config options, its only metal right? (and untraited get trait)
@@ -238,5 +248,12 @@ def _fill_swap_allowed_len_morethan_1(from_traits,to_traits,trait_look_order,all
     from_traits = from_traits + missing_from
     to_traits = to_traits + to_traits
     return (from_traits,to_traits)
+
+
+
+
+
+
+
 
 

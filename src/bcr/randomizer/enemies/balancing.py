@@ -2,6 +2,11 @@ import tadbcmc.data.enums.enemy as e
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
 import copy
+from ...config.defaults import DEFAULT_CONFIG
+import tadbcmc.core.seeded_randomization as srand
+from tadbcmc.data.collated_info.enemy_info import*
+ENEMY_INFO_extend_w_defaults()
+import tadbcmc.data.enums.unit_info as ui
 
 
 #idk what else to do here but Im gonna put all the making of base arrays in here
@@ -221,22 +226,51 @@ def _literally_just_metal_croc(stats):
     stats[499][e.s.hp] = 5
     return stats
 
+#this may need changing?
+def _starred_aliens(stats,config=DEFAULT_CONFIG,log=None):
+    """ removes all previous starred and applies starred to aliens at configs desired rate """
+    starred_freq = config["enemy"]["trait_gimmicks"]["alien"]["starred_frequency"]
+    allowed_starred_in_cotc = config["gameplay"]["modifications"]["remove_cotc_crystals"]
+    for u_id in range(0,len(stats)):
+        r = srand.randinst(503+11*u_id)
+        #first remove all starred aliens
+        if stats[u_id][e.s.starred_god] == 1:
+            stats[u_id][e.s.starred_god] = 0
+        #now only add starred alien to aliens that arent god
+        if stats[u_id][e.s.starred_god] == 0 and stats[u_id][e.t.alien] == 1:
+            #additionally dont do it for things in eoc/itf and cotc if crystals are on
+            if ENEMY_INFO[u_id][ui.e.in_eoc] != 1 and ENEMY_INFO[u_id][ui.e.in_itf] != 1:
+                if allowed_starred_in_cotc or ENEMY_INFO[u_id][ui.e.in_cotc] != 1:
+                    if r.randrange(0,100) < starred_freq:
+                        stats[u_id][e.s.starred_god] = 1
+    return stats
 
+#THIS FUNCTION IS NOT RANDOM
+def _block_certain_aliens(stats,config=DEFAULT_CONFIG,log=None):
+    """ blocks enemies in itf from getting alien if crystals are still on """
+    if config["gameplay"]["modifications"]["remove_itf_crystals"]:
+        return stats #no sense continuing if crystals are off
+    #for now Im just gonna set them as zombie cause I dont feel like figuring out what traits are on and what they were
+    for u_id in range(0,len(stats)):
+        if stats[u_id][e.t.alien] == 1 and ENEMY_INFO[u_id][ui.e.in_itf]:
+            stats[u_id][e.t.alien] = 0
+            stats[u_id][e.t.zombie] = 1
+    return stats
 
-from ...config import defaults
 
 """ actual total functions 
 \n this functions do not save to file """
-def early_rebalance(config=defaults.DEFAULT_CONFIG):
+#STILL MISSING REMOVE METALS
+def early_rebalance(config=DEFAULT_CONFIG):
     """ pulls vanilla enemy array and applys the proper rebalances to make the before anything array """
     vanilla_stats = gf.file_reader(fn.ENEMY_STATS,vanilla=True)
     modded_array = copy.deepcopy(vanilla_stats)
     #gonna specify all the bools here because I dont like calling config in an if
     remove_metals = True
-    give_metals_new_trait = True
-    rebalance_metals = True
-    remove_behemoths = True
-    rebalance_behemoths = True
+    give_metals_new_trait = True #wonder how Im gonna do this one
+    rebalance_metals = config["gameplay"]["modifications"]["metal_rework"]
+    remove_behemoths = config["gameplay"]["modifications"]["remove_behemoths"]
+    rebalance_behemoths = config["gameplay"]["modifications"]["behemoth_rebalance"]
     #now actually edit the arrays
     if remove_metals:
         modded_array = _hp_buff_metals(modded_array)
@@ -251,24 +285,41 @@ def early_rebalance(config=defaults.DEFAULT_CONFIG):
     #is there anything else that needs to be done before this array can be used
     return modded_array
 
-def middle_rebalance(stats,config=defaults.DEFAULT_CONFIG):
-    """ modded enemies intended to be affected by randomization should go in here """ #this shouldnt be the method desc lmao
-    #dunno what yet so this is basically empty
+def pre_trait_change_rebalance(stats,config=DEFAULT_CONFIG):
+    """ modded enemies intended to be affected by randomization should go in here """
     stats = copy.deepcopy(stats)
 
 
     return stats
 
-def late_rebalance(stats,config=defaults.DEFAULT_CONFIG):
-    """ modded enemies that arent intended to be affected by randomization should go in here """ #this shouldnt be the method desc lmao
+def post_trait_rand_pre_gimmick_rebalance(stats,config=DEFAULT_CONFIG,log=None):
+    """ any changes to things intended to take place after traits have been changed but before gimmicks are applied should go here """
+    #for example fixing the traits of certain enemies would go here
+    mode_of_trait_change = config["enemy"]["trait"]["randomization_mode"]
+    #only change aliens in itf if its randomize
+    if mode_of_trait_change == "randomize":
+        stats = _block_certain_aliens(stats,config,log)
+    #only edit starred if traits are being changed
+    if mode_of_trait_change != "none":
+        stats = _starred_aliens(stats,config,log)
+
+
+#should I make it so if cotc crystals are still on things in cotc lost starred here so starred aliens can actually be in cotc?
+def post_gimmick_rebalance(stats,config=DEFAULT_CONFIG):
+    """ runs after gimmicks are applied
+    \n modded enemies that arent intended to be affected by gimmicks should go in here
+    \n ability randomization is still after this """
     #I dont currently know what to do so this is empty for now
     stats = copy.deepcopy(stats)
 
 
     return stats
 
-def end_rebalance(stats,config=defaults.DEFAULT_CONFIG):
-    """ this function should run at the very end of the program """
+
+#STILL MISSING REMOVE METALS or something
+def end_rebalance(stats:list[list[int]],config=DEFAULT_CONFIG) -> list[list[int]]:
+    """ this function should run at the very end of the program
+    \n anything that shouldnt be edited or accessed belongs here """
     stats = copy.deepcopy(stats)
     rebalance_metal = True
     if rebalance_metal:
