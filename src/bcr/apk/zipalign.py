@@ -1,14 +1,6 @@
 from pathlib import Path
 import subprocess
-import sys
-
-if getattr(sys, "frozen", False):
-    TOOLS_DIR = Path(sys._MEIPASS) / "resources" / "tools"
-else:
-    TOOLS_DIR = Path(__file__).resolve().parents[3] / "resources" / "tools"
-    
-ZIPALIGN_PATH = TOOLS_DIR/"windows"/"build-tools"/"zipalign.exe"
-
+from ..config.paths import *
 
 def zipalign_apk(input_apk,output_apk):
 
