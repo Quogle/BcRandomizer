@@ -1,8 +1,13 @@
 from pathlib import Path
 import subprocess
+import sys
 
 
-TOOLS_DIR = Path(__file__).resolve().parents[3]/"resources"/"tools"
+if getattr(sys, "frozen", False):
+    TOOLS_DIR = Path(sys._MEIPASS) / "resources" / "tools"
+else:
+    TOOLS_DIR = Path(__file__).resolve().parents[3] / "resources" / "tools"
+
 APKTOOL_PATH = TOOLS_DIR/"apktool.jar"
 
 

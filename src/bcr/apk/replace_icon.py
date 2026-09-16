@@ -1,9 +1,16 @@
 import random
 import shutil
 from pathlib import Path
+import sys
 
-ICON_XL =  Path(__file__).resolve().parents[3] / "resources" / "assets" / "apk_icons_xl"
-WORKSPACE = Path(__file__).resolve().parents[3] / "workspace"
+if getattr(sys, "frozen", False):
+    BASE_DIR = Path(sys._MEIPASS)
+else:
+    BASE_DIR = Path(__file__).resolve().parents[3]
+
+
+ICON_XL = BASE_DIR / "resources" / "assets" / "apk_icons_xl"
+WORKSPACE = Path("workspace")
 DECOMPILED = WORKSPACE / "decoded"
 RES = DECOMPILED / "res"
 

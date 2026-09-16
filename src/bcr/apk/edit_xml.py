@@ -1,7 +1,7 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-WORKSPACE = Path(__file__).resolve().parents[3] / "workspace"
+WORKSPACE = Path("workspace")
 DECOMPILED = WORKSPACE / "decoded"
 MANIFEST = DECOMPILED / "AndroidManifest.xml"
 APP_NAME = "BCR"
