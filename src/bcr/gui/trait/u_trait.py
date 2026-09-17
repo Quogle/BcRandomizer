@@ -16,7 +16,7 @@ from ..helpers.config_helpers import *
 
 class TraitRandomization(QWidget):
     def refresh_from_config(self):
-        trait_config = self.config["unit"]["trait"]
+        trait_config = self.config["trait"]["unit"]["randomize"]
 
         self.randomization_mode.setCurrentText(trait_config["randomization_mode"])
         self.vary_form_traits.setChecked(trait_config["vary_form_traits"])
@@ -30,7 +30,7 @@ class TraitRandomization(QWidget):
         # main layout
         self.layout = QVBoxLayout(self)
 
-        trait_config = self.config["unit"]["trait"]
+        trait_config = self.config["trait"]["unit"]["randomize"]
 
 
         # Randomization Type

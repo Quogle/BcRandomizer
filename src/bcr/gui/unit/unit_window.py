@@ -12,13 +12,12 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from bcr.gui.themes.dark import DARK_THEME
 from .ability import AbilityRandomization
-from .trait import TraitRandomization
+from ..trait.u_trait import TraitRandomization
 from .talent import TalentRandomization
 
 class UnitWindow(QWidget):
     def refresh_from_config(self):
         self.ability_randomization.refresh_from_config()
-        self.trait_randomization.refresh_from_config()
         self.talent_randomization.refresh_from_config()
 
     def __init__(self, config):
@@ -49,16 +48,6 @@ class UnitWindow(QWidget):
         ability_randomization_layout.addWidget(self.ability_randomization)
 
         content_layout.addWidget(ability_randomization)
-
-        ################ Trait Randomization ###########################################################################
-
-        trait_randomization = QGroupBox("Trait Randomization")
-        trait_randomization_layout = QVBoxLayout(trait_randomization)
-
-        self.trait_randomization = TraitRandomization(self.config)
-        trait_randomization_layout.addWidget(self.trait_randomization)
-
-        content_layout.addWidget(trait_randomization)
 
         ################ Talent Randomization ###########################################################################
 

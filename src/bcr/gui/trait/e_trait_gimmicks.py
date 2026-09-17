@@ -154,7 +154,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        white_config = self.config["enemy"]["trait_gimmicks"]["white"]
+        white_config = self.config["trait"]["enemy"]["trait_gimmicks"]["white"]
 
         # Enabled
         self.white_enabled = QCheckBox("Enabled")
@@ -207,7 +207,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        red_config = self.config["enemy"]["trait_gimmicks"]["red"]
+        red_config = self.config["trait"]["enemy"]["trait_gimmicks"]["red"]
 
         self.red_enabled = QCheckBox("Enabled")
         connect_checkbox(
@@ -281,7 +281,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        floating_config = self.config["enemy"]["trait_gimmicks"]["floating"]
+        floating_config = self.config["trait"]["enemy"]["trait_gimmicks"]["floating"]
 
         # Basic Floating settings
         self.floating_enabled = QCheckBox("Enabled")
@@ -344,7 +344,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        dark_config = self.config["enemy"]["trait_gimmicks"]["dark"]
+        dark_config = self.config["trait"]["enemy"]["trait_gimmicks"]["dark"]
 
         # Basic Dark settings
         self.dark_enabled = QCheckBox("Enabled")
@@ -444,9 +444,7 @@ class TraitGimmicks(QWidget):
                 "boost": 0,
             }
 
-            self.config["enemy"]["trait_gimmicks"]["dark"]["speed_boosts"].append(
-                boost_config
-            )
+            self.config["trait"]["enemy"]["trait_gimmicks"]["white"]["dark"]["speed_boosts"].append(boost_config)
 
         row = QWidget()
 
@@ -507,9 +505,7 @@ class TraitGimmicks(QWidget):
 
     def remove_dark_speed_boost(self, row, boost_config):
 
-        self.config["enemy"]["trait_gimmicks"]["dark"]["speed_boosts"].remove(
-            boost_config
-        )
+        self.config["trait"]["enemy"]["trait_gimmicks"]["dark"]["speed_boosts"].remove(boost_config)
 
         self.dark_speed_boost_layout.removeWidget(row)
         row.deleteLater()
@@ -523,7 +519,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        angel_config = self.config["enemy"]["trait_gimmicks"]["angel"]
+        angel_config = self.config["trait"]["enemy"]["trait_gimmicks"]["angel"]
 
         self.angel_enabled = QCheckBox("Enabled")
         connect_checkbox(
@@ -638,7 +634,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        alien_config = self.config["enemy"]["trait_gimmicks"]["alien"]
+        alien_config = self.config["trait"]["enemy"]["trait_gimmicks"]["alien"]
 
         # Basic Alien settings
         self.alien_enabled = QCheckBox("Enabled")
@@ -776,7 +772,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        zombie_config = self.config["enemy"]["trait_gimmicks"]["zombie"]
+        zombie_config = self.config["trait"]["enemy"]["trait_gimmicks"]["zombie"]
 
         self.zombie_enabled = QCheckBox("Enabled")
         connect_checkbox(
@@ -968,7 +964,7 @@ class TraitGimmicks(QWidget):
 
     def add_revive_type(self, revive_config=None):
 
-        zombie_config = self.config["enemy"]["trait_gimmicks"]["zombie"]
+        zombie_config = self.config["trait"]["enemy"]["trait_gimmicks"]["zombie"]
 
         if revive_config is None:
             revive_config = {
@@ -1050,7 +1046,7 @@ class TraitGimmicks(QWidget):
 
     def remove_revive_type(self, row, revive_config):
 
-        zombie_config = self.config["enemy"]["trait_gimmicks"]["zombie"]
+        zombie_config = self.config["trait"]["enemy"]["trait_gimmicks"]["zombie"]
 
         zombie_config["revive_types"].remove(
             revive_config
@@ -1066,7 +1062,7 @@ class TraitGimmicks(QWidget):
 
     def add_burrow_type(self, burrow_config=None):
 
-        zombie_config = self.config["enemy"]["trait_gimmicks"]["zombie"]
+        zombie_config = self.config["trait"]["enemy"]["trait_gimmicks"]["zombie"]
 
         if burrow_config is None:
             burrow_config = {
@@ -1135,7 +1131,7 @@ class TraitGimmicks(QWidget):
 
     def remove_burrow_type(self, row, burrow_config):
 
-        zombie_config = self.config["enemy"]["trait_gimmicks"]["zombie"]
+        zombie_config = self.config["trait"]["enemy"]["trait_gimmicks"]["zombie"]
 
         zombie_config["burrow_types"].remove(
             burrow_config
@@ -1152,7 +1148,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        relic_config = self.config["enemy"]["trait_gimmicks"]["relic"]
+        relic_config = self.config["trait"]["enemy"]["trait_gimmicks"]["relic"]
 
         self.relic_enabled = QCheckBox("Enabled")
         connect_checkbox(
@@ -1253,7 +1249,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        aku_config = self.config["enemy"]["trait_gimmicks"]["aku"]
+        aku_config = self.config["trait"]["enemy"]["trait_gimmicks"]["aku"]
 
         self.aku_enabled = QCheckBox("Enabled")
         connect_checkbox(
@@ -1379,7 +1375,7 @@ class TraitGimmicks(QWidget):
 
         menu, menu_layout = self.create_trait_menu()
 
-        metal_config = self.config["enemy"]["trait_gimmicks"]["metal"]
+        metal_config = self.config["trait"]["enemy"]["trait_gimmicks"]["metal"]
 
         self.metal_enabled = QCheckBox("Enabled")
         connect_checkbox(
