@@ -9,15 +9,13 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QPushButton,
 )
+
 from PySide6.QtCore import Qt
-from bcr.gui.themes.dark import DARK_THEME
-from .trait_gimmicks import TraitGimmicks
 from .randomization import EnemyRandomization
 from .ability import AbilityRandomization
 
 class EnemyWindow(QWidget):
     def refresh_from_config(self):
-        self.trait_gimmicks.refresh_from_config()
         self.enemy_randomization.refresh_from_config()
         self.ability_randomization.refresh_from_config()
 
@@ -25,8 +23,6 @@ class EnemyWindow(QWidget):
         super().__init__()
 
         self.config = config
-
-        self.setStyleSheet(DARK_THEME)
 
         # --------------------------------------------------
         # Main layout
@@ -123,18 +119,6 @@ class EnemyWindow(QWidget):
         trait_randomization_layout.addWidget(add_swap)
 
         content_layout.addWidget(trait_randomization)
-
-        # --------------------------------------------------
-        # TRAIT GIMMICKS
-        # --------------------------------------------------
-
-        trait_gimmicks = QGroupBox("Trait Gimmicks")
-        trait_gimmicks_layout = QVBoxLayout(trait_gimmicks)
-
-        self.trait_gimmicks = TraitGimmicks(self.config)
-        trait_gimmicks_layout.addWidget(self.trait_gimmicks)
-
-        content_layout.addWidget(trait_gimmicks)
 
         # --------------------------------------------------
         # Enemy Randomization

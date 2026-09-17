@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from .enemy.enemy_window import EnemyWindow
+from.trait.trait_window import TraitWindow
 from .unit.unit_window import UnitWindow
 from .combo.combo_window import ComboWindow
 from .setup.setup_window import SetupWindow
@@ -42,6 +43,7 @@ class MainWindow(QMainWindow):
 
         buttons = [
             "Setup",
+            "Trait",
             "Units",
             "Enemies",
             "Cat Combos",
@@ -76,9 +78,10 @@ class MainWindow(QMainWindow):
         self.setup_page = SetupWindow(self.config)
         self.setup_page.config_loaded.connect(self.refresh_from_config)
 
-        self.pages.addWidget(self.setup_page)       # Setup
-        self.pages.addWidget(UnitWindow(self.config))       # Units
-        self.pages.addWidget(EnemyWindow(self.config))   # Enemies
+        self.pages.addWidget(self.setup_page)           # Setup
+        self.pages.addWidget(TraitWindow(self.config))           # Trait
+        self.pages.addWidget(UnitWindow(self.config))   # Units
+        self.pages.addWidget(EnemyWindow(self.config))  # Enemies
         self.pages.addWidget(ComboWindow(self.config))       # Cat Combos
         self.pages.addWidget(QWidget())       # Gameplay
         self.pages.addWidget(QWidget())       # QoL
