@@ -2,8 +2,8 @@ DEFAULT_CONFIG = {
     "mod": {
         "seed": None,
         "id": "bcrando",
-        "max_unit_id": -1,  # Highest unit id that can be selected for swapping. This is so enemies dont completely change every update. -1 to ignore this
-        "max_enemy_id": -1,  # Highest unit id that can be selected for swapping. This is so enemies dont completely change every update. -1 to ignore this
+        "config_version": 1,
+        "freeze_game_version": "15.5.0",
     },
     "trait": {
         "included":{
@@ -247,6 +247,7 @@ DEFAULT_CONFIG = {
             "keep_class": True,             # general swap: peons stay as peons, basically enemies will randomize into similar types ish kinda?????
             "adjust_magnifications": True,  # Adjusts the new enemy's magnification to better match the original enemy's stats
             "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one (in the future we will be able to use this properly, will probably need to make barrier not exist tho)
+            "max_enemy_id": -1,
         },
         "ability": {
             "randomize_abilities": False, # Randomizes enemy abilities, keeps the original amount
@@ -340,6 +341,7 @@ DEFAULT_CONFIG = {
             "enabled": True,        # randomizes units into other units
             "keep_rarity": False,   # Units will randomize into the same rarity
             "keep_uber_lr": True,   # Ubers and Legend Rares cannot randomize into lower rarities
+            "max_unit_id": -1,
         },
         "ability": {
             "randomize": True,
