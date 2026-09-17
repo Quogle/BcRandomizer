@@ -75,3 +75,13 @@ class TraitRandomization(QWidget):
         )
 
         self.layout.addWidget(self.avoid_old_traits)
+
+        self.randomization_mode.currentTextChanged.connect(
+            lambda value: [
+                self.vary_form_traits.setEnabled(value != "None" and value != "Swap"),
+                self.avoid_old_traits.setEnabled(value != "None"),
+            ]
+        )
+        self.randomization_mode.currentTextChanged.emit(
+            self.randomization_mode.currentText()
+        )

@@ -264,4 +264,81 @@ QProgressBar::chunk {
     border-radius: 4px;
 }
 
+
+QSpinBox:disabled {
+    background-color: #191a1b;
+    color: #666666;
+    border: 1px solid #2b2e31;
+}
+
+QDoubleSpinBox:disabled {
+    background-color: #191a1b;
+    color: #666666;
+    border: 1px solid #2b2e31;
+}
+
+QLabel:disabled {
+    color: #666666;
+}
+
+QCheckBox:disabled {
+    color: #666666;
+}
+
+QCheckBox::indicator:disabled {
+    background-color: #191a1b;
+    border: 1px solid #2b2e31;
+}
+
+QPushButton:disabled {
+    background-color: #191a1b;
+    color: #666666;
+}
+
+QComboBox:disabled {
+    background-color: #191a1b;
+    color: #666666;
+    border: 1px solid #2b2e31;
+}
+
+QSlider:disabled {
+    background-color: transparent;
+}
+
+QSlider::groove:horizontal:disabled {
+    background: #2b2e31;
+}
+
+QSlider::handle:horizontal:disabled {
+    background: #666666;
+}
+
+QLineEdit:disabled {
+    background-color: #191a1b;
+    color: #666666;
+    border: 1px solid #2b2e31;
+}
+
+QPlainTextEdit:disabled {
+    background-color: #191a1b;
+    color: #666666;
+    border: 1px solid #2b2e31;
+}
+
+QProgressBar:disabled {
+    background-color: #191a1b;
+    color: #666666;
+    border: 1px solid #2b2e31;
+}
+
+QGroupBox:disabled {
+    background-color: #191a1b;
+    color: #666666;
+    border: 1px solid #2b2e31;
+}
+
+QGroupBox::title:disabled {
+    color: #666666;
+}
+
 """

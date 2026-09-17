@@ -119,6 +119,21 @@ class AbilityTraitRandomization(QWidget):
         spinbox_layout.addLayout(curse_immune_frequency_layout)
 
 
+        self.grant_trait_abilities.toggled.connect(
+            lambda checked: [
+                self.zkill_frequency.setEnabled(checked),
+                zkill_frequency_label.setEnabled(checked),
+                self.shield_pierce_frequency.setEnabled(checked),
+                shield_pierce_frequency_label.setEnabled(checked),
+                self.curse_immune_frequency.setEnabled(checked),
+                curse_immune_frequency_label.setEnabled(checked)
+            ]
+        )
+        self.grant_trait_abilities.toggled.emit(
+            self.grant_trait_abilities.isChecked()
+        )
+
+
         main_layout.addLayout(checkbox_layout, 1)
         main_layout.addLayout(spinbox_layout, 1)
         self.layout.addLayout(main_layout)
