@@ -5,7 +5,9 @@ notes to self:
 
 
 
-
+unit trait stuffs
+    Option to give all units a certain amount of target traits (weights for what amount?)
+    Then said units need to gain abilities targeted towards traits (also weighted)
 
 
 
