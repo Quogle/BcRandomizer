@@ -90,15 +90,21 @@ def _move_all_local_and_server_files_to_vanilla_files(delete_them=True):
             shutil.copy(directory / file,internalPaths.VANILLAFILES / file)
             if delete_them:
                 os.remove(directory / file)
+        if delete_them:
+            os.remove(directory)
+    if delete_them:
+        os.remove(internalPaths.LOCALFILES)
+        os.remove(internalPaths.SERVERFILES)
 
 
 #working on this still
-def breakdown_apk(apk_path,keep_local_server=False):
+def breakdown_apk(apk_path,move_files_to_vanilla_files=False,keep_local_server=False):
     """ breaks down the apk and decrypts all the pack files """
     #_decrypt_apk(apk_path=apk_path)
     _decrypt_local_packs()
     _download_and_decrypt_server_files()
-    _move_all_local_and_server_files_to_vanilla_files((not keep_local_server))
+    if move_files_to_vanilla_files:
+        _move_all_local_and_server_files_to_vanilla_files((not keep_local_server))
 
 
 breakdown_apk("en_merged.apk",keep_local_server=False)

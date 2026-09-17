@@ -10,11 +10,8 @@ from bcr.config.defaults import DEFAULT_CONFIG
 from tadbcmc.data.collated_info.enemy_info import *
 import tadbcmc.data.enums.unit_info as ui
 import tadbcmc.core.simple_funcs as simp
-main()
-
-
-DEFAULT_CONFIG["enemy"]["ability"]["randomize_abilities"] = True
-DEFAULT_CONFIG["enemy"]["ability"]["min_abilities"] = 4
+#main()
+import bcr.randomizer.units.trait_changer as trait_changer
 
 
 
@@ -27,17 +24,9 @@ gf.file_writer(fn.ENEMY_STATS,estat)
 """
 
 
-variants = [[]]
-for variant in ui.enemy_variant:
-    variants.append([])
 
-for unit in ENEMY_INFO:
-    if unit[ui.e.variant_id] > 0:
-        print(unit[ui.e.variant_id])
-        variants[unit[ui.e.variant_id]].append(unit[ui.e.unit_name])
-
-
-simp.print_array_one_by_one(variants)
+talent_array = gf.get_talents()
+stats = gf.get_cat_stats(vanilla=True)
 
 
 

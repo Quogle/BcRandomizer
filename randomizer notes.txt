@@ -1,0 +1,583 @@
+
+notes to self:
+    do I have a weighted list func on seed rando? (I should make one)
+    I think I need something that gets the post atk animation of each enemy (for now Ill prolly pass an empty array)
+
+
+
+
+
+
+
+random disconnected things
+    youcan warning
+    remove itf treasures
+        option to keep eoc aliens buffed with it off
+    remove cotc treasures
+    give true traitless enemies like doge-base a trait
+    metal removal and rework
+    sage rework
+    behemoth removal
+    condense god treasures
+    remove mystery mask
+    catamin viewable early
+    eoc 2 and 3 killer using enemy bases and god (you can make the first stage of itf give negative and the last give positive to have it balance out, last stage of eoc is the one for eoc)
+    maybe add seasonal tf stages like eggys as extra stages in sol?
+    option to force certain enemies to have certain traits? (so each of us can generate our own apks)
+        on that topic... I need to copy over the bluck anim somehow (if I have a reserve of files that just need to be raw copied Ill put it there)
+
+
+qol things
+    unit drops:
+        seasonals in sol:
+        seasonal tf in sol:
+        collabs in advents:
+
+
+    behemoth cube buff 
+    enigma buff
+    replace weekday stages with special units (does it need to replace? I think its better if it does)
+    weekend stage lils
+    change xp stage to drop items (do I want to do this?)
+    buff shop (how exactly?) #I think this has no reason to exist since its all done individually
+        cheaper items
+        leadership in shop
+        ototo helper in shop
+        cheaper catamin
+    unit sell increase
+    free orb removal
+    gold cpu daily increase, also remove some stages from no gold cpu?
+    gaurantee advent drops
+    catfruit:
+        remake growing catfruit to have all stages again, 2 seeds, 1 fruit, 2 fruits gauranteed jubilee
+        jubilee always epic
+        gstrange - first stage drops a seed, second drops 4 seeds
+            make it an endless loop
+        gevil - (20% seed, 50% seed, 100% 2 seeds, 100% aku fruit)
+        gepic - gauranteed continue stage
+    xp: #remember to do the catamins
+        buff sol xp drop
+        weekend stage if it still exists just like 1.5x its raw xp
+        megablitz - xp 200k
+        collo - 280k
+        merciless - 400k
+        bonanza - (400k,500k,700k)
+    material stage buff
+    ticket stages:
+        hate metal hippoe - 100% drop rate 
+        smh - 3 tickets (maybe add fd as a continuation from this?)
+        fd - has itself as a continuation stage
+    orbs:
+        buff orb drops
+        add trait ability orbs to orb stages
+        replace all enigma with relic/aku stages or add relic aku to map lord?
+        ability orbs in map lord?
+    proving grounds buff
+        proving grounds endless mode
+    advent revenges on catamin stages
+
+    wish we could set treasures to be gauranteed....
+
+
+
+
+
+
+
+combos:
+    change units in the combos, self exp
+    randomize combo effects
+    randomize combo effect sizes
+    preserve combo sizes
+    if not preserve
+        combo unit count proportions
+        combo effect sizes based on unit count (2d array)
+    combo unit blacklists
+        collab
+        version exclusive
+        unobtainable        ,( iron wall, conjures )
+        limited event       ,(such as capsule and gacha cat and gummy)
+
+    all unit DOWN combos,       these should all be first form right? since I dont think you can restrict it to only that form specifically (maybe thats the unknown value in combos)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fr
+ -- enemies  --
+
+
+enemy swap
+    keep class, swap enemies only of a similar 'kind'
+    balance swap, swap enemies only of a similar strength
+        balance strictness, variable for determining the strictness of the groupings (default is 10)
+    max id: (-1 is ignore), highest enemy to swap with, this should be kept constant in order for randomization to not change from update
+    adjust mags:    whether or not to change the mags when swapping
+    include eoc: this is an option because eoc mags are unalterable
+
+    notes:
+        I need notes on how I actually made the data in the csv
+
+
+
+ability swap
+    randomize only the vanilla abilities of a unit - do we really wanna include this or should it be forced to default (currently thinking just default)
+    make all enemies have at least x abilities variable, self exp 
+    weights for each ability
+        some abilities like area ld and omni should def be default 0 weight
+    
+
+    notes:
+        Im thinking that since I need to apply abilities for a bunch of different functions I should just make funcs for each abilities that are used in both trait rando and also this one
+
+
+trait randomization:
+    starred/god killer
+    something to block aliens/starred aliens from appearing if they shouldnt
+
+
+
+
+trait gimmicks:
+    #red
+        slower and less kbs, preferrably rounded down, 80% speed, 50% kbs
+    #black
+        faster with more kbs, preferrably rounded up, default +3 for 3 or less, 1.8x for 15 or less (but >3), 1.5x for above 15
+    #white
+        weak sages, referrably nerfs sages to 30% instead of 70% and makes kb go in reverse
+    #floating
+        gets a wave/surge/blast immunity (wave block and surge reflect included), uses a weight system with default 50% chance of second ability, wi:5 si:5 bi:2 wb:3 cs:3
+    #relic
+        gets curse and weak pierce, unknown curse strength, default 10% damage 5% range pierce
+            I think only surge ld and omni dont get pierce since wave and explosion should be indistinguishable (exp range is currently unused right?)
+    #zombie
+        gets revive and usually burrow (rates can be changed) - can set to be balanced
+        revives:
+            inf full after 30f - 5 weight
+            inf 10% after 200f - 5 weight
+            3 50% after 90f    - 10 weight
+            1 100% after 300f  - 10 weight
+            1 50% after 240f   - 10 weight
+            1 100% after 900f  - 5 weight
+            2 10% after 30f    - 5 weight
+            1 10% after 180    - 10 weight
+        burrows: #putting these as distances we are used to in game not the 4x they are in stats
+            inf 400 w:3
+            3 600   w:3
+            1 1500  w:6
+            1 1000  w:10
+            1 750   w:10
+            1 500   w:10
+            1 250   w:5
+    #alien
+        gets a random ability from a list - chance to be starred (default to block eoc/itf/cotc from star and itf from normal) 
+        freeze w:5
+        slow w:5
+        kb w:5
+        weak w:5
+        wave w:2
+        surge w:2
+        explode w:0
+        crit w:5
+        savage w:5 #these should prolly stop at like 50% or maybe adjust damage to keep dps the same or something
+        lethal w:4
+        base des w:5
+        multihit w:3
+
+        starred frequency default 30%?
+        warp frequency 60?          #make these use a single determinant to make dual possible
+        barrier freq 50?
+        warps: #listed strong to weak
+            backwards mid
+            short fast
+            max distance slow
+            far mid
+            mid mid
+            mid slow
+            mid mid (double chance)
+            mid fast
+        barriers: these vary around these amounts - will sometimes multiply their health by 10 for not weak enemies
+            shitter 10 hp
+            3k
+            9k
+            22k
+    #angel
+        currently gives speed and health boost while reducing damage (1.3x and 0.8x), reduced health increases on > 2 mill hp enemies
+        dab has proposed something to do with delay
+    #aku
+        shield and death surge (and death surge ability)
+        shield frequency
+        death surge frequency
+        death surge ability frequency #do I want weights on these
+        ability death surge is mini bool
+        abilities:
+            freeze 60f 
+            slow 120f
+            weak to 50% 180f
+            kb 100%
+            savage 100 or 300 (* by 7 if mini) (savage at 20% for 300, 50% for 100)
+        shield types:
+            for enemies with >5k hp default to a 5k shield base hp with 100% regen
+            1 kb: 30%
+            2 kb: 20%, 50% regen
+            3 kb: 15%
+            >24 kb: 15%
+            else: 10%, regen 50%
+    #metal
+        nothing known currently
+
+
+
+enemies:
+    exceptions
+        brollow
+        doge
+        squirrel
+        duche
+        johnnyleon
+        poultrio?
+        shyboy for ryelo
+    metal removal rebalance: #default new trait for metals is to be red (default metal change is 400x hp if 1k or below, 20x otherwise)
+        47 metal hippoe - white
+        54 smh          - relic
+        56 cyberhorn    - angel
+        58 face         - black
+        59 seal         - white
+        71 cyclone      - angel
+        116 sign        - white
+        147 doge        - angel
+        338 rost        - angel
+        358 snache      - relic
+        359 sloth       - white
+        449 baabaa      - relic
+        497 croc        - white
+        517 kory        - relic #the code for all this can prolly be copied from the randomizer just fine (metal_new_trait in enemy.py v4)
+
+        rebalance stats:
+        147 doge    - 20k hp
+        47 hippoe   - 80k hp 
+        517 kory    - 75k hp, 0tba, 25k attack, waveblock, surge immune
+        57 cybear   - wave immune, (maybe it should get surge immune too?)
+        58 face     - 1 hp, 100% wave, 90% dodge 1f, ld 240 w:-560
+        56 onehorn  - sage
+        116 fanboy  - 0 speed, 10 attack, 100% lvl 15 surge 4000 code distance 100 variation, 8000 range, 100% dodge 300f, 100% weak to 50 900f
+        54 smh      - 3kb, 300k hp #code for this can prolly be yanked from metal_rebalance in enemy.py in v4 
+    behemoth removal rebalance:
+        603 wild doge   - 45k hp, 12k atk, remove surge immune and lethal
+        604 ruck        - 600k hp, 5k per atk
+        605 hazuku      - 12k atk, 1.4 mill hp, ld min 355 w:705
+        606 crab        - 1 mill hp, 10k atk 12k second hit
+        610 sloth       - 800k hp, (8k,10k,12k) atk all hit on first attacks frame, ld min 500 w:-500
+        611 bluck       - 1 mill hp, 5k per atk
+        613 raja        - 1.2 mill hp, 8k atk, miniwave
+        624 chickful    - 1.2 mill hp, 18k atk
+        627 reluck      - 1.4 mill hp, (7k,7k,10k) atk
+        634 aku master a- 800k hp, 10k atk 15k second hit
+        639 deonil      - 800k hp, 5k atk
+        641 le boin     - 1.2 mill hp, 8k atk, 20 tba
+        650 relic leon  - 2.6 mill hp, 10k atk, 50 tba
+        652 henry       - 400k hp, 10k atk
+        655 black croc  - 2.5 mill hp, 25499 atk #lmao what
+        659 ganglion    - 2.5 mill hp, 125 tba
+        714 bunglious   - 2.8 mill hp, 36k atk #all this code can just be snagged from behemoth_rebalance in enemy.py in v4
+
+        497 croc        - 5 hp, metal, 0tba     has to be done after randomization and metals removed
+
+
+fr?
+ -- units --
+
+
+unit trait rando/swap:
+    needed config options for trait rando:
+        trait per whole unit - as opposed to each form gets its own randomization
+        try new trait - will attempt to make sure traits a unit gets they didnt originally have
+        consider talents - do I really want this as an option, I feel it should be default
+    needed config options for trait swap:
+        are there any lmao?
+    options applying to both:
+        gift trait specific abilities - give things like zkill and curse imm for units that newly obtained said traits (not units that target all traits or happened to have it before and after)
+        take trait specific abilities - take things like ^ from units that not longer target those traits
+        zkiller freq - currently it seems these default to per form, I feel we should have an option to make it not
+        curse freq
+        shield pierce freq
+
+    I feel like Im missing something
+
+
+
+
+talents:
+    I think do talent trait randomization first and include it as part of the general trait randomization
+
+
+    master switch for talent randomization (non trait)?
+        all units have talents number (0 for off)
+            include orb slots?
+    so the way this might work is create a pool of talents to randomize to
+        is hp/attack in that pool?
+        is trait talents in that pool?
+        is abilities in that pool?
+    then based on those same bools randomize a units talents that are allowed to be randomized
+    so if traits and abilities are on then they are in that pool and a units trait and ability talents will change but their hp/attack will not
+    ALSO have a button allowing for units to get duplicate talents
+        I think I need something to block a unit from getting traits they currently have (this implies talents is done post other randomizations)
+    
+    notes:
+        somethin to do about ability talents that give traits
+            prolly only if it doesnt currently have any trait targets
+            but we run into problems with it getting such a talent and also that same trait as a talent
+
+
+unit changes
+    #toggles
+    crit savage slop - controls whether or not some units get their damage from crit savage or not (namely merc, neneko, summer neneko, cmoneko)
+
+    #contentious
+    658 courier - remove targetting 
+
+
+    #normal units
+    46 jurassic - savage 200 (5% and 12% in tf), cost 500? (450 in v3 but 500 in v4), health (570,900,1400), attack (200,250,300), gets black target in true form post rando #this one needs major testing
+    635 million dollar cat - what am I doing with this one, maybe wave weaken all traits? could do moneko style cd on it (prolly 120f weaken 25% with 607f atkfrq to match sign) (maybe make its wave level randomized)
+    78 space - 20% crit (maybe first form surge, second blast, third ld? based on animation) amph suggests increasing damage to make it like single target paris
+    88 jumprope - hp 600 # needs testing
+    267 hurricat - 5% svage 200, 3 30 damage (24 first form) hits (all hits have ability) #maybe make this part of savageslop?
+    273 waitress - target trait (metal before rando) strong, 100% savage 200
+    621 aku research - target trait, massive (metal if remove metals prolly aku otherwise)
+    446 backhoe - 3 100 damage hits, 50% curse for 100f, 50% explode 1000-3000, 100% chance on both in tf
+    184 mint - 140 attack, 350 cost, 400 cd, 500 hp, 4 kbs, alien first form, red/metal second based on if metal removed
+    26 punt - 1000 hp and attack, 100% weak 150f to 50%, metal/? trait, tf 1200 attack and weak to 10
+    121 merc - hp 800, 4 kb, 100 attack on 3 hits, first omni 155 width:-475, 2nd ld -320 w:550, 3rd ld -320 w:625, 2f delay between each, if slop savage 200 at 20% chance crit 20%, both 100% in tf, if no slop 150 damage and 600 in tf      all these numbers are subject to change
+    28 capsule - 500 attack, massive, metal/white
+    65 racism cow - hp from 500 to 1300, attack from 30 to 80
+    68 reaper - 60% slow for 120f, 750 cost, 470 attack, 700 hp, true form: attack (200,400,800) 1000hp, pre attack (16,57,83)
+    716 cop - something to do with black red alien instead of white, idk how exactly
+
+    #ubers
+    57 paladin - savage 200 (20,40,50)%, hp (2000,3000,4000), attack (600,1000,1200), soul strike, tba 100? unsure what to do with this
+    427 cat clan - was 3% savage 200, I dont think its really needed/wanted
+    358 verbena - savage 200, crit and savage (30,30,50)%
+    261 hayabusa - first form gets 30% savage 200
+
+    #nenekos
+    131 neneko - 15% savage 200 insane against a trait (done by metal pre trait rando) #these 2 high dph ones should prolly be more fragile and lower dps and maybe worse at hitting
+    276 summer neneko - massive insane massive against a trait (^)
+    314 new years neneko - 0tba 15% savage 200
+    589 valentine neneko - wave level 4, range increased to 410 (increase sp to 50% in tf?)
+    332 easter neneko - 50% chance of freeze slow weaken for 40f (90? in tf, maybe higher), area and metal target all forms
+    16 moneko - bounty (make tf wave not mini)
+    418 cmoneko - 100% savage 200 (this is really lame lmao) ryelo suggests gauranteed random debuff, should prolly be full uptime since she has such a long pre atk 
+
+    #lugas (do I make them target all traits or just the ones in the second form?)
+    34 nekoluga - level 4 kb surge? (maybe make it freeze 150f since kubi also exists)
+    168 ashiluga - level 4 surge slow 420f
+    169 kubiluga - level 6 kb surge
+    170 tecoluga - level 3 crit surge (prolly increase tecos damage from 150 to 1000?(17k - 34k on crit), maybe make it 50% crit)
+    171 balaluga - level 4 surge freeze 300f, weak to 50% for 420f
+    240 togeluga - level 30 surge (idk what ability to give so Im doing absurdly long surge instead), maybe increase damage to 300? (about 5k dph level 30)
+    436 nobiluga - level 10 surge (make this surge spawn way further than most), 300 damage?
+    546 papaluga - level 4 surge curse 300f
+    625 furiluga - level 6 surge, barrier and shield pierce
+    712 kaoluga  - level 12 surge 30% kb, minisurge
+    781 mamoluga - level 4 surge, weaken to 25% for 300f
+    564 summerluga - level 8 surge, 600 damage (10200 at 30), huge spawn range
+    711 betrothed bala - level 6 surge, freeze 300f (dunno what else to give it but this is 420f of freeze so its prolly fine)
+
+
+    #experimental
+    343 slug cat    - 0tba?
+    63 rampage      - hp increased from 700 to 1200 (26.4k at level 40) maybe should be higher idk bro has 4 kbs
+    70 ritual       - remove stong? increase hp from (700,700,1200) to (1500,1500,2500)? attack from (160,160,320) to (350,350,450) (7650 at 50 for tf), increase berserk from 100% to 200%, maybe omni pierce by 20 or something? might be a bit much
+    74 reindeer     - 0tba, zkill?, 1kb?
+    79 prisoner     - pre tf: hp reduced from 550 to 50, range increased from 120 to 435, 0tba (61f cycle), speed increased to 12, cd increased to 864, attack increased from 350 to 700? (I would rather decrease its post attack than have dmage increased this way tho), okay I made an animation in bcu that works with 0tba 435 range and 16f pre attack
+    80 evil         - cost increase to 1000, 0 tba (46f cycle), freeze 30% 90f, tf: only decrease cooldown from 460 to 376 
+    81 doll         - cost decreased to 500, damage increased from 167 to 200 (3400 at 30), 100% level 1 wave (5 in tf)
+    100 maiden      - hp increased from (994,994,1988) to (1800,1800,2800), atk from (277,277,277) to (500,500,600), tf gets slow and weaken imm
+    104 koi         - 0tba (cycle decreased from 127 to 19), speed increased to 25 in all forms
+    109 madam       - cd decreased from 540 (276) to 360 (96), hp from (1140,1140,1710) to (1200,1200,2000), speed in tf increased to 11
+    122 vacation    - 40% kb 1st 2nd, 100% tf
+    128 vengeful    - bounty, [0tba (233f to 89f) attack increased from 98 to 300]? or instead maybe [attack increased from 98 to 500], soulstrike?
+    132 kungfu x    - only editing tf, attacks increased from (370,184,1294) to (470,100,1500) with a level 1 wave on first hit to clear peons
+    176 marshmallow - freezing death surge on all traits?
+    183 kart        - mario:(damage from 60 to 300, hp from 390 to 760 (12920 level 30), kb reduced to 2) luigi:(range from 320 to 465, 12% savage 200, damage 60 to 180) peach:(0tba, 1 kb, hp from 390 to 580)
+    227 pumpcat     - 2nd:(40% freeze 120f) tf:(60% freeze 140f)
+    244 gift of cats- area 50% freeze 75f
+    303 delivery    - damage 1st 2nd from 200 to 300
+    329 eggy        - slow 50%
+    17 tricycle     - 1st:(700cd 56tba (code time) for 132 attack cycle, 100% explode, 250 range, 360 damage, 580 hp) 2nd:(440cd 0tba(47f cycle), 3 180 damage hits, preatk (16,21,33), massive against metal/red, 440 hp, 1kb) tf:(400 damage 780 hp, 100% level 1 surge just past current target)
+
+    extra note:
+        I dont actually change anything about the power pro units but they are given somehow
+
+
+
+
+
+
+
+game wide randomizations:
+    randomize whats boss in each stage
+    enemy swap
+        default to a balance swap using info in the csv
+        edit each stage, dont swap units in t_unit.csv as thats insufficient
+    randomize cat abilities #never figured out how I was even gonna do this (prolly enemy abilities aswell)
+
+
+
+
+
+
+shishis:
+    manic shishi
+        cannon to make it attack is the stage design philosophy
+    lil shishi
+        was planning to make this a spam stage kinda like idi 
+        faster attack than usual 
+    had planned to make one a boss with boss wave as its gimmick 
+        heres my notes for that:
+        "you could make a boss waving shishi by delaying all the parts of its animation for the duration of its post attack and making it invisible during that period so that the spawn of the next one is what causes the boss wave but you cant see the next one until the current one finishes its animation and dies swapping them
+        and then you could spawn a different shishi that has omni pierce so that it has to walk a little bit and its walking animation can have some sort of dissipation of energy to show that it no longer kbs on hit"
+    crazed shishi:
+    brainwashed shishi:
+    malevolent shishi:
+    killer shishi:
+do I want first form luga for all these?
+
+
+
+
+
+
+
+
+
+
+
+things already added:
+    units:
+    enemies:
+        trait rand
+        trait swap (aside from specified swaps)
+        ability swap
+        behemoth/metal rebalances
+        enemy id per game swap (almost, still missing the conditions for what is allowed to swap and missing swapping of stationary enemies)
+        trait gimmick (almost, missing angel entirely and missing delay in alien)
+    qol:
+        behemoth stage buffs
+        xp stages buffs
+        material stage buffs
+        ticket stage buffs
+        fruit stage buffs
+        orb stage buffs (not the enigma ones)
+        shop buffs
+    gameplay:
+        behemoth/metal removal
+        itf/cotc crystal removal
+        condense god
+        stronger aliens in eoc
+    combo:
+        all unit down combos (for config note: this needs Unit_Explanation)
+        combo randomization
+    funnies:
+    anims/sprites:
+        sprite getter
+        adult f1 f2 animations
+
+
+things still needed to be added:
+    units:
+        trait changer:
+            trait rand 
+            talent trait rand 
+        talent changer:
+            talent rand
+        unit rebalances
+    enemies:
+        something to do with what is and isnt alien/starred in itf/cotc
+        delay in alien and angel
+        burrow animation stuff
+        sage rework
+    qol:
+        seasonals/collabs
+        seasonal/collab tf
+        gold cpu buff?
+        early catamin unlocks (this must be done early I think)
+        unit sell increase
+    gameplay:
+        old zombies
+    combos:
+        actual testing on how to do down combos in param
+        also param editing
+    funnies:
+        unbeatable end of sol stage for future proofing
+
+
+
+things I dont feel like adding the the randomizer now because they would take too long:
+    units:
+        unit trait swap
+        ability 
+            toggle for remove existing abilities?
+            maybe a weighted system for how many abilities on top of weight for what abilities
+        unit id swap? (do I feel like figuring that out rn?)
+        maybe add a minimum number of traits units have/ maybe it could also be +2 traits instead of 2 minimum (this does have problems of wtf do units with no trait abilities get)
+    enemies:
+        per stage enemy swap
+        enemy swap eoc fixes
+        trait specified swap
+        ability randomization might need to remove abilities as an option
+    qol:
+        eoc skip (both in the form of returner and enemy base)
+        proving grounds
+        lil farming stages
+        item farming stages
+        maybe even weekday specials?
+        enigma buff (including orb enigmas)
+        collab tf through missions (I dont have any mission editing code nor do I have the necessary documentation for it yet)
+        advent revenges on catamins
+        seasonal tf like delivery somewhere
+        #make it so when you add/change treasures it changes the text and icon displayed for them
+    funnies:
+        boss swap
+            p sure I already have youcan warning mostly done but we dont have an enemy for it yet and I dont feel like figuring out how to do that rn
+        clionel sprite fix 
+        dragon sprite rand
+        bluck anim
+        randomize restrictions
+        randomize stages in sol/ul/zl chapters
+        catasaurus black
+
+    
+
+
+
+
+
+
+
+
+notes on what needs to be maintained each update:
+    max ids: (change the defaults in configs to these numbers to facilitate people saving this info)
+        number of enemies,
+        number of cats,
+        number of combo effects
+    combos:
+        combo effect ids
+        killer/slayers
+        abnormal combos
+        no down effect
+
+
+
+
