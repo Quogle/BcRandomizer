@@ -57,7 +57,7 @@ DEFAULT_CONFIG = {
                         "Wave Immunity": 5,
                         "Surge Immunity": 5,
                         "Explosion Immunity": 3,
-                        "Counter-Surge": 5,
+                        "Counter Surge": 5,
                         "Wave Block": 3,
                     },
                     "dual_ability_chance": 40,

@@ -146,6 +146,17 @@ class TraitGimmicks(QWidget):
             elif item.layout() is not None:
                 self.clear_layout(item.layout())
 
+    def connect_trait_enabled(self, enabled, widgets):
+        enabled.toggled.connect(
+            lambda checked: [
+                widget.setEnabled(checked)
+                for widget in widgets
+            ]
+        )
+        enabled.toggled.emit(
+            enabled.isChecked()
+        )
+
     ###################################################################################################################
     # White
     ###################################################################################################################
@@ -188,6 +199,17 @@ class TraitGimmicks(QWidget):
             "sage_resist_mult"
         )
 
+        # Gray out sage debuff multiplier if make white enemies sage is disabled
+        self.white_sage.toggled.connect(
+            lambda checked: [
+                resist_label.setEnabled(checked),
+                self.white_sage_resist_mult.setEnabled(checked),
+            ]
+        )
+        self.white_sage.toggled.emit(
+            self.white_sage.isChecked()
+        )
+
         menu_layout.addWidget(self.white_enabled)
 
         sage_layout = QHBoxLayout()
@@ -196,6 +218,16 @@ class TraitGimmicks(QWidget):
         sage_layout.addWidget(self.white_sage_resist_mult)
 
         menu_layout.addLayout(sage_layout)
+
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.white_enabled,
+            [
+                self.white_sage,
+                resist_label,
+                self.white_sage_resist_mult,
+            ]
+        )
 
         layout.addWidget(menu)
 
@@ -271,6 +303,19 @@ class TraitGimmicks(QWidget):
 
         menu_layout.addStretch()
 
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.red_enabled,
+            [
+                speed_label,
+                self.red_speed_mult,
+                kb_label,
+                self.red_kb_mult,
+                mult_rounding_label,
+                self.red_mult_rounding,
+            ]
+        )
+
         layout.addWidget(menu)
 
 
@@ -335,6 +380,17 @@ class TraitGimmicks(QWidget):
 
         menu_layout.addLayout(dual_ability_layout)
 
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.floating_enabled,
+            [
+                self.floating_abilities,
+                dual_ability_label,
+                self.floating_dual_ability_chance,
+                dual_ability_value,
+            ]
+        )
+
         layout.addWidget(menu)
 
     ###################################################################################################################
@@ -369,9 +425,13 @@ class TraitGimmicks(QWidget):
 
         menu_layout.addWidget(speed_boost_label)
 
-        self.dark_speed_boost_layout = QVBoxLayout()
+        speed_boost_container = QWidget()
+
+        self.dark_speed_boost_layout = QVBoxLayout(speed_boost_container)
+        self.dark_speed_boost_layout.setContentsMargins(0, 0, 0, 0)
         self.dark_speed_boost_layout.setSpacing(6)
-        menu_layout.addLayout(self.dark_speed_boost_layout)
+
+        menu_layout.addWidget(speed_boost_container)
 
         for boost_config in dark_config["speed_boosts"]:
             self.add_dark_speed_boost(boost_config)
@@ -432,6 +492,20 @@ class TraitGimmicks(QWidget):
         
         menu_layout.addLayout(rounding_layout)
 
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.dark_enabled,
+            [
+                speed_boost_label,
+                speed_boost_container,
+                add_speed_boost,
+                kb_label,
+                self.dark_kb_mult,
+                rounding_label,
+                self.dark_mult_rounding,
+            ]
+        )
+
         layout.addWidget(menu)
 
 
@@ -444,7 +518,7 @@ class TraitGimmicks(QWidget):
                 "boost": 0,
             }
 
-            self.config["trait"]["enemy"]["trait_gimmicks"]["white"]["dark"]["speed_boosts"].append(boost_config)
+            self.config["trait"]["enemy"]["trait_gimmicks"]["dark"]["speed_boosts"].append(boost_config)
 
         row = QWidget()
 
@@ -624,6 +698,21 @@ class TraitGimmicks(QWidget):
 
         menu_layout.addStretch()     
 
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.angel_enabled,
+            [
+                self.angel_balanced,
+                speed_label,
+                self.angel_speed_mult,
+                attack_label,
+                self.angel_attack_mult,
+                health_label,
+                self.angel_health_mult,
+                rounding_label,
+                self.angel_rounding,
+            ]
+        )
 
         layout.addWidget(menu)
 
@@ -761,6 +850,23 @@ class TraitGimmicks(QWidget):
         barrier_layout.addWidget(barrier_value)
 
         menu_layout.addLayout(barrier_layout)
+
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.alien_enabled,
+            [
+                self.alien_abilities,
+                starred_label,
+                self.alien_starred_frequency,
+                starred_value,
+                warp_label,
+                self.alien_warp_frequency,
+                warp_value,
+                barrier_label,
+                self.alien_barrier_frequency,
+                barrier_value,
+            ]
+        )
 
         layout.addWidget(menu)
 
@@ -954,6 +1060,16 @@ class TraitGimmicks(QWidget):
         burrow_layout.addWidget(add_burrow)
 
         menu_layout.addWidget(burrow_group)
+
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.zombie_enabled,
+            [
+                self.zombie_balanced,
+                revive_group,
+                burrow_group,
+            ]
+        )
 
         layout.addWidget(menu)
 
@@ -1238,6 +1354,35 @@ class TraitGimmicks(QWidget):
 
         menu_layout.addLayout(relic_pierce_range_layout)
 
+
+        # Gray out shit if relic pierce is disabled
+        self.relic_pierce.toggled.connect(
+            lambda checked: [
+                relic_pierce_attack_label.setEnabled(checked),
+                self.relic_pierce_attack.setEnabled(checked),
+                relic_pierce_range_label.setEnabled(checked),
+                self.relic_pierce_range.setEnabled(checked),
+            ]
+        )
+        self.relic_pierce.toggled.emit(
+            self.relic_pierce.isChecked()
+        )
+
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.relic_enabled,
+            [
+                self.relic_curse,
+                self.relic_pierce,
+                relic_pierce_attack_label,
+                self.relic_pierce_attack,
+                relic_pierce_attack_value,
+                relic_pierce_range_label,
+                self.relic_pierce_range,
+                relic_pierce_range_value,
+            ]
+        )
+
         layout.addWidget(menu)
 
 
@@ -1363,6 +1508,22 @@ class TraitGimmicks(QWidget):
 
         menu_layout.addWidget(self.aku_ds_ability_mini)
 
+        # Gray out everything if not enabled
+        self.connect_trait_enabled(
+            self.aku_enabled,
+            [
+                aku_shield_frequency_label,
+                self.aku_shield_frequency,
+                aku_shield_frequency_value,
+                aku_ds_frequency_label,
+                self.aku_ds_frequency,
+                aku_ds_frequency_value,
+                aku_ds_ability_frequency_label,
+                self.aku_ds_ability_frequency,
+                aku_ds_ability_frequency_value,
+                self.aku_ds_ability_mini,
+            ]
+        )
 
         layout.addWidget(menu)
 

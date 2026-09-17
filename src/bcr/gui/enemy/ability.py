@@ -13,42 +13,6 @@ from PySide6.QtCore import Qt
 from ..helpers.widgets import *
 from ..helpers.config_helpers import *
 
-ABILITY_NAMES = {
-    "weaken": "Weaken",
-    "freeze": "Freeze",
-    "slow": "Slow",
-    "knockback": "Knockback",
-    "warp": "Warp",
-    "curse": "Curse",
-    "dodge": "Dodge",
-    "strengthen": "Strengthen",
-    "survive": "Survive",
-    "base_destroy": "Base Destroyer",
-    "crit": "Critical Hit",
-    "savage": "Savage Blow",
-    "wave": "Wave",
-    "mini_wave": "Mini Wave",
-    "surge": "Surge",
-    "mini_surge": "Mini Surge",
-    "explosion": "Explosion",
-    "counter_surge": "Counter Surge",
-    "wave_block": "Wave Block",
-    "single_atk": "Single Attack",
-    "area_atk": "Area Attack",
-    "long_distance": "Long Distance",
-    "omni_strike": "Omni Strike",
-    "weaken_immune": "Weaken Immune",
-    "freeze_immune": "Freeze Immune",
-    "slow_immune": "Slow Immune",
-    "kb_immune": "Knockback Immune",
-    "wave_immune": "Wave Immune",
-    "surge_immune": "Surge Immune",
-    "explosion_immune": "Explosion Immune",
-    "warp_immune": "Warp Immune",
-    "curse_immune": "Curse Immune",
-    "toxic_immune": "Toxic Immune",
-}
-
 class AbilityRandomization(QWidget):
 
     def refresh_from_config(self):
@@ -111,8 +75,11 @@ class AbilityRandomization(QWidget):
 
         self.ability_weights = WeightedGrid(
             ability_config["weights"].items(),
-            columns=3,
-            names=ABILITY_NAMES
+            3,
+            {
+                name: name.replace("_", " ").title()
+                for name in ability_config["weights"]
+            }
         )
 
         connect_weighted_list(
