@@ -65,6 +65,19 @@ def connect_weighted_list(widget, config):
         )
 
 
+def connect_checkbox_grid(widget, config):
+    for name, checkbox in widget.items.items():
+        checkbox.setChecked(config[name])
+
+        checkbox.stateChanged.connect(
+            lambda _, name=name, checkbox=checkbox:
+            config.__setitem__(
+                name,
+                checkbox.isChecked()
+            )
+        )
+
+
 def connect_line_edit(widget, config, key):
     value = config[key]
 

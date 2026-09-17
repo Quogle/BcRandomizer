@@ -13,6 +13,7 @@ from PySide6.QtCore import Qt
 from ..trait.e_trait_gimmicks import TraitGimmicks
 from ..trait.u_trait import TraitRandomization
 from ..trait.u_ability import AbilityTraitRandomization
+from ..trait.included import IncludedTraits
 
 class TraitWindow(QWidget):
     def refresh_from_config(self):
@@ -36,6 +37,16 @@ class TraitWindow(QWidget):
         scroll.setWidget(content)
 
         main_layout.addWidget(scroll)
+
+        ################ Included Traits ###########################################################################
+
+        included = QGroupBox("Included Traits")
+        included_layout = QVBoxLayout(included)
+
+        self.included = IncludedTraits(self.config)
+        included_layout.addWidget(self.included)
+
+        content_layout.addWidget(included)
 
         ################ Unit Trait Randomization ###########################################################################
 
