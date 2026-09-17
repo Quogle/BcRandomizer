@@ -10,6 +10,7 @@ from bcr.config.defaults import DEFAULT_CONFIG
 from tadbcmc.data.collated_info.enemy_info import *
 import tadbcmc.data.enums.unit_info as ui
 import tadbcmc.core.simple_funcs as simp
+main()
 
 
 DEFAULT_CONFIG["enemy"]["ability"]["randomize_abilities"] = True

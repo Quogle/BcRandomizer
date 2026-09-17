@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import subprocess # no sense in it
+from os.path import join
 
 if getattr(sys, "frozen", False):
     TOOLS_DIR = Path(sys._MEIPASS) / "resources" / "tools"
@@ -33,3 +34,22 @@ KEYSTORE_PATH = (TOOLS_DIR/"keystore"/"bcrando.jks")
 WORKSPACE = Path("workspace")
 DECOMPILED = WORKSPACE / "decoded"
 RES = DECOMPILED / "res"
+LIBPATH = DECOMPILED / "lib" / "x86_64" / "libnative-lib.so"
+APKASSETS = DECOMPILED / "assets"
+DOWNLOADLOCALPACK = APKASSETS / "DownloadLocal.pack"
+
+
+# Game File Paths
+DECRYPTED = WORKSPACE / "decrypted"
+DOWNLOADLOCAL = DECRYPTED / "DownloadLocal"
+SERVERDIRECTORY = WORKSPACE / "en_server" #this is where the server list/pack files are stored before being decrypted I believe
+VANILLAFILES = DECRYPTED / "vanilla_files"
+SERVERFILES = DECRYPTED / "server" #this is where the server pack files have their output?
+LOCALFILES = DECRYPTED / "local"
+
+
+# Rebuilding Apk Paths
+REBUILTAPK = WORKSPACE / "rebuilt.apk"
+ALIGNEDAPK = WORKSPACE / "aligned.apk"
+#SIGNEDAPK = WORKSPACE / "sign.apk" #I think u moved this?
+

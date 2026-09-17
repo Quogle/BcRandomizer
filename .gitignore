@@ -653,7 +653,7 @@ workspace/
 *.test*.py
 self_install.py
 self_upload.py
-
+testing_server_files
 
 
 

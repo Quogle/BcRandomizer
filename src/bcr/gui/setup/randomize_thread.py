@@ -13,13 +13,14 @@ from ...apk.server.downloader import download_server_files,process_server_files
 from ...apk.packs.required_files import get_required_files
 from ...apk.edit_xml import edit_manifest
 from ...apk.replace_icon import replace_icon
+from ...config import paths as internalPaths
 
 #from ...randomizer import randomize as randomize_function
 
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
-DECRYPT_SPECIFICS = True
-SKIP_SERVER = True
+DECRYPT_SPECIFICS = False
+SKIP_SERVER = False
 
 class RandomizeThread(QObject):
 
@@ -31,7 +32,7 @@ class RandomizeThread(QObject):
     def __init__(self, apk_path, config):
         super().__init__()
 
-        self.apk_path = apk_path
+        self.apk_path = apk_path #idk where to change this path if it should be changed at all
         self.config = config
 
     def run(self):
@@ -47,20 +48,15 @@ class RandomizeThread(QObject):
         apk_path = self.apk_path
         config = self.config
 
-        workspace = Path("workspace")
-        decoded_directory = workspace / "decoded"
-        decrypted_directory = workspace / "decrypted"
-        rebuilt_apk = workspace / "rebuilt.apk"
-        aligned_apk = workspace / "aligned.apk"
         signed_apk = Path(f"{self.config['mod']['id']}.apk")
 
         self.log.emit("Extracting APK...")
 
-        extract_apk(apk_path,decoded_directory,)
+        extract_apk(apk_path,internalPaths.DECOMPILED,)
 
         pack_paths = [
             path
-            for path in decoded_directory.rglob("*.pack")
+            for path in internalPaths.DECOMPILED.rglob("*.pack")
             if "_" not in path.stem
         ]
 
@@ -82,7 +78,7 @@ class RandomizeThread(QObject):
             decrypt_packs(
                 pack_paths=pack_paths,
                 cc="en",
-                output_directory=decrypted_directory / "vanilla_files",
+                output_directory=internalPaths.DECRYPTED / "vanilla_files",
                 wanted_files=requirements["local"],
                 use_pack_directory=False,
             )
@@ -90,21 +86,12 @@ class RandomizeThread(QObject):
             decrypt_packs(
                 pack_paths=pack_paths,
                 cc="en",
-                output_directory=decrypted_directory,
+                output_directory=internalPaths.DECRYPTED,
             )
 
-        server_directory = workspace / "en_server"
+        tsv_paths = sorted(internalPaths.DECOMPILED.rglob("download_*.tsv"))
 
-        lib_path = (
-            decoded_directory
-            / "lib"
-            / "x86_64"
-            / "libnative-lib.so"
-        )
-
-        tsv_paths = sorted(decoded_directory.rglob("download_*.tsv"))
-
-        self.log.emit(f"\nFound libnative.so: {lib_path}")
+        self.log.emit(f"\nFound libnative.so: {internalPaths.LIBPATH}")
 
         self.log.emit(f"Found {len(tsv_paths)} server TSV files:")
 
@@ -120,14 +107,14 @@ class RandomizeThread(QObject):
             if not DECRYPT_SPECIFICS:
 
                 download_server_files(
-                    lib_path=lib_path,
+                    lib_path=internalPaths.LIBPATH,
                     tsv_paths=tsv_paths,
                     country_code="en",
-                    output_directory=server_directory,
+                    output_directory=internalPaths.SERVERDIRECTORY,
                 )
 
                 server_pack_paths = list(
-                    server_directory.rglob("*.pack")
+                    internalPaths.SERVERDIRECTORY.rglob("*.pack")
                 )
 
                 self.log.emit(
@@ -140,33 +127,25 @@ class RandomizeThread(QObject):
                 decrypt_packs(
                     pack_paths=server_pack_paths,
                     cc="en",
-                    output_directory=decrypted_directory / "server",
+                    output_directory=internalPaths.SERVERFILES,
                 )
 
             else:
 
                 process_server_files(
-                    lib_path=lib_path,
+                    lib_path=internalPaths.LIBPATH,
                     tsv_paths=tsv_paths,
                     country_code="en",
-                    server_directory=server_directory,
-                    output_directory=decrypted_directory / "vanilla_files",
+                    server_directory=internalPaths.SERVERDIRECTORY,
+                    output_directory=internalPaths.VANILLAFILES,
                     wanted_files=requirements["server"],
                     use_pack_directory=False,
                     log=self.log.emit,
                 )
 
-        pack_path = (
-            decoded_directory
-            / "assets"
-            / "DownloadLocal.pack"
-        )
+        pack_name = internalPaths.DOWNLOADLOCALPACK.stem
 
-        pack_name = pack_path.stem
-
-        game_files_directory = (decrypted_directory/pack_name)
-
-        game_files_directory.mkdir(
+        internalPaths.DOWNLOADLOCAL.mkdir(
             parents=True,
             exist_ok=True,
         )
@@ -180,9 +159,9 @@ class RandomizeThread(QObject):
         )
 
         encrypt_pack(
-            game_files_dir=game_files_directory,
+            game_files_dir=internalPaths.DOWNLOADLOCAL,
             pack_name=pack_name,
-            output_directory=pack_path.parent,
+            output_directory=internalPaths.DOWNLOADLOCALPACK.parent,
             cc="en",
         )
 
@@ -199,17 +178,17 @@ class RandomizeThread(QObject):
         self.log.emit("Building APK")
 
         build_apk(
-            decoded_directory,
-            rebuilt_apk,
+            internalPaths.DECOMPILED,
+            internalPaths.REBUILTAPK,
         )
 
         self.log.emit("Zipaligning APK")
 
-        zipalign_apk(rebuilt_apk,aligned_apk,)
+        zipalign_apk(internalPaths.REBUILTAPK,internalPaths.ALIGNEDAPK,)
 
         self.log.emit("Signing APK")
 
-        sign_apk(aligned_apk,signed_apk,)
+        sign_apk(internalPaths.ALIGNEDAPK,signed_apk,)
         self.log.emit(f"Signed APK: {signed_apk}")
         
         self.html_log.emit('<span style="color: lime;">Randomization Complete.</span>')

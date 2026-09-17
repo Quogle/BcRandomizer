@@ -3,78 +3,104 @@ from bcr.apk.packs.decrypt import decrypt_packs
 from bcr.apk.server.downloader import download_server_files,process_server_files
 import os
 from pathlib import Path
+import bcr.config.paths as internalPaths
+import shutil
 
-def _decrypt_apk(apk_path,output_dir):
-    """decrypts the apk at specified path to other specified path"""
-    extract_apk(apk_path,output_dir)
+SERVER_FILE_TYPES = ["MapServer","NumberServer","UnitServer","ImageServer","ImageDataServer"]
+THE_ALPHABET = "abcdefghijklmnopqrstuvwxyz".upper()
 
 
-def _decrypt_local_packs(dir_with_packs,output_dir,henry_style_output=False):
+def _correctly_order_server_files(server_files:list[Path]):
+    """ puts the server files in the correct order """
+    correct_order = []
+    #first the base ones
+    for server_file in server_files:
+        if server_file.stem.replace(".pack","") in SERVER_FILE_TYPES:
+            correct_order.append(server_file)
+    #lettered ones
+    for letter in THE_ALPHABET:
+        for filetype in SERVER_FILE_TYPES:
+            this_filename = letter + filetype
+            for server_file in server_files:
+                if this_filename in server_file.stem:
+                    correct_order.append(server_file)
+    #now numbered ones
+    server_files.sort()
+    for server_file in server_files:
+        if server_file not in correct_order:
+            correct_order.append(server_file)
+    return correct_order
+
+def _decrypt_apk(apk_path):
+    """decrypts the apk at specified path"""
+    extract_apk(apk_path,internalPaths.DECOMPILED)
+
+def _decrypt_local_packs():
     """ decrypts any packs found in specified directory to the specified directory
     \n if henry style, will instead output each of the packs into their own directory """
     #first get all the pack paths
-    all_in_pack_location = os.listdir(dir_with_packs)
-    all_packs = []
-    for file in all_in_pack_location:
-        if ".pack" in file:
-            all_packs.append(file)
-    print(all_packs)
+    all_packs = internalPaths.DECOMPILED.rglob("*.pack")
+    pack_paths = []
+    for pack in all_packs:
+        if "_" not in pack.stem:
+            pack_paths.append(pack)
     #now decrypt them
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    if not henry_style_output:
-        for file in all_packs:
-            decrypt_packs(
-                pack_paths=os.path.join(dir_with_packs,file),
-                cc="en",
-                output_directory=output_dir,
-                )
-    else:
-        #for henry style output each one into a dir of its own name
-        for file in all_packs:
-            this_dir = os.path.join(output_dir,file.replace(".pack",""))
-            if not os.path.exists(this_dir):
-                os.makedirs(this_dir)
-            decrypt_packs(
-                pack_paths=os.path.join(dir_with_packs,file),
-                cc="en",
-                output_directory=this_dir,
-            )
-
-def _download_and_decrypt_server_files(decoded_apk_dir:Path,server_packs:Path,decrypted_dir:Path):
-    """ if henry it will output each server file into a dir of its own name """
-    apk_lib_path = os.path.join(
-                        decoded_apk_dir,
-                        "lib",
-                        "x86_64",
-                        "libnative-lib.so",
-                    )
-    tsv_paths = sorted(decoded_apk_dir.rglob("download_*.tsv")) #not a fuckin clue how this works
+    if not os.path.exists(internalPaths.DECRYPTED):
+        os.makedirs(internalPaths.DECRYPTED)
+    decrypt_packs(
+        pack_paths=pack_paths,
+        cc="en",
+        output_directory=internalPaths.LOCALFILES,
+    )
+    
+def _download_and_decrypt_server_files():
+    """ outputs each server file in the correct order to its respective game directory in serverfiles """
+    tsv_paths = sorted(internalPaths.DECOMPILED.rglob("download_*.tsv")) #not a fuckin clue how this works
     #start by downloading all the server files?
     download_server_files(
-        lib_path=apk_lib_path,
+        lib_path=internalPaths.LIBPATH,
         tsv_paths=tsv_paths,
         country_code="en",
-        output_directory=server_packs,
+        output_directory=internalPaths.SERVERDIRECTORY,
     )
     #now get all of them
     server_pack_paths = list(
-        server_packs.rglob("*.pack")
+        internalPaths.SERVERDIRECTORY.rglob("*.pack")
     )
+    #now order them correctly
+    ordered_server_files = _correctly_order_server_files(server_pack_paths)
     #now decrypt them
     decrypt_packs(
-        pack_paths=server_pack_paths,
+        pack_paths=ordered_server_files,
         cc="en",
-        output_directory=os.path.join(decrypted_dir,"server")
+        output_directory=internalPaths.SERVERFILES
     )
 
+def _move_all_local_and_server_files_to_vanilla_files(delete_them=True):
+    """ copies all files from local and then server into vanilla, deletes them if specified """
+    dirs = []
+    for each in os.listdir(internalPaths.LOCALFILES):
+        dirs.append(internalPaths.LOCALFILES / each)
+    for each in os.listdir(internalPaths.SERVERFILES):
+        dirs.append(internalPaths.SERVERFILES / each)
+    for directory in dirs:
+        print("moving " + directory.stem + " to vanilla_files")
+        all_files = os.listdir(directory)
+        for file in all_files:
+            shutil.copy(directory / file,internalPaths.VANILLAFILES / file)
+            if delete_them:
+                os.remove(directory / file)
 
 
-def breakdown_apk(apk_path,output_dir,henry_style=False):
+#working on this still
+def breakdown_apk(apk_path,keep_local_server=False):
     """ breaks down the apk and decrypts all the pack files """
-    _decrypt_apk(apk_path=apk_path)
+    #_decrypt_apk(apk_path=apk_path)
+    _decrypt_local_packs()
+    _download_and_decrypt_server_files()
+    _move_all_local_and_server_files_to_vanilla_files((not keep_local_server))
 
 
-
+breakdown_apk("en_merged.apk",keep_local_server=False)
 
 

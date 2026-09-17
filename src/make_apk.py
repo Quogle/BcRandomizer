@@ -7,36 +7,26 @@ from bcr.apk.zipalign import zipalign_apk
 from bcr.apk.sign import sign_apk
 from bcr.config.defaults import DEFAULT_CONFIG
 import os
+from bcr.config.paths import*
 
 
-workspace = "workspace"
-decrypted = "decrypted"
-downloadlocal = "DownloadLocal"
-decoded = "decoded"
-output_apk = "complete.apk"
 
-dl_path = os.path.join(workspace,decrypted,downloadlocal)
-decoded_path = os.path.join(workspace,decoded)
-rebuilt_path = os.path.join(workspace,"rebuilt.apk")
-aligned_path = os.path.join(workspace,"aligned.apk")
-signed_path = os.path.join(workspace,output_apk)
-
-def make_apk():
+def make_apk(output):
     """makes the apk"""
-    encrypt_pack(game_files_dir=dl_path,pack_name=downloadlocal,output_directory=workspace,cc="en")
+    encrypt_pack(game_files_dir=DOWNLOADLOCAL,pack_name=DOWNLOADLOCAL.stem,output_directory=WORKSPACE,cc="en")
     replace_icon()
     edit_manifest(mod_id=DEFAULT_CONFIG["mod"]["id"])
-    build_apk(decoded_directory=decoded_path,output_apk=rebuilt_path)
-    zipalign_apk(input_apk=rebuilt_path,output_apk=aligned_path)
-    sign_apk(input_apk=aligned_path,output_apk=signed_path)
+    build_apk(decoded_directory=DECOMPILED,output_apk=REBUILTAPK)
+    zipalign_apk(input_apk=REBUILTAPK,output_apk=ALIGNEDAPK)
+    sign_apk(input_apk=ALIGNEDAPK,output_apk=output)
     #now remove all the extra files
-    files_in_workspace = os.listdir(workspace)
+    files_in_workspace = os.listdir(WORKSPACE)
     remove_file_endings = [".apk",".idsig",".list",".pack"]
     for file in files_in_workspace:
         for each in remove_file_endings:
-            if each in file and file != output_apk:
-                if os.path.exists(os.path.join(workspace,file)):
-                    os.remove(os.path.join(workspace,file))
+            if each in file and file != output:
+                if os.path.exists(os.path.join(WORKSPACE,file)):
+                    os.remove(os.path.join(WORKSPACE,file))
 
 
-make_apk()
+make_apk(Path(f"{DEFAULT_CONFIG['mod']['id']}.apk"))
