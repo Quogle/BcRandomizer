@@ -33,7 +33,7 @@ qol things
         seasonal tf in sol:
         collabs in advents:
 
-
+    korea 50 radar drops?
     behemoth cube buff 
     enigma buff
     replace weekday stages with special units (does it need to replace? I think its better if it does)
@@ -419,6 +419,36 @@ unit changes
 
     extra note:
         I dont actually change anything about the power pro units but they are given somehow
+
+
+
+notes on the process of unit trait rand:
+    differing types:
+        per form
+        avoid old traits
+    base information
+        all traits: (not actually all just the ones considered up to this point in case more traits in future)
+        allowed traits: list of all traits allowed (similarly not actually all allowed just those existing before)
+    things to consider:
+        A: a unit should NEVER lose traits from the randomization process (except when they have more than there are allowed traits)
+            maybe a caveat here, things that target all except white should maybe have 1 less trait than there are allowed?
+        B: per form should consider talents only in 3rd and 4th forms
+        C: old trait swapping to old talent is preferrable to old trait swapping to other old trait
+        D: A+B --> third/fourth form traits must be considered together as a block where if at all possible none of the traits in that block are duplicates
+        E: old trait swapping to other old trait is less bad if traits exist on a unit on different forms
+        F: A --> if the traits of one form are a subset of the traits of another, the subset must be considered first
+        G: subA --> for target all except white, white should map to something nothing else maps to (presumably by removing it from allowed)
+        H: C+E --> the more forms a trait appears on the more important it is that it swaps to a non old trait (talent traits are worth only half)
+    resultant process:
+        if target all except white:
+            immediately can be solved by mapping white to any trait in allowed and then mapping all remaining traits to traits in allowed except that one, no further logic needed in this case
+        if number of traits a unit has is less than half the length of allowed, simply map each trait to a trait in allowed the unit doesnt have, nor further logic needed
+        if the number of traits a unit has is half of more than ^, log across how many forms a trait is used in
+            traits used across more forms should be mapped first, mapping to traits used across less forms
+    extra notes:
+        if not avoid old traits, simply do base traits and make sure they lack duplicates and then add talent traits and attempt to make sure they lack duplicates
+
+        
 
 
 
