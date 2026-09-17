@@ -39,7 +39,7 @@ class TraitWindow(QWidget):
 
         ################ Unit Trait Randomization ###########################################################################
 
-        u_trait_randomization = QGroupBox("Trait Randomization")
+        u_trait_randomization = QGroupBox("Unit Trait Randomization")
         u_trait_randomization_layout = QVBoxLayout(u_trait_randomization)
 
         self.u_trait_randomization = TraitRandomization(self.config)
@@ -49,7 +49,7 @@ class TraitWindow(QWidget):
 
         ################ Unit Trait Based Ability Randomization ###########################################################################
 
-        u_ability_randomization = QGroupBox("Trait Randomization")
+        u_ability_randomization = QGroupBox("Unit Trait Specific Abilities")
         u_ability_randomization_layout = QVBoxLayout(u_ability_randomization)
 
         self.u_ability_randomization = AbilityTraitRandomization(self.config)
@@ -59,7 +59,7 @@ class TraitWindow(QWidget):
 
         ################ Enemy Trait Gimmicks  ###########################################################################
 
-        e_trait_gimmicks = QGroupBox("Trait Gimmicks")
+        e_trait_gimmicks = QGroupBox("Enemy Trait Gimmicks")
         e_trait_gimmicks_layout = QVBoxLayout(e_trait_gimmicks)
 
         self.e_trait_gimmicks = TraitGimmicks(self.config)
