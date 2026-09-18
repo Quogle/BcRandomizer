@@ -20,6 +20,7 @@ from ..helpers.widgets import *
 from .randomize_thread import RandomizeThread
 from PySide6.QtGui import QRegularExpressionValidator
 from PySide6.QtCore import QRegularExpression
+from .versions import Versions
 
 class SetupWindow(QWidget):
 
@@ -30,9 +31,24 @@ class SetupWindow(QWidget):
 
         self.config = config
 
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(22, 18, 22, 22)
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(22, 18, 22, 22)
+        main_layout.setSpacing(15)
+
+        layout = QVBoxLayout()
         layout.setSpacing(15)
+
+        main_layout.addLayout(layout)
+
+        right_layout = QVBoxLayout()
+        self.versions = Versions(self.config)
+        right_layout.addWidget(self.versions)
+        right_layout.addStretch()
+
+        main_layout.addLayout(right_layout)
+
+        main_layout.setStretch(0, 9)
+        main_layout.setStretch(1, 3)
 
         # Input APK
         input_layout = QHBoxLayout()
@@ -105,36 +121,14 @@ class SetupWindow(QWidget):
             self.randomize
         )
 
-        # GAME FREEZE VERSION ###
-        freeze_game_version_label = QLabel("Freeze Randomization at Game Version")
-
-        self.freeze_game_version = QLineEdit()
-        self.freeze_game_version.setValidator(
-            QRegularExpressionValidator(QRegularExpression(r"[0-9.]*"))
-        )
-        self.freeze_game_version.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Fixed
-        )
-        connect_line_edit(
-            self.freeze_game_version,
-            self.config["mod"],
-            "freeze_game_version"
-        )
-
         randomizer_layout = QHBoxLayout()
-        id_layout = QHBoxLayout()
-
         randomizer_layout.addWidget(seed_label)
         randomizer_layout.addWidget(self.seed)
         randomizer_layout.addWidget(id_label)
         randomizer_layout.addWidget(self.id)
 
-        id_layout.addWidget(freeze_game_version_label)
-        id_layout.addWidget(self.freeze_game_version)
 
         layout.addLayout(randomizer_layout)
-        layout.addLayout(id_layout)
         layout.addWidget(randomize_button)
 
         # console
@@ -197,9 +191,19 @@ class SetupWindow(QWidget):
             )
             self.id.setText(self.config["mod"]["id"])
             
-            self.freeze_game_version.setText(
-                "" if self.config["mod"]["freeze_game_version"] is None
-                else str(self.config["mod"]["freeze_game_version"])
+            self.versions.unit_version.setText(
+                "" if self.config["mod"]["unit_version"] is None
+                else str(self.config["mod"]["unit_version"])
+            )
+
+            self.versions.enemy_version.setText(
+                "" if self.config["mod"]["enemy_version"] is None
+                else str(self.config["mod"]["enemy_version"])
+            )
+
+            self.versions.talent_version.setText(
+                "" if self.config["mod"]["talent_version"] is None
+                else str(self.config["mod"]["talent_version"])
             )
 
             self.config_loaded.emit()

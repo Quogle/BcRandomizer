@@ -1,9 +1,16 @@
 DEFAULT_CONFIG = {
+
     "mod": {
         "seed": None,
         "id": "bcrando",
         "config_version": 1,
-        "freeze_game_version": "15.5.0",
+        "unit_id": "15.5.0",
+        "unit_trait": "15.5.0",
+        "unit_ability": "15.5.0",
+        "talents": "15.5.0",
+        "enemy_id": "15.5.0",
+        "combos": "15.5.0",
+        "stages": "15.5.0",
     },
     "trait": {
         "included":{
