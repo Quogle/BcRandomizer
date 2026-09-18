@@ -450,10 +450,17 @@ notes on the process of unit trait rand:
     extra notes:
         if not avoid old traits, simply do base traits and make sure they lack duplicates and then add talent traits and attempt to make sure they lack duplicates
 
-        
-
-
-
+notes on the new unit rand process:
+    differing types:
+        per form
+        avoid old traits
+    base info:
+        all traits (existing at version time not actually all traits) actually prolly not fuck you just make a new randomization or leave the trait off
+        allowed traits
+    considerations:
+        A: except target all but white, units shouldnt lose the number of traits they target
+        B: per form only considers talents for 3/4th form
+        C: 
 
 
 
