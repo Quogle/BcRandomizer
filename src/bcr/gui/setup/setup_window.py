@@ -105,38 +105,21 @@ class SetupWindow(QWidget):
             self.randomize
         )
 
-        # MAX UNIT ID ###
-        max_unit_id_label = QLabel("Max Unit ID:")
+        # GAME FREEZE VERSION ###
+        freeze_game_version_label = QLabel("Freeze Randomization at Game Version")
 
-        self.max_unit_id = NoWheelSpinBox()
-        self.max_unit_id.setSizePolicy(
+        self.freeze_game_version = QLineEdit()
+        self.freeze_game_version.setValidator(
+            QRegularExpressionValidator(QRegularExpression(r"[0-9.]*"))
+        )
+        self.freeze_game_version.setSizePolicy(
             QSizePolicy.Expanding,
             QSizePolicy.Fixed
         )
-        self.max_unit_id.setMinimum(-1)
-        self.max_unit_id.setMaximum(9999)
-        self.max_unit_id.setSingleStep(1)
-        connect_value(
-            self.max_unit_id,
+        connect_line_edit(
+            self.freeze_game_version,
             self.config["mod"],
-            "max_unit_id"
-        )
-
-        # MAX ENEMY ID ###
-        max_enemy_id_label = QLabel("Max Enemy ID:")
-
-        self.max_enemy_id = NoWheelSpinBox()
-        self.max_enemy_id.setSizePolicy(
-            QSizePolicy.Expanding,
-            QSizePolicy.Fixed
-        )
-        self.max_enemy_id.setMinimum(-1)
-        self.max_enemy_id.setMaximum(9999)
-        self.max_enemy_id.setSingleStep(1)
-        connect_value(
-            self.max_enemy_id,
-            self.config["mod"],
-            "max_enemy_id"
+            "freeze_game_version"
         )
 
         randomizer_layout = QHBoxLayout()
@@ -147,10 +130,8 @@ class SetupWindow(QWidget):
         randomizer_layout.addWidget(id_label)
         randomizer_layout.addWidget(self.id)
 
-        id_layout.addWidget(max_unit_id_label)
-        id_layout.addWidget(self.max_unit_id)
-        id_layout.addWidget(max_enemy_id_label)
-        id_layout.addWidget(self.max_enemy_id)
+        id_layout.addWidget(freeze_game_version_label)
+        id_layout.addWidget(self.freeze_game_version)
 
         layout.addLayout(randomizer_layout)
         layout.addLayout(id_layout)
@@ -216,8 +197,10 @@ class SetupWindow(QWidget):
             )
             self.id.setText(self.config["mod"]["id"])
             
-            self.max_unit_id.setValue(self.config["mod"]["max_unit_id"])
-            self.max_enemy_id.setValue(self.config["mod"]["max_enemy_id"])
+            self.freeze_game_version.setText(
+                "" if self.config["mod"]["freeze_game_version"] is None
+                else str(self.config["mod"]["freeze_game_version"])
+            )
 
             self.config_loaded.emit()
 
