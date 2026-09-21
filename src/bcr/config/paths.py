@@ -28,6 +28,9 @@ APKTOOL_PATH = TOOLS_DIR/"apktool.jar"
 KEYSTORE_PATH = (TOOLS_DIR/"keystore"/"bcrando.jks")
 
 
+RESOURCES = Path("resources")
+ASSETS = RESOURCES / "assets"
+TOOLS = RESOURCES / "tools"
 
 
 # Decompiled Apk Paths
@@ -46,6 +49,8 @@ SERVERDIRECTORY = WORKSPACE / "en_server" #this is where the server list/pack fi
 VANILLAFILES = DECRYPTED / "vanilla_files"
 SERVERFILES = DECRYPTED / "server" #this is where the server pack files have their output?
 LOCALFILES = DECRYPTED / "local"
+GAMECACHEFILES = DECRYPTED / "cache"
+RANDOMIZERASSETS = ASSETS / "randomizer_assets"
 
 
 # Rebuilding Apk Paths

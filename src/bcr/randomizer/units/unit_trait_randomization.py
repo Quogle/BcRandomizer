@@ -40,7 +40,6 @@ def create_trait_map(form_traits:list[list[int]],talent_traits:list[int],this_lo
 
 
 
-
 def _only_one_allowed_trait(allowed_traits:list[int],all_traits:list[int]) -> list[list[int]]:
     """ creates the map if some fuck wants randomization to only one trait """
     to_traits = [allowed_traits[0]]*len(all_traits)
