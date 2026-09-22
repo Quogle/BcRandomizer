@@ -325,7 +325,7 @@ def _apply_ability_to_unit(stat:list[int],ab_name:str,random_number:int,post_att
     elif ab_name == "toxic":
         return abal._give_ability_toxic(stat,strength=5+int(r1/12),likelihood=5+int(r2/12),post_attack_time=post_attack_time)
     elif ab_name == "drain":
-        return abal._give_ability_drain(stat,strength=5+int(r1/12),likelihood=5+int(r2/12),post_attack_time=post_attack_time)
+        return abal._give_ability_drain(stat,post_attack_time=post_attack_time)
     elif ab_name == "self_destruct":
         return abal._give_ability_self_destruct(stat,die=True,number_of_attacks=1+int(r2/12),post_attack_time=post_attack_time)
     elif ab_name == "death_surge":

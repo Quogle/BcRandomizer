@@ -511,7 +511,8 @@ things already added:
         ability swap
         behemoth/metal rebalances
         enemy id per game swap (almost, still missing the conditions for what is allowed to swap and missing swapping of stationary enemies)
-        trait gimmick (almost, missing angel entirely and missing delay in alien)
+        trait gimmick
+        drain in alien and angel
     qol:
         behemoth stage buffs
         xp stages buffs
@@ -544,7 +545,6 @@ things still needed to be added:
         unit rebalances
     enemies:
         something to do with what is and isnt alien/starred in itf/cotc
-        delay in alien and angel
         burrow animation stuff
         sage rework
     qol:

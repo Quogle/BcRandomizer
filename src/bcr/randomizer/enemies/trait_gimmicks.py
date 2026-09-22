@@ -42,7 +42,6 @@ def apply_all_gimmicks(stats:list[list],config=DEFAULT_CONFIG,post_attack_anim=[
     #that should be all?
     return stats
 
-
 def white_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ gives all white units sage
     \n does nothing if white is off """
@@ -194,10 +193,52 @@ def dark_gimmick(stats:list,config=DEFAULT_CONFIG):
     #should be all good
     return stats
 
-#not done!!!!!
 def angel_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
-    """ skipping for now since idk what were doing with angels """
-    pass
+    """ makes angels into faster beefier but lesser damage enemies
+    \n also gives a portion of them delay, by default off
+    \n does nothing if angel if off """
+    angel_config = config["enemy"]["trait_gimmicks"]["angel"]
+    if not angel_config["enabled"]:
+        return stats
+    balanced = angel_config["balanced"]
+    speed_mult = angel_config["speed_mult"]
+    attack_mult = angel_config["attack_mult"]
+    health_mult = angel_config["health_mult"]
+    round_direction = angel_config["rounding"]
+    drain_freq = angel_config["drain_frequency"]
+    #might aswell calculate it here
+    above_hp_thresh_mult = health_mult
+    if balanced: above_hp_thresh_mult = 1+(attack_mult-1)/2
+    round_up = True
+    if round_direction != "Up": round_up = False
+    hp_thresh = 2000000 #2 million
+
+
+    #now apply the gimmick
+    for u_id in range(0,len(stats)):
+        if stats[u_id][e.t.angel] == 1:
+            #first do the attacks
+            first_attack = stats[u_id][e.s.attack]*attack_mult
+            second_attack = stats[u_id][e.s.multiDamage2]*attack_mult
+            third_attack = stats[u_id][e.s.multiDamage3]*attack_mult
+            stats[u_id][e.s.attack] = max(1,_round_directionally(first_attack,round_up))
+            stats[u_id][e.s.multiDamage2] = max(1,_round_directionally(second_attack,round_up))
+            stats[u_id][e.s.multiDamage3] = max(1,_round_directionally(third_attack,round_up))
+            #now do speed
+            unit_speed = stats[u_id][e.s.speed]*speed_mult
+            stats[u_id][e.s.speed] = max(1,_round_directionally(unit_speed,round_up))
+            #now do health
+            unit_health = stats[u_id][e.s.hp]
+            if unit_health > hp_thresh: unit_health *= above_hp_thresh_mult
+            else: unit_health *= health_mult
+            stats[u_id][e.s.hp] = max(1,_round_directionally(unit_health,round_up))
+            #now do drain
+            r = srand.randinst(56+87*u_id)
+            drain_dec = r.randrange(0,100)
+            post_attack = -1
+            if len(post_attack_info) > u_id: post_attack = post_attack_info[u_id]
+            if drain_dec < drain_freq: stats[u_id] = abal._give_ability_drain(stats[u_id],post_attack)
+    return stats
 
 def alien_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     """ gives stats an alien ability and returns it
@@ -220,11 +261,12 @@ def alien_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     wlethal = ab_dict["Lethal"]
     wbasedestroyer = ab_dict["Base Destroyer"]
     wmultihit = ab_dict["Multihit"]
+    wdrain = ab_dict["Drain"]
     warp_freq = config["enemy"]["trait_gimmicks"]["alien"]["warp_frequency"]
     barrier_freq = config["enemy"]["trait_gimmicks"]["alien"]["barrier_frequency"]
-    #now get the necessary lists
-    ability_weight_list =   [wfreeze,                   wslow,                      wkb,                    wweaken,                    wwave,                  wsurge,                     wexp,                           wcrit,                      wsavage,                    wlethal,                    wbasedestroyer,     wmultihit]
-    ability_check_list =    [e.s.freezeChance,          e.s.slowChance,             e.s.kbChance,           e.s.weakenChance,           e.s.waveChance,         e.s.surgeChance,            e.s.explodeChance,              e.s.critChance,             e.s.savageChance,           e.s.lethal,                 e.s.baseDestroyer,  e.s.multiDamage2]
+    #now get the necessary lists (these are in the order they are in config)
+    ability_weight_list =   [wfreeze,                   wslow,                      wkb,                    wweaken,                    wwave,                  wsurge,                     wexp,                           wcrit,                      wsavage,                    wlethal,                    wbasedestroyer,     wmultihit,          wdrain]
+    ability_check_list =    [e.s.freezeChance,          e.s.slowChance,             e.s.kbChance,           e.s.weakenChance,           e.s.waveChance,         e.s.surgeChance,            e.s.explodeChance,              e.s.critChance,             e.s.savageChance,           e.s.lethal,                 e.s.baseDestroyer,  e.s.multiDamage2,   e.s.drainChance]
     starred_alien_normal_ability_rate = 20 #we arent adding this to the config for reasons
     #now do each enemy
     for e_id in range(0,len(stats)):
@@ -512,6 +554,8 @@ def _give_an_alien_ability(stat:list,r:srand.randinst=srand.randinst(300),abilit
         stat[e.s.baseDestroyer] = 1
     elif new_ab_index == 11:#multihit
         stat = abal._alien_multihit(stat,multihit_decider=int(r1/5),post_attack_time=post_attack_time)
+    elif new_ab_index == 12:#drain
+        stat = abal._give_ability_drain(stat,post_attack_time)
 
     #should be all set now?
     return stat
