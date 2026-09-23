@@ -543,6 +543,8 @@ things still needed to be added:
         talent changer:
             talent rand
         unit rebalances
+            million dollar needs level boosts zeroed
+            paladins talents also need to be changed since they dont mesh with my paladin rework
     enemies:
         something to do with what is and isnt alien/starred in itf/cotc
         burrow animation stuff
