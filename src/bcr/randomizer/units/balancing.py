@@ -349,7 +349,7 @@ def _critter_metal_removal_rebalance(stats:list[list[list]]):
     for x in range(0,3):
         stats[space][x][c.s.recharge] = 500
         stats[space][x][c.s.barrier_break_chance] = 0
-        stats[space][x][c.s.wave_immune] = 0
+        stats[space][x][c.s.wave_immune] = 1
         stats[space][x][c.s.crit_chance] = 20
     #my idea for first form is generally the surges shouldnt hit what space is actually targetting (not editing hp/atk for now)
     stats[space][0][c.s.surge_chance] = 40
@@ -423,14 +423,23 @@ def _critter_metal_removal_rebalance(stats:list[list[list]]):
         stats[paladin][x][c.s.savage_by] = 200
         stats[paladin][x][c.s.tba] = 140 #makes for about 310f cycle
         stats[paladin][x][c.s.soul_strike] = 1
-        stats[paladin][x][c.s.weaken_immune] = 1
-        stats[paladin][x][c.s.slow_immune] = 1
         stats[paladin][x][c.s.zombie_killer] = 1
-    stats[paladin][0][c.s.crit_chance] = 30
+        stats[paladin][x][c.s.weaken_immune] = 1
+    #first form is a more rapid attacking single target version
+    stats[paladin][0][c.s.crit_chance] = 50
     stats[paladin][0][c.s.tba] = 90 #for a cycle of about 210f
-    (stats[paladin][0][c.s.savage_chance],stats[paladin][1][c.s.savage_chance],stats[paladin][2][c.s.savage_chance]) = (30,40,50)
-    (stats[paladin][0][c.s.hp],stats[paladin][1][c.s.hp],stats[paladin][2][c.s.hp]) = (3500,3500,4000)
-    (stats[paladin][0][c.s.attack],stats[paladin][1][c.s.attack],stats[paladin][2][c.s.attack]) = (1400,1000,1200)
+    stats[paladin][0][c.s.barrier_break_chance] = 100
+    #second form is a fastier tankier lower damage version
+    stats[paladin][1][c.s.speed] = 11
+    stats[paladin][1][c.s.slow_immune] = 1
+    stats[paladin][1][c.s.freeze_immune] = 1
+    stats[paladin][1][c.s.kbs] = 2
+    stats[paladin][1][c.s.lethal_chance] = 100
+    #third form is just a midranged semi nuker idrk, I think most of its interesting bits come from talents since it has so many
+    #I had this intent to maybe give slow/freeze immune as talents, but also a relatively frequent dodge chance for very short time
+    (stats[paladin][0][c.s.savage_chance],stats[paladin][1][c.s.savage_chance],stats[paladin][2][c.s.savage_chance]) = (50,40,50)
+    (stats[paladin][0][c.s.hp],stats[paladin][1][c.s.hp],stats[paladin][2][c.s.hp]) = (4000,5000,4000)
+    (stats[paladin][0][c.s.attack],stats[paladin][1][c.s.attack],stats[paladin][2][c.s.attack]) = (1000,800,1200)
 
 
     #verbena, not a lot to say it just gets savage at crit rates on each form
@@ -447,6 +456,144 @@ def _critter_metal_removal_rebalance(stats:list[list[list]]):
     #ok I think thats it
     return stats
 
+def _cop_cat_fix(stats:list[list[list]]):
+    """ fixes the copaganda that is strong against white with strong against red/alien/black instead
+    \n nonconditional """
+    #cop cat is u id 716
+    for x in range(1,3):
+        stats[716][x][c.t.white] = 0
+        stats[716][x][c.t.red] = 1
+        stats[716][x][c.t.dark] = 1
+        stats[716][x][c.t.alien] = 1
+    return stats
+
+def _moneneko_rebalance(stats:list[list[list]]):
+    """ reworks all the monekos and nenekos to no longer just be anti metal units
+    \n nonconditional """
+    #Im gonna define all their unit ids as variables for ease of understanding
+    neneko = 131
+    summer_neneko = 276
+    new_years_neneko = 314
+    valentine_neneko = 589
+    easter_neneko = 332
+    witchy_neneko = 228
+    moneko = 16
+    cmoneko = 418
+
+    #neneko, the occasionally savaging insane massive unit
+    for x in range(0,2): #only two forms
+        stats[neneko][x][c.s.savage_by] = 200
+        stats[neneko][x][c.s.savage_chance] = 15
+        stats[neneko][x][c.t.metal] = 1
+        stats[neneko][x][c.s.insane_massive] = 1
+
+
+    #summer neneko, the massive insane massive unit,
+    for x in range(0,3):
+        stats[summer_neneko][x][c.s.massive] = 1
+        stats[summer_neneko][x][c.s.insane_massive] = 1
+        stats[summer_neneko][x][c.t.metal] = 1
+
+    #new years neneko, the single target multi kber
+    for x in range(0,3):
+        stats[new_years_neneko][x][c.s.area] = 0
+        stats[new_years_neneko][x][c.s.kb_chance] = 100
+        stats[new_years_neneko][x][c.s.tba] = 80
+        stats[new_years_neneko][x][c.s.crit_chance] = 0
+        for trait in c.t:
+            stats[new_years_neneko][x][trait] = 1
+    stats[new_years_neneko][2][c.s.multi_ld_2_exists] = 1
+    stats[new_years_neneko][2][c.s.multi_ld_3_exists] = 1
+    stats[new_years_neneko][2][c.s.multi_ld_2_start] = 250
+    stats[new_years_neneko][2][c.s.multi_ld_2_width] = 180 #hits up to 430
+    stats[new_years_neneko][2][c.s.multi_ld_3_start] = 410
+    stats[new_years_neneko][2][c.s.multi_ld_3_width] = 230 #hits up to 640
+
+    #valentine neneko, the ranged waver, with sp in tf
+    for x in range(0,3):
+        stats[valentine_neneko][x][c.s.range] = 410
+        stats[valentine_neneko][x][c.s.wave_level] = 4
+        stats[valentine_neneko][x][c.s.crit_chance] = 0
+        stats[valentine_neneko][x][c.s.attack] = 200 #double its base damage
+        stats[valentine_neneko][x][c.s.hp] = 1200 #base is 900
+    stats[valentine_neneko][2][c.s.shield_pierce_chance] = 30
+
+    #easter neneko, the wild multihit debuffer
+    for x in range(0,3):
+        stats[easter_neneko][x][c.s.area] = 1
+        stats[easter_neneko][x][c.t.metal] = 1
+        stats[easter_neneko][x][c.s.freeze_chance] = 50
+        stats[easter_neneko][x][c.s.slow_chance] = 50
+        stats[easter_neneko][x][c.s.weaken_chance] = 50
+        stats[easter_neneko][x][c.s.weaken_to] = 50
+        stats[easter_neneko][x][c.s.kb_chance] = 15
+        stats[easter_neneko][x][c.s.freeze_duration] = 40
+        stats[easter_neneko][x][c.s.slow_duration] = 60
+        stats[easter_neneko][x][c.s.weaken_duration] = 80
+    stats[easter_neneko][2][c.s.freeze_duration] = 90
+    stats[easter_neneko][2][c.s.slow_duration] = 140
+    stats[easter_neneko][2][c.s.weaken_duration] = 180
+
+
+    #witchy neneko,
+    for x in range(0,3):
+        stats[witchy_neneko][x][c.s.crit_chance] = 0
+    #first form is a suicidal counter surger though a dummy first hit
+    stats[witchy_neneko][0][c.s.tba] = 200 #doubling the tba to make it attack less often
+    stats[witchy_neneko][0][c.s.range] = 390
+    stats[witchy_neneko][0][c.s.wave_immune] = 1
+    stats[witchy_neneko][0][c.s.explode_immune] = 1
+    stats[witchy_neneko][0][c.s.multi_damage_2] = 80
+    stats[witchy_neneko][0][c.s.multi_preatk_2] = 28
+    stats[witchy_neneko][0][c.s.multi_has_ability_2] = 0
+    stats[witchy_neneko][0][c.s.multi_has_ability_1] = 1
+    stats[witchy_neneko][0][c.s.preatk] = -1
+    stats[witchy_neneko][0][c.s.attack] = 800 #makes for about 13k damage at 30
+    stats[witchy_neneko][0][c.s.savage_by] = 200
+    stats[witchy_neneko][0][c.s.savage_chance] = 20
+    #second form I dont even know Im ignoring for now
+    #third form doesnt need any changing
+
+
+    #moneko, waving bountier (miniwave outside tf)
+    for x in range(0,3):
+        stats[moneko][x][c.s.bounty] = 1
+        stats[moneko][x][c.s.wave_chance] = 100
+        stats[moneko][x][c.s.is_miniwave] = 1
+        stats[moneko][x][c.s.crit_chance] = 0
+    (stats[moneko][0][c.s.attack],stats[moneko][1][c.s.attack],stats[moneko][2][c.s.attack]) = (300,500,600)
+    (stats[moneko][0][c.s.hp],stats[moneko][1][c.s.hp],stats[moneko][2][c.s.hp]) = (900,1300,1600)
+    (stats[moneko][0][c.s.wave_level],stats[moneko][1][c.s.wave_level],stats[moneko][2][c.s.wave_level]) = (2,3,4)
+    stats[moneko][2][c.s.is_miniwave] = 0
+
+
+    #crazed moneko, suicide after 3 hits, absurd weaken miniwave, (the order of hits is actually reversed to make interrupting burn an attack)
+    for x in range(0,2):
+        stats[cmoneko][x][c.s.attack_count] = 3
+        stats[cmoneko][x][c.s.attack_state] = 2
+        stats[cmoneko][x][c.s.preatk] = 139
+        stats[cmoneko][x][c.s.multi_has_ability_1] = 1
+        stats[cmoneko][x][c.s.multi_preatk_2] = 19
+        stats[cmoneko][x][c.s.multi_has_ability_2] = 0
+        stats[cmoneko][x][c.s.multi_preatk_3] = 4
+        stats[cmoneko][x][c.s.multi_has_ability_3] = 0
+        stats[cmoneko][x][c.s.crit_chance] = 0
+        stats[cmoneko][x][c.s.weaken_to] = 50
+        stats[cmoneko][x][c.s.weaken_chance] = 100
+        stats[cmoneko][x][c.s.weaken_duration] = 900
+        stats[cmoneko][x][c.s.wave_chance] = 100
+        stats[cmoneko][x][c.s.wave_level] = 30
+        stats[cmoneko][x][c.s.is_miniwave] = 1
+        stats[cmoneko][x][c.s.kbs] = 2000
+        stats[cmoneko][x][c.s.recharge] = 2060 #makes for about a minute of recharge
+    stats[cmoneko][0][c.s.hp] = 2000
+    stats[cmoneko][0][c.s.attack] = 200 #the wave hit
+    stats[cmoneko][0][c.s.multi_damage_2] = 300
+    stats[cmoneko][0][c.s.multi_damage_3] = 300
+    stats[cmoneko][1][c.s.hp] = 2500
+    stats[cmoneko][1][c.s.attack] = 300 #the wave hit
+    stats[cmoneko][1][c.s.multi_damage_2] = 400
+    stats[cmoneko][1][c.s.multi_damage_3] = 400
 
 
 
