@@ -14,7 +14,7 @@ def mamoluga(stats:list[list[list]]):
 
     #mamoluga
     for trait in c.t:
-        [unit][0][trait] = 1
+        unit[0][trait] = 1
     #still a sentry with more or less the same stats
     #honestly I think these are pretty much the intended stats
     unit[0][c.s.attack_state] = 1

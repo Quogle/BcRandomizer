@@ -53,17 +53,17 @@ def early_rebalance(config=DEFAULT_CONFIG,log=None):
     #first get cat stats
     stats = gf.get_cat_stats(vanilla=True)
     if rework_config["lugas"]:
-        stats = _first_form_lugas(stats)
+        stats = lugas.lugas(stats)
     if rework_config["courier"]:
         stats = _courier_massive_removal(stats)
     if rework_config["critters"]:
-        stats = _critter_metal_removal_rebalance(stats)
+        stats = critters.critters(stats)
     if rework_config["cop"]:
         stats = _cop_cat_fix(stats)
     if rework_config["monenekos"]:
-        stats = _moneneko_rebalance(stats)
+        stats = monenekos.monenekos(stats)
     if rework_config["seasonals"]:
-        stats = _seasonal_unit_rebalance(stats)
+        stats = seasonals.seasonals(stats)
 
 
 

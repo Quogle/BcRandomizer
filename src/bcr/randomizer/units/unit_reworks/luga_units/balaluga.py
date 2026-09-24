@@ -14,7 +14,7 @@ def balaluga(stats:list[list[list]]):
 
     #balaluga
     for trait in c.t:
-        [unit][0][trait] = 1
+        unit[0][trait] = 1
     #make it sentry with correct freeze and no surge
     unit[0][c.s.attack_state] = 1
     unit[0][c.s.attack_count] = 1

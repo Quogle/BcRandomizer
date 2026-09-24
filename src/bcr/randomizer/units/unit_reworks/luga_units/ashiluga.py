@@ -13,7 +13,7 @@ def ashiluga(stats:list[list[list]]):
 
     #ashiluga
     for trait in c.t:
-        [unit][0][trait] = 1
+        unit[0][trait] = 1
     #making it a suicide unit with correct surge stats but on a normal surge
     unit[0][c.s.attack_state] = 2
     unit[0][c.s.attack_count] = 1
