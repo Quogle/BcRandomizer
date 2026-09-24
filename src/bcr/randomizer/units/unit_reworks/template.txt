@@ -1,0 +1,49 @@
+"""  """
+import tadbcmc.core.game_files as gf
+import tadbcmc.data.filenames as fn
+import tadbcmc.data.enums.cats as c
+
+
+
+def (stats:list[list[list]]):
+    """ applies the rework to
+    \n nonconditional """
+    unit_id = 
+    unit = stats[unit_id] #passing things as a reference oh lord help me
+
+
+
+
+
+
+    talents = gf.get_talents()
+    this_talents = []
+    for x in range(0,len(talents)):
+        if unit_id in talents[x]:
+            this_talents = talents[x]
+
+
+    gf.write_talents(talents)
+
+
+    levels = gf.file_reader(fn.LEVEL_STAT_GAIN)
+    levels[unit_id] = []
+    gf.file_writer(fn.LEVEL_STAT_GAIN,levels)
+
+
+
+
+
+    return stats
+
+
+
+
+
+
+
+
+
+
+
+

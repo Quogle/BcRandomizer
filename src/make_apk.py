@@ -13,7 +13,7 @@ from bcr.config.paths import*
 
 def make_apk(output):
     """makes the apk"""
-    encrypt_pack(game_files_dir=DOWNLOADLOCAL,pack_name=DOWNLOADLOCAL.stem,output_directory=WORKSPACE,cc="en")
+    encrypt_pack(game_files_dir=DOWNLOADLOCAL,pack_name=DOWNLOADLOCAL.stem,output_directory=DOWNLOADLOCALPACK.parent,cc="en")
     replace_icon()
     edit_manifest(mod_id=DEFAULT_CONFIG["mod"]["id"])
     build_apk(decoded_directory=DECOMPILED,output_apk=REBUILTAPK)

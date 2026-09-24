@@ -23,7 +23,7 @@ from ...randomizer import file_local
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
 DECRYPT_SPECIFICS = True
-SKIP_SERVER = True
+SKIP_SERVER = False
 
 class RandomizeThread(QObject):
 
