@@ -304,7 +304,7 @@ def post_trait_rand_pre_gimmick_rebalance(stats,config=DEFAULT_CONFIG,log=None):
         stats = _starred_aliens(stats,config,log)
 
 
-#should I make it so if cotc crystals are still on things in cotc lost starred here so starred aliens can actually be in cotc?
+#should I make it so if cotc crystals are still on things in cotc lose starred here so starred aliens can actually be in cotc?
 def post_gimmick_rebalance(stats,config=DEFAULT_CONFIG):
     """ runs after gimmicks are applied
     \n modded enemies that arent intended to be affected by gimmicks should go in here

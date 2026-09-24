@@ -95,16 +95,17 @@ DEFAULT_CONFIG = {
     
                 "angel": {
                     "enabled": True,
-                    "balanced": True,
+                    "balanced": True, #makes it so the health boost only applies half as much to things with more than 2 million hp (old randomizer made this also apply to speed but idk bout that)
                     "speed_mult": 1.3,
                     "attack_mult": 0.8,
                     "health_mult": 1.3,
                     "rounding": "Up",
+                    "drain_frequency":0,
                 },
     
                 "alien": {
                     "enabled": True,
-                    "abilities": {
+                    "abilities": { #please dont change the order of these or I will not hesitate to email you a pipebomb
                         "Freeze": 5,
                         "Slow": 5,
                         "Knockback": 5,
@@ -117,6 +118,7 @@ DEFAULT_CONFIG = {
                         "Lethal": 4,
                         "Base Destroyer": 5,
                         "Multihit": 3,
+                        "Drain":3,
                     },
                     "starred_frequency": 30,
                     "warp_frequency": 60,

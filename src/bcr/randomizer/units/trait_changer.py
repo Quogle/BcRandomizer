@@ -1,8 +1,14 @@
 import tadbcmc.data.enums.cats as c
 import tadbcmc.core.seeded_randomization as srand
 import tadbcmc.core.game_files as gf
+import tadbcmc.data.filenames as fn
+
+import tadbcmc.core.file_handler as fh
 from ...config.defaults import DEFAULT_CONFIG
 import copy
+from ..units import trait_randomization_mk3
+
+UNIT_TRAIT_MAP_FILE = "unit_trait_map.csv"
 
 #these are in alphabetical order
 TRAITS = [
@@ -43,118 +49,11 @@ TALENT_SUMS = [
 ]
 
 
-def _get_single_form_map(form_stats:list[int],talent_array:list[int]=[],all_traits:list[int]=TRAITS,allowed_traits:list[int]=[],avoid_old:bool=True,r_offset:int=13):
-    """ gets the map for a single form, considers talents if passed """
-    #start by getting the look order
-    this_look_order = _get_trait_look_order(all_traits,r_offset) #this is not passed TRAITS for if they add a trait in the future
-    #now get traits a unit has in various places
-    has_base = _get_units_traits(form_stats)
-    if talent_array != []: has_talents = _get_trait_from_talents(talent_array)
-    else: has_talents = []
-    hasnt_traits = []
-    for trait in all_traits:
-        if trait not in has_base and trait not in has_talents:
-            hasnt_traits.append(trait)
-    #now append all the traits a unit has to the start of the map
-    map_from = []
-    for trait in this_look_order: 
-        if trait in has_base: map_from.append(trait)
-    for trait in this_look_order:
-        if trait in has_talents and trait not in has_base: map_from.append(trait)
-    #now create map to as a list of same length with no values
-    map_to = [None]*len(map_from)
-    #start by placing the values from allowed traits that are also in this list into it shifted right by one
-    
-    
-
-#DOES NOT HAVETARGET ALL EXCEPT WHITE
-def _get_single_form_map_avoid_old(form_stats:list[int],talent_array:list[int]=[],all_traits:list[int]=TRAITS,allowed_traits:list[int]=[],r_offset:int=13) -> list[list[int]]:
-    """ gets the map for a single form if not avoiding old traits, considers talents if passed """
-
-            
-            
-def _get_single_form_map(form_stats:list[int],talent_array:list[int]=[],all_traits:list[int]=TRAITS,allowed_traits:list[int]=[],r_offset:int=13,avoid_old:bool=True) -> list[list[int]]:
-    """ gets the map for a single form, considers talents if passed to it """
-    #start by getting the look order
-    this_look_order = _get_trait_look_order(all_traits,r_offset) #this is not passed TRAITS for if they add a trait in the future
-    #now get the traits this unit does and doesnt have
-    has_base = _get_units_traits(form_stats)
-    if talent_array != []: has_talents = _get_trait_from_talents(talent_array)
-    else: has_talents = []
-    hasnt_traits = []
-    for trait in all_traits:
-        if trait not in has_base and trait not in has_talents:
-            hasnt_traits.append(trait)
-    #need to remove extra traits from talent_array if they arent supposed to be considered rn (this is because talent array does not use all_traits it uses TRAITS)
-    for trait in TRAITS:
-        if trait in has_talents and trait not in all_traits:
-            has_talents.remove(trait)
-    #now append all the traits a unit has to the start of the map
-    map_from = []
-    for trait in this_look_order:
-        if trait in has_base: map_from.append(trait)
-    for trait in this_look_order:
-        if trait in has_talents and trait not in map_from: map_from.append(trait)
-    #break off here into avoid old and not avoid old
-    if avoid_old:
-        pass
-
-def _sf_avoid_old_fill_map(map_from:list[int],look_order:list[int],allowed_traits:list[int],has_base:list[int],has_talent:list[int],hasnt:list[int]) -> tuple[list[int],list[int]]:
-    """ fills out map_from and map_to priorizing hasnt traits, then talent traits, then base trait """
-    map_to = [None]*len(map_from)
-    #add the traits a unit doesnt have first
-    should_get = []
-    for trait in look_order:
-        if trait in hasnt and trait in allowed_traits: should_get.append(trait)
-    #now check if thats enough to cover map
-    if len(should_get) >= len(map_from):
-        #fill it with them
-        map_to = []
-        for x in range(0,len(map_from)):
-            map_to.append(should_get[x])
-        #is there any sense in doing more right here?
-    else:
-        #if that isnt enough then try adding talents
-        if len(should_get) + len(has_talent) >= len(map_from):
-            #do it in look order
-            pos_in_look = -1
-            get_from_talents = []
-            while len(should_get) + len(get_from_talents) < len(map_from):
-                pos_in_look = (pos_in_look+1) % len(look_order)
-                if look_order[pos_in_look] in has_talent and look_order[pos_in_look] in allowed_traits:
-                    get_from_talents.append(look_order[pos_in_look])
-            #now now should get is full, what am I doing now?
-        else:
-            #add all in allowed until it reaches the proper length
-            #give priority to those in has talents
-            get_from_base = []
-            get_from_talents = []
-            for trait in look_order:
-                if trait in has_talent and trait in allowed_traits:
-                    get_from_talents.append(trait)
-            for trait in look_order:
-                if trait in allowed_traits and trait not in should_get:
-                    if len(should_get) + len(get_from_talents) + len(get_from_base) < len(map_from):
-                        get_from_base.append(trait)
-            
-    
 
 
+      
 
-def _sf_not_avoid_old_fill_map(map_from:list[int],look_order:list[int],allowed_traits:list[int]) -> tuple[list[int],list[int]]:
-    """ fills out a map for avoid old traits by simply adding those allowed traits in look order """
-    #start by filling out map from
-    for trait in look_order:
-        if trait not in map_from:
-            map_from.append(trait)
-    #now create map_to as the same length as map_from but with allowed traits
-    map_to = []
-    pos_in_look = -1
-    while len(map_to) < len(map_from):
-        pos_in_look = (pos_in_look+1) % len(look_order)
-        if look_order[pos_in_look] in allowed_traits:
-            map_to.append(look_order[pos_in_look])
-    return (map_from,map_to)
+
 
 
 
@@ -203,66 +102,94 @@ def _get_units_traits(unit_array:list[list[int]|int]) -> list[int]:
                 has_traits.append(trait)
     return has_traits
 
-def _order_array_in_look_order(array:list[int],look_order:list[int]) -> list[int]:
-    """ takes an array and rearranges it to be in the proper look order """
-    output = []
-    for trait in look_order:
-        if trait in array:
-            output.append(trait)
-    return output
+def _get_stats_and_talents_to_use_in_map_creation(per_form,config=DEFAULT_CONFIG) -> tuple[list[list[list]],list[list]]:
+    """ gets the stats to use in creating the map by removing the information that would change it after the specified version """
+    #I dont feel like figuring out how the fuck Im gonna do this rn nor do I even have the relevant initial cstat array to do it
+    #however, if its per form theres no reason to remove any cats stats
+    # if its per whole unit then cat stats added afterwards should be removed
+    # always talents added afterwards should be removed
 
+def _create_randomization_trait_map(per_form,avoid_old_traits,all_traits,allowed_traits):
+    """ creates the trait map to be used elsewhere, saves it to cache """
+    trait_map = []
+    (cat_stats,talent_stats) = _get_stats_and_talents_to_use_in_map_creation(per_form)
+    #now get the form traits and talent traits arrays for all units
+    cat_traits = []
+    talent_traits = []
+    for u_id in range(0,len(cat_stats)):
+        this_base_traits = _get_units_traits(cat_stats[u_id])
+        this_talent_traits = _get_trait_from_talents(talent_stats[u_id])
+        #theres no reason to edit them right?
+        cat_traits.append(this_base_traits)
+        talent_traits.append(this_talent_traits)
+    #now we just create the trait map one by one
+    for u_id in range(0,len(cat_traits)):
+        if per_form:
+            this_units_map = []
+            for form_id in range(0,len(cat_traits)):
+                #get the info required to do it
+                look_order = _get_trait_look_order(all_traits,13+300*u_id+44*form_id)
+                this_talents = []
+                if form_id >= 2:
+                    this_talents = talent_traits[u_id]
+                #now make the map
+                (from_traits,to_traits) = trait_randomization_mk3.single_form_trait_randomization(
+                    form_traits=cat_traits[u_id][form_id],
+                    talent_traits=this_talents,
+                    all_traits=all_traits,
+                    allowed_traits=allowed_traits,
+                    avoid_old_traits=avoid_old_traits,
+                    look_order=look_order,
+                )
+                #slap that thang on
+                this_units_map.append([from_traits,to_traits])
+            trait_map.append(this_units_map)
+        else:
+            this_units_map = []
+            #get the info required to do this
+            look_order = _get_trait_look_order(all_traits,13+300*u_id)
+            #now make the map
+            (from_traits,to_traits) = trait_randomization_mk3.multiform_trait_randomization(
+                form_traits=cat_traits[u_id],
+                talent_traits=talent_traits[u_id],
+                all_traits=all_traits,
+                allowed_traits=allowed_traits,
+                avoid_old_traits=avoid_old_traits,
+                look_order=look_order,
+            )
+            #ok since Im doing it so that if the units form is out of the bounds of the array it just calls the last one these can all be just this one size
+            this_units_map.append([from_traits,to_traits])
+            trait_map.append(this_units_map)
+    #now we should be good to just save this map to the cache
+    fh.write_file_to_cache(UNIT_TRAIT_MAP_FILE,trait_map,list[list[list[list]]])
 
-def _form_randomize_traits(form_stats:list[int],allowed_traits:list[int],r_offset:int,number_intended_traits:int=None,avoid_old:bool=True,talent_array:list=[]) -> list[int]:
-    """ randomizes the traits of this specific form, considers talents if passed to it
-    \n if requesting a specific number of traits it will make it have that many, else its just how many it naturally has """
-    this_look_order = _get_trait_look_order(TRAITS,r_offset=r_offset)
-    if number_intended_traits != None:
-        trait_number = number_intended_traits
-    else:
-        trait_number = 0
-        for trait in TRAITS:
-            if form_stats[trait] == 1:
-                trait_number += 1
-    #I dont need a map for this since its only this form
-    if avoid_old:
-        #didnt have at all is highest priority, then had in talents, then has raw
-        had_base = _get_units_traits(form_stats)
-        has_talents = _get_trait_from_talents(talent_array)
-        hadnt = []
-        for trait in TRAITS:
-            if trait not in had_base and trait not in has_talents:
-                hadnt.append(trait)
-        #now order those
-        had_base = _order_array_in_look_order(had_base,this_look_order)
-        has_talents = _order_array_in_look_order(has_talents,this_look_order)
-        hadnt = _order_array_in_look_order(hadnt,this_look_order)
-        #now in the proper order put only those in allowed into give traits
-        give_traits = []
-        for trait in hadnt:
-            if trait in allowed_traits:
-                give_traits.append(trait)
-        for trait in has_talents:
-            if trait in allowed_traits and trait not in give_traits:
-                give_traits.append(trait)
-        for trait in had_base:
-            if trait in allowed_traits and trait not in give_traits:
-                give_traits.append(trait)
-    else:
-        #this can literally just choose from allowed traits in correct order
-        give_traits = []
-        for trait in this_look_order:
-            if trait in allowed_traits:
-                give_traits.append(trait)
-    #first kill all traits
-    for trait in this_look_order:
-        form_stats[trait] = 0
-    #now choose from give traits
-    for trait in give_traits:
-        if trait_number > 0:
-            form_stats[trait] = 1
-            trait_number -= 1
-    #all good
-    return form_stats
+def _create_trait_swap_map(trait_swap,config=DEFAULT_CONFIG):
+    """ just makes the swap have an entry for each unit and saves map to file """
+    (cat_stats,talent_stats) = _get_stats_and_talents_to_use_in_map_creation(True,config) #it doesnt really matter Im just using this to get the length
+    trait_map = [trait_swap]*len(cat_stats)
+    fh.write_file_to_cache(UNIT_TRAIT_MAP_FILE,trait_map,list[list[list[list]]])
+    
+def _apply_map_to_stats(stats:list[list[list]]) -> list[list[list]]:
+    """ pulls the map from cache and uses it to change the traits of stats """
+    trait_map = fh.read_cached_file(UNIT_TRAIT_MAP_FILE,type=list[list[list[list]]])
+    before = copy.deepcopy(stats)
+    after = copy.deepcopy(stats)
+    #first step is removing all traits from after
+    for u_id in range(0,len(after)):
+        for form in range(0,len(after[u_id])):
+            for trait in c.t:
+                after[u_id][form][trait] = 0
+    #now for each trait in before add the corresponding trait in after
+    for u_id in range(0,len(trait_map)):
+        for form in range(0,len(after[u_id])):
+            #first get the map form
+            map_form = form
+            if map_form >= len(trait_map[u_id]):
+                map_form = len(trait_map[u_id]) - 1 #set it to the last used form if current form is out of index
+            for index in range(0,len(trait_map[map_form])):
+                if before[u_id][form][trait_map[u_id][map_form][0][index]] == 1:
+                    after[u_id][form][trait_map[u_id][map_form][1][index]] = 1
+    return after
 
 
 

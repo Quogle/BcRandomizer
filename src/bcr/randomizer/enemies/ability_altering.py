@@ -672,14 +672,67 @@ def _give_ability_omni(stats,relative_size=10,blindspot_size=10):
     stats[e.s.ldWidth] = int(-width)
     return stats
 
-#UNDONE
-def _give_ability_drain(stats,strength=10,likelihood=10,post_attack_time=-1):
+def _give_ability_drain(stats,post_attack_time=-1):
     """ gives stats a drain and returns it """
+    #first get the attack cycle
+    attack_cycle = _get_stats_attack_cycle(stats,post_attack_time)
+    #now get the relevant stats used in scaling it
+    #range
+    unit_range = stats[e.s.range]
+    #fix for ld
+    if stats[e.s.ldWidth] != 0:
+        if stats[e.s.ldWidth] < 0:
+            unit_range = int((unit_range+stats[e.s.ldMinRange])/2) #get the middle ground between its standing range and its omni range
+        else:
+            unit_range += int(100*(stats[e.s.ldMinRange]+stats[e.s.ldWidth]-unit_range)/400) #add 100 distance to unit range for each 400 distance beyond standing range it hits
+    #area
+    area = False
+    if stats[e.s.area] == 1: area = True
+    #now get the chance and cycle power
+    chance = 30 + 10*int(attack_cycle/30)
+    if not area: chance += 20
+    chance = simp.clamp(chance)
+    cycle_power = 0.7
+    #now match to get the base drain added per second of attack cycle powered
+    base_drain_per_second = 1
+    if unit_range < 170: base_drain_per_second += 2
+    if unit_range < 200: base_drain_per_second += 1
+    if unit_range < 250: base_drain_per_second += 0.5
+    if unit_range < 320:
+        base_drain_per_second += 0.5
+        if not area: base_drain_per_second += 1
+    if unit_range < 360: base_drain_per_second += 0.5
+    if unit_range < 400: base_drain_per_second += 1
+    if unit_range < 500: base_drain_per_second += 0.5
+    if unit_range < 600:
+        base_drain_per_second += 0.5
+        if not area: base_drain_per_second += 1
+    else: cycle_power += 0.05
+    if unit_range < 740: base_drain_per_second += 0.5
+    else: cycle_power += 0.1
+    if unit_range < 800: base_drain_per_second += 0.5
+    else: cycle_power += 0.1
+    if unit_range < 1100: base_drain_per_second += 0.5
+    else: cycle_power += 0.05
+    #now get the drain per proc
+    adjusted_drain = int(base_drain_per_second*((attack_cycle/30)**cycle_power)/(0.2+chance/100))
+    number_of_proc_attacks = stats[e.s.multiHasAbility1] + stats[e.s.multiHasAbility2] + stats[e.s.multiHasAbility3]
+    #say something if a unit comes up as having 0 ability hits
+    if number_of_proc_attacks == 0 and unit_range != 0:
+        print("a unit came up as having no proccable attacks! " + str(stats))
+    #now divide the drain count accordingly
+    if number_of_proc_attacks > 1:
+        new_adjusted_drain = int(adjusted_drain/number_of_proc_attacks)
+        if adjusted_drain > new_adjusted_drain*number_of_proc_attacks: #if it lost drain in that process
+            if chance < 100:
+                chance = simp.clamp(chance + 10)
+            else:
+                new_adjusted_drain += 1 #if its chance cant be increased then increase the drain amount per attack by 1
+        adjusted_drain = new_adjusted_drain
+    #now its all good to be set
+    stats[e.s.drainChance] = int(chance)
+    stats[e.s.drainPercent] = int(adjusted_drain)
     return stats
-
-
-
-
 
 """ these functions are meant to be used in giving alien/aku abilities, they work different than the usual give ability """
 #this could also be done in enemy info if I wanna fine tune it

@@ -342,45 +342,51 @@ talents:
 
 
 unit changes
-    #toggles
-    crit savage slop - controls whether or not some units get their damage from crit savage or not (namely merc, neneko, summer neneko, cmoneko)
-
     #contentious
     658 courier - remove targetting 
 
 
     #normal units
     46 jurassic - savage 200 (5% and 12% in tf), cost 500? (450 in v3 but 500 in v4), health (570,900,1400), attack (200,250,300), gets black target in true form post rando #this one needs major testing
-    635 million dollar cat - what am I doing with this one, maybe wave weaken all traits? could do moneko style cd on it (prolly 120f weaken 25% with 607f atkfrq to match sign) (maybe make its wave level randomized)
-    78 space - 20% crit (maybe first form surge, second blast, third ld? based on animation) amph suggests increasing damage to make it like single target paris
-    88 jumprope - hp 600 # needs testing
-    267 hurricat - 5% svage 200, 3 30 damage (24 first form) hits (all hits have ability) #maybe make this part of savageslop?
-    273 waitress - target trait (metal before rando) strong, 100% savage 200
+    635 million dollar cat - literally sign stats, but with a weaken to 25% for 5 seconds wave of level 5-14 (determined randomly)
+    78 space - decrease recharge from 600 to 500 (336 to 236), wave immune, 20% crit with no bbreak, gets stuff based on the attack anim
+        first form: surger that generally doesnt hit what space is actually targetting
+        second form: 50% explosion and barrier break
+        third form: single target paris/camera, attack increased to 100, recharge decreased to 400 (136 ingame), 40% lethal
+    88 jumprope - hp 800 and no crit # needs testing
+    267 hurricat - 3 30 damage (24 first form) hits, no crit
+    273 waitress - target trait (metal before rando) strong, 100% savage 400 (basically has bahamut dph)
     621 aku research - target trait, massive (metal if remove metals prolly aku otherwise)
-    446 backhoe - 3 100 damage hits, 50% curse for 100f, 50% explode 1000-3000, 100% chance on both in tf
+    446 backhoe - 3 100 damage hits, 50% curse for 100f, 50% explode 1000-3000, 100% chance on both in tf, no crit/surge
     184 mint - 140 attack, 350 cost, 400 cd, 500 hp, 4 kbs, alien first form, red/metal second based on if metal removed
     26 punt - 1000 hp and attack, 100% weak 150f to 50%, metal/? trait, tf 1200 attack and weak to 10
     121 merc - hp 800, 4 kb, 100 attack on 3 hits, first omni 155 width:-475, 2nd ld -320 w:550, 3rd ld -320 w:625, 2f delay between each, if slop savage 200 at 20% chance crit 20%, both 100% in tf, if no slop 150 damage and 600 in tf      all these numbers are subject to change
     28 capsule - 500 attack, massive, metal/white
     65 racism cow - hp from 500 to 1300, attack from 30 to 80
     68 reaper - 60% slow for 120f, 750 cost, 470 attack, 700 hp, true form: attack (200,400,800) 1000hp, pre attack (16,57,83)
-    716 cop - something to do with black red alien instead of white, idk how exactly
+    716 cop - lit just target red/black/alien instead of white
 
     #ubers
-    57 paladin - savage 200 (20,40,50)%, hp (2000,3000,4000), attack (600,1000,1200), soul strike, tba 100? unsure what to do with this
-    427 cat clan - was 3% savage 200, I dont think its really needed/wanted
+    57 paladin - supposed to be a cheap front line nuker with variations across forms, soul strike and zkill with a 200 savage and longer tba, weak imm
+        first form: single target shorter tba (90 instead of 140), 100% barrier break (maybe low sp), 50% crit/savage 4000hp/1000atk
+        second form: faster tankier, freeze/slow imm, 2kbs and lethal, 40% crit/savage, 5000hp/800atk
+        third form: longer range and more damage than second form but less health and not freeze/slow immune, still unsure what to actually do with this in talents
+    427 cat clan - ended up leaving out, was 3% savage 200, I dont think its really needed/wanted
     358 verbena - savage 200, crit and savage (30,30,50)%
-    261 hayabusa - first form gets 30% savage 200
+    261 hayabusa - first form gets 30% savage 200 (makes for 1.04x average dps of second form)
 
-    #nenekos
+    #nenekos (generally they have crit removed unless they have damage as their gimmick)
     131 neneko - 15% savage 200 insane against a trait (done by metal pre trait rando) #these 2 high dph ones should prolly be more fragile and lower dps and maybe worse at hitting
     276 summer neneko - massive insane massive against a trait (^)
-    314 new years neneko - 0tba 15% savage 200
-    589 valentine neneko - wave level 4, range increased to 410 (increase sp to 50% in tf?)
-    332 easter neneko - 50% chance of freeze slow weaken for 40f (90? in tf, maybe higher), area and metal target all forms
-    16 moneko - bounty (make tf wave not mini)
-    418 cmoneko - 100% savage 200 (this is really lame lmao) ryelo suggests gauranteed random debuff, should prolly be full uptime since she has such a long pre atk 
+    314 new years neneko - single target gauranteed kb in a moving backwards range each hit, longer tba (outside tf its just kb on 1 enemy)
+    589 valentine neneko - wave level 4, range increased to 410
+    332 easter neneko - 50% chance of freeze slow weaken for some time (tf much higher time), area and metal target all forms
+    228 witchy neneko - first form is a suicidal counter surger with savage (no crit), no idea what to do for second form, third form just has no crit its good enough
+    16 moneko - bounty miniwaver (make tf wave not mini) stat increases to make it usable
+    418 cmoneko - sui after 3 attacks, first hit is actually last so interrupting wastes an attack, insane amount of kbs, gauranteed level 30 miniwave with 30 seconds of weak to 50, cooldown increased to 1 minute
 
+
+    apparently theres no ds on cats so all of these are wrong!
     #lugas (do I make them target all traits or just the ones in the second form?)
     34 nekoluga - level 4 kb surge? (maybe make it freeze 150f since kubi also exists)
     168 ashiluga - level 4 surge slow 420f
@@ -511,7 +517,8 @@ things already added:
         ability swap
         behemoth/metal rebalances
         enemy id per game swap (almost, still missing the conditions for what is allowed to swap and missing swapping of stationary enemies)
-        trait gimmick (almost, missing angel entirely and missing delay in alien)
+        trait gimmick
+        drain in alien and angel
     qol:
         behemoth stage buffs
         xp stages buffs
@@ -542,9 +549,11 @@ things still needed to be added:
         talent changer:
             talent rand
         unit rebalances
+            million dollar needs level boosts zeroed
+            paladins talents also need to be changed since they dont mesh with my paladin rework
+            jurassic target dark post trait changes
     enemies:
         something to do with what is and isnt alien/starred in itf/cotc
-        delay in alien and angel
         burrow animation stuff
         sage rework
     qol:
