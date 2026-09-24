@@ -54,9 +54,8 @@ class RandomizeThread(QObject):
 
         signed_apk = Path(f"{self.config['mod']['id']}.apk")
 
-        if EXTRACT_APK:
-            self.log.emit("Extracting APK...")
-            extract_apk(apk_path,internalPaths.DECOMPILED,)
+        self.log.emit("Extracting APK...")
+        extract_apk(apk_path,internalPaths.DECOMPILED,)
 
         pack_paths = [
             path
