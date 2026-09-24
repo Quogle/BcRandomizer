@@ -432,6 +432,27 @@ DEFAULT_CONFIG = {
             "weaken_down_combos_by":50 #weakens down combos by this amount if down combos are enabled, 100 means 100% so they arent affected (default is they are half as strong)
         },
     },
+    "stage": {
+        "restrictions": {
+            "chance": 25,           # percent chance a stage gets restrictions
+            "ignore_grinds": True,  # do not apply restrictions to grind stages
+            "categories": {         # categories that can get restrictions
+                "eoc": False,
+                "itf": False,
+                "cotc": False,
+                "aku_realms": False,
+                "event": False,
+                "towers": False,
+                "sol": False,
+                "ul": False,
+                "zl": False,
+                "dojo": False,
+                "catamin": False,
+                "labyrinth": False,
+                "colloseum": False, 
+            },
+        },
+    },
     "gameplay": {
         "modifications": {
             "metal_rework": True,

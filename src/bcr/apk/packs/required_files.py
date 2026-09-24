@@ -49,6 +49,10 @@ def add_unit_requirements(config, requirements):
     requirements["local"].add("NyancomboData.csv")
     requirements["local"].add("NyancomboParam.tsv")
 
+    # Stage Restrictions
+    requirements["local"].add("Stage_option.csv")
+    requirements["local"].add("Charagroup.csv")
+
 
 
 
