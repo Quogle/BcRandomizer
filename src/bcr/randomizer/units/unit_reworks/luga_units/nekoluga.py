@@ -32,7 +32,7 @@ def nekoluga(stats:list[list[list]]):
 
 
     #extending the animation
-    nekoluga_anim_name = simp.uinfo_to_anim(nekoluga,enemy=False,form=0,file_end="maanim",anim_num=2)
+    nekoluga_anim_name = simp.uinfo_to_anim(unit_id,enemy=False,form=0,file_end="maanim",anim_num=2)
     nekoluga_anim = gf.file_reader(nekoluga_anim_name,vanilla=True) #Im assuming its fine to pull the vanilla version of the animations since this is early on
     #Im just hardcoding this, by slapping the final line of the first block onto it again (ill change this once I actually making shit for editing animations)
     if nekoluga_anim != None:

@@ -27,6 +27,7 @@ def backhoe(stats:list[list[list]]):
         unit[x][c.s.crit_chance] = 0
         unit[x][c.s.curse_chance] = 50
         unit[x][c.s.explode_chance] = 50
+        unit[x][c.s.attack_only] = 0
     unit[2][c.s.curse_chance] = 100
     unit[2][c.s.explode_chance] = 100
     unit[2][c.s.surge_chance] = 0 #prevent it from being too sloppy, this should hide all the other surge information

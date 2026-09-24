@@ -15,21 +15,30 @@ def space(stats:list[list[list]]):
         unit[x][c.s.recharge] = 250
         unit[x][c.s.barrier_break_chance] = 0
         unit[x][c.s.wave_immune] = 1
-        unit[x][c.s.crit_chance] = 20
-        unit[x][c.s.attack] = 135
+        unit[x][c.s.crit_chance] = 0
+        unit[x][c.s.attack] = 155
     #my idea for first form is generally the surges shouldnt hit what space is actually targetting (not editing hp/atk for now)
-    unit[0][c.s.surge_chance] = 40
+    unit[0][c.s.surge_chance] = 100
     unit[0][c.s.surge_level] = 4
+    unit[0][c.s.is_minisurge] = 1
     unit[0][c.s.surge_start_four] = 1700
     unit[0][c.s.surge_width_four] = 1300
-    #my idea for second form is its a good aoe barrier breaker
-    unit[1][c.s.crit_chance] = 0
+    #my idea for second form is its a good aoe barrier breaker, the explosion is actually from a weaker ealier hit to make the timing of the explosion correct
+    unit[1][c.s.multi_damage_2] = 20
+    unit[1][c.s.multi_preatk_2] = 22
+    unit[1][c.s.multi_has_ability_2] = 1
+    unit[1][c.s.multi_has_ability_1] = 0
     unit[1][c.s.explode_chance] = 50
     unit[1][c.s.explode_at] = 1360
-    unit[1][c.s.barrier_break_chance] = 50
+    unit[1][c.s.barrier_break_chance] = 100
+    #gonna also give it kb alien/metal
+    unit[1][c.t.metal] = 1
+    unit[1][c.t.alien] = 1
+    unit[1][c.s.kb_chance] = 15
     #my idea for third form is idk a mix between camera and paris I guess
-    unit[2][c.s.attack] = 155
-    unit[2][c.s.lethal_chance] = 40
+    unit[2][c.s.crit_chance] = 20
+    unit[2][c.s.attack] = 175
+    unit[2][c.s.lethal_chance] = 60
     unit[2][c.s.recharge] = 182
     unit[2][c.s.hp] = 960 #was 720
     unit[2][c.s.kbs] = 4 #was 3, the net effect of these two is just an additional whole kbs worth of hp 

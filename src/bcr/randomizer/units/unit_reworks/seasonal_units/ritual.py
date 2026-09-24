@@ -19,14 +19,11 @@ def ritual(stats:list[list[list]]):
         unit[x][c.s.ld_minimum] = 240
         unit[x][c.s.ld_width] = -560
     (unit[0][c.s.hp],unit[1][c.s.hp],unit[2][c.s.hp]) = (1500,1500,2500) #was (700,700,1200)
-    (unit[0][c.s.attack],unit[1][c.s.attack],unit[2][c.s.attack]) = (350,350,450) #was (160,160,320)
-    unit[0][c.s.strengthen_by] = 200 #was 100
+    (unit[0][c.s.attack],unit[1][c.s.attack],unit[2][c.s.attack]) = (440,440,550) #was (160,160,320) #for note, mflying has 724
+    unit[0][c.s.strengthen_by] = 100 #was 100
 
 
     return stats
-
-
-
 
 
 

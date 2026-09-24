@@ -27,8 +27,9 @@ def (stats:list[list[list]]):
 
 
     levels = gf.file_reader(fn.LEVEL_STAT_GAIN)
-    levels[unit_id] = []
-    gf.file_writer(fn.LEVEL_STAT_GAIN,levels)
+    if levels != None:
+        levels[unit_id] = [20,20,20,20,20,20,10,10,10,10,10,10,10,10,10,10,10,10,10,10]
+        gf.file_writer(fn.LEVEL_STAT_GAIN,levels)
 
 
 

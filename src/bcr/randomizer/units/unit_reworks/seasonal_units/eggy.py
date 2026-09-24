@@ -14,7 +14,7 @@ def eggy(stats:list[list[list]]):
     #eggy, high slow rate in first 2 forms
     for x in range(0,2):
         unit[x][c.s.slow_chance] = 50 #was 20
-
+        unit[x][c.s.recharge] = 220 #was 240, makes for 176f recharge
 
     return stats
 

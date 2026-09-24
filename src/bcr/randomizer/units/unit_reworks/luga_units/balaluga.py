@@ -36,7 +36,7 @@ def balaluga(stats:list[list[list]]):
 
 
     #editing the post attack animation time
-    balaluga_anim_name = simp.uinfo_to_anim(balaluga,enemy=False,form=0,file_end="maanim",anim_num=2)
+    balaluga_anim_name = simp.uinfo_to_anim(unit_id,enemy=False,form=0,file_end="maanim",anim_num=2)
     balaluga_anim = gf.file_reader(balaluga_anim_name,vanilla=True)#Im assuming its fine to pull the vanilla version of the animations since this is early on
     if balaluga_anim != None:
         balaluga_copy = copy.deepcopy(balaluga_anim[13])
