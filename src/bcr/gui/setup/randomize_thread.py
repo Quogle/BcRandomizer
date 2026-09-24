@@ -14,13 +14,16 @@ from ...apk.packs.required_files import get_required_files
 from ...apk.edit_xml import edit_manifest
 from ...apk.replace_icon import replace_icon
 from ...config import paths as internalPaths
+from ...randomizer.gameplay.zombie_fix import fix_zombie
+import traceback
+from ...randomizer import file_local
 
 #from ...randomizer import randomize as randomize_function
 
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
-DECRYPT_SPECIFICS = False
-SKIP_SERVER = False
+DECRYPT_SPECIFICS = True
+SKIP_SERVER = True
 
 class RandomizeThread(QObject):
 
@@ -40,8 +43,9 @@ class RandomizeThread(QObject):
             self.randomize_process()
             self.finished.emit()
 
-        except Exception as e:
-            self.error.emit(str(e))
+        except Exception:
+            traceback.print_exc()
+            self.error.emit(traceback.format_exc())
 
     def randomize_process(self):
 
@@ -50,9 +54,9 @@ class RandomizeThread(QObject):
 
         signed_apk = Path(f"{self.config['mod']['id']}.apk")
 
-        self.log.emit("Extracting APK...")
-
-        extract_apk(apk_path,internalPaths.DECOMPILED,)
+        if EXTRACT_APK:
+            self.log.emit("Extracting APK...")
+            extract_apk(apk_path,internalPaths.DECOMPILED,)
 
         pack_paths = [
             path
@@ -152,6 +156,7 @@ class RandomizeThread(QObject):
 
         # TODO RANDOMIZER CODE HEY DAB IM ADDING IT HERE
         # randomize_function.randomize_according_to_config(config=config,log=self.log.emit)
+        fix_zombie()
 
 
         self.log.emit(

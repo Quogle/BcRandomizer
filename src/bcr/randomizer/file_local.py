@@ -8,6 +8,6 @@ fh.set_file_dir(
     DownloadLocal=os.path.join("workspace","decrypted","DownloadLocal"),
     Game_files="",
     Vanilla_store=os.path.join("workspace","decrypted","vanilla_files"),
-    Modded_files=os.path.join("resources","assets","randomizer_assets")
+    Modded_files=os.path.join("resources","assets",)
 )
 fh.set_search_function("all in one dir")

@@ -39,6 +39,11 @@ def add_unit_requirements(config, requirements):
     requirements["local"].add("unitLimit.csv")
     requirements["local"].add(r"^Unit\_Explanation\d+\_en\.csv$")
 
+    # zombie fix
+    requirements["local"].add("img015.imgcut")
+    requirements["local"].add("nyankoPictureBookData_Attribute.csv")
+    requirements["local"].add("nyankoPictureBookData_EffectAbility.csv")
+
     # combo
     requirements["local"].add("Nyancombo_en.csv")
     requirements["local"].add("NyancomboData.csv")
