@@ -19,7 +19,7 @@ from ...config import paths as internalPaths
 
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
-DECRYPT_SPECIFICS = False
+DECRYPT_SPECIFICS = True
 SKIP_SERVER = False
 
 class RandomizeThread(QObject):

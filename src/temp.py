@@ -10,7 +10,7 @@ from bcr.config.defaults import DEFAULT_CONFIG
 from tadbcmc.data.collated_info.enemy_info import *
 import tadbcmc.data.enums.unit_info as ui
 import tadbcmc.core.simple_funcs as simp
-#main()
+main()
 import bcr.randomizer.units.trait_changer as trait_changer
 
 
