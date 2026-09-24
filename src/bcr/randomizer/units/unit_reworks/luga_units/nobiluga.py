@@ -13,7 +13,7 @@ def nobiluga(stats:list[list[list]]):
 
     #nobiluga
     for trait in c.t:
-        [unit][0][trait] = 1
+        unit[0][trait] = 1
     #gonna make it a suicide wave unit, trying out funky berserker on the wave
     unit[0][c.s.attack_state] = 2
     unit[0][c.s.attack_count] = 1

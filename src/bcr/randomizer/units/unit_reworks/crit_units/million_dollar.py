@@ -35,8 +35,10 @@ def million_dollar(stats:list[list[list]]):
 
 
     levels = gf.file_reader(fn.LEVEL_STAT_GAIN)
-    levels[unit_id] = [0]*20
-    gf.file_writer(fn.LEVEL_STAT_GAIN,levels)
+    if levels != None:
+        levels[unit_id] = [0]*20
+        gf.file_writer(fn.LEVEL_STAT_GAIN,levels)
+    #dont really need to do anything elsewise
 
 
 

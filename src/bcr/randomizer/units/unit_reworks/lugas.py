@@ -13,7 +13,7 @@ from .luga_units import summer_luga
 from .luga_units import betrothed_balaluga
 
 
-def monenekos(stats:list[list[list]]):
+def lugas(stats:list[list[list]]):
     """ does the reworks for all first form lugas and the things required for them
     \n nonconditional """
     stats = nekoluga.nekoluga(stats)

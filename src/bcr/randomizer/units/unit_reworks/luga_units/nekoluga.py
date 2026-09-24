@@ -14,7 +14,7 @@ def nekoluga(stats:list[list[list]]):
 
     #nekoluga 
     for trait in c.t:
-        [unit][0][trait] = 1
+        unit[0][trait] = 1
     #due to the lack of death surge it will be a sentry with 350 range and 100% freeze for 45f and 20% kb (cooldown increased greatly)
     unit[0][c.s.attack_state] = 1
     unit[0][c.s.attack_count] = 1

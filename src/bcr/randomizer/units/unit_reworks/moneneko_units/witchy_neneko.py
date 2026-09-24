@@ -27,6 +27,7 @@ def witchy_neneko(stats:list[list[list]]):
     unit[0][c.s.attack] = 800 #makes for about 13k damage at 30
     unit[0][c.s.savage_by] = 200
     unit[0][c.s.savage_chance] = 20
+    unit[0][c.s.counter_surge] = 1
     #second form I dont even know Im ignoring for now
     #third form doesnt need any changing
 

@@ -13,7 +13,7 @@ def papaluga(stats:list[list[list]]):
 
     #papaluga
     for trait in c.t:
-        [unit][0][trait] = 1
+        unit[0][trait] = 1
     #suicide with curse on the surge pretty boring
     unit[0][c.s.attack_state] = 2
     unit[0][c.s.attack_count] = 1
