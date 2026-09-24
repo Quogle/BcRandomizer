@@ -17,6 +17,7 @@ from ...config import paths as internalPaths
 from ...randomizer.gameplay.zombie_fix import fix_zombie
 import traceback
 from ...randomizer import file_local
+from ...randomizer.stages.restrictions import apply_stage_restrictions
 
 #from ...randomizer import randomize as randomize_function
 
@@ -155,6 +156,7 @@ class RandomizeThread(QObject):
 
         # TODO RANDOMIZER CODE HEY DAB IM ADDING IT HERE
         # randomize_function.randomize_according_to_config(config=config,log=self.log.emit)
+        apply_stage_restrictions(config)
         fix_zombie()
 
 
