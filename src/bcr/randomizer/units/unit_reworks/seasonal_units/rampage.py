@@ -4,7 +4,7 @@ import tadbcmc.data.filenames as fn
 import tadbcmc.data.enums.cats as c
 
 
-
+#still need a better idea for this one
 def rampage(stats:list[list[list]]):
     """ applies the rework to
     \n nonconditional """

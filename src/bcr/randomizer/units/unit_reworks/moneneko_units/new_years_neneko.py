@@ -15,8 +15,9 @@ def new_years_neneko(stats:list[list[list]]):
     for x in range(0,3):
         unit[x][c.s.area] = 0
         unit[x][c.s.kb_chance] = 100
-        unit[x][c.s.tba] = 80
+        unit[x][c.s.tba] = 170
         unit[x][c.s.crit_chance] = 0
+        unit[x][c.s.recharge] = 1111 #was 777, makes for about 2k frame recharge
         for trait in c.t:
             unit[x][trait] = 1
     unit[2][c.s.multi_ld_2_exists] = 1

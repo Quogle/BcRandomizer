@@ -18,9 +18,13 @@ from .seasonal_units import gift_of_cats
 from .seasonal_units import delivery
 from .seasonal_units import eggy
 from .seasonal_units import tricycle
+from .seasonal_units import goemon
 
 
-def seasonals(stats:list[list[list]]):
+
+
+
+def seasonals(stats:list[list[list]],remove_metals=True):
     """ does the reworks for all seasonals and the things required for them
     \n nonconditional """
     stats = slug_cat.slug_cat(stats)
@@ -42,7 +46,8 @@ def seasonals(stats:list[list[list]]):
     stats = gift_of_cats.gift_of_cats(stats)
     stats = delivery.delivery(stats)
     stats = eggy.eggy(stats)
-    stats = tricycle.tricycle(stats)
+    stats = tricycle.tricycle(stats,remove_metals)
+    stats = goemon.goemon(stats)
     return stats
 
 

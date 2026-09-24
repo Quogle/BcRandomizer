@@ -50,7 +50,8 @@ VANILLAFILES = DECRYPTED / "vanilla_files"
 SERVERFILES = DECRYPTED / "server" #this is where the server pack files have their output?
 LOCALFILES = DECRYPTED / "local"
 GAMECACHEFILES = DECRYPTED / "cache"
-RANDOMIZERASSETS = ASSETS / "randomizer_assets"
+MODDEDGAMEFILES = RESOURCES / "modded_game_files"
+TRAITSPRITES = RESOURCES / "trait_sprites"
 
 
 # Rebuilding Apk Paths

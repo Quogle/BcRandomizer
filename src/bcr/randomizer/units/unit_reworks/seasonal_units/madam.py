@@ -14,7 +14,8 @@ def madam(stats:list[list[list]]):
     #madam, expensive af tanky meatshield, faster recharge, more speed in tf, hp increased slightly (might need more since its so expensive)
     for x in range(0,3):
         unit[x][c.s.recharge] = 180 #for 96f, was 240
-    (unit[0][c.s.hp],unit[1][c.s.hp],unit[2][c.s.hp]) = (1200,1200,2000) #was (1140,1140,1710)
+        unit[x][c.s.cost] = 500
+    (unit[0][c.s.hp],unit[1][c.s.hp],unit[2][c.s.hp]) = (1500,1500,2400) #was (1140,1140,1710), results in (25500,25500,40800)
     unit[2][c.s.speed] = 11
 
 

@@ -99,7 +99,9 @@ def _move_all_local_and_server_files_to_vanilla_files(delete_them=True):
 
 #working on this still
 def breakdown_apk(apk_path,move_files_to_vanilla_files=False,keep_local_server=False):
-    """ breaks down the apk and decrypts all the pack files """
+    """ breaks down the apk and decrypts all the pack files
+    \n if move files it will move all the files into vanilla files
+    \n if keep local server, when it moves them to vanilla files it wont delete them """
     #_decrypt_apk(apk_path=apk_path)
     _decrypt_local_packs()
     _download_and_decrypt_server_files()
@@ -107,6 +109,6 @@ def breakdown_apk(apk_path,move_files_to_vanilla_files=False,keep_local_server=F
         _move_all_local_and_server_files_to_vanilla_files((not keep_local_server))
 
 
-breakdown_apk("en_merged.apk",keep_local_server=False)
+breakdown_apk("en_merged.apk",move_files_to_vanilla_files=True,keep_local_server=False)
 
 
