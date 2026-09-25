@@ -32,10 +32,10 @@ def apply_stage_restrictions(config = DEFAULT_CONFIG):
 
             for stage in range(stage_count[category_id][map]):
                 map_id = int(str(category_id) + f"{map:03}")    # format the map ID (ex: 13-category + 7-map = 13007)
-                print(f"        Processing stage {map_id}, stage {stage}")
+                print(f"            Processing stage {map_id}, stage {stage}")
 
                 if r.randrange(0, 100) < config["stage"]["restrictions"]["chance"]: # Roll for if stage gets a restriction
-                    print(f"        Adding restriction to stage {map_id}, stage {stage}")
+                    print(f"                Adding restriction to stage {map_id}, stage {stage}")
 
                     restriction = get_random_restriction(r, groups)
                     set_restriction(restrictions, map_id, 0, stage, restriction)
