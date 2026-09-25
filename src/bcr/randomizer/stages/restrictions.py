@@ -141,7 +141,7 @@ def get_group_id(r, groups):
     group_id = int(groups[-1][0]) + 1
     percent = r.randrange(8, 16) * 5    # percent between 40 and 75 in increments of 5
 
-    group = [group_id, f"{percent}% Units are Available.", 0, 0]    # create the new group
+    group = [group_id, f"{percent}% of all units are available.", 0, 0]    # create the new group
 
     # add allowed cats to the group
     for cat_id in range(CAT_COUNT): 
