@@ -52,6 +52,7 @@ def add_unit_requirements(config, requirements):
     # Stage Restrictions
     requirements["local"].add("Stage_option.csv")
     requirements["local"].add("Charagroup.csv")
+    requirements["local"].add(r".*stage.*")
 
 
 
