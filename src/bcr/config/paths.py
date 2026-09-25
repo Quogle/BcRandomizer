@@ -59,3 +59,13 @@ REBUILTAPK = WORKSPACE / "rebuilt.apk"
 ALIGNEDAPK = WORKSPACE / "aligned.apk"
 #SIGNEDAPK = WORKSPACE / "sign.apk" #I think u moved this?
 
+
+
+
+
+# Config Paths (is this correct dab)
+CONFIG = Path("config")
+VERSIONCONFIGS = CONFIG / "version_info"
+
+
+
