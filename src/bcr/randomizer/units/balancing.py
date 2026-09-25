@@ -10,7 +10,7 @@ from .unit_reworks import critters
 from .unit_reworks import lugas
 from .unit_reworks import monenekos
 from .unit_reworks import seasonals
-
+from .unit_reworks import collabs
 
 
 
@@ -64,6 +64,8 @@ def early_rebalance(config=DEFAULT_CONFIG,log=None):
         stats = monenekos.monenekos(stats)
     if rework_config["seasonals"]:
         stats = seasonals.seasonals(stats)
+    if rework_config["collabs"]:
+        stats = collabs.collabs(stats)
 
 
 

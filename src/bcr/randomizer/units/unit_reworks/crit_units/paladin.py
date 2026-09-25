@@ -2,7 +2,7 @@
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
 import tadbcmc.data.enums.cats as c
-
+import copy
 
 
 def paladin(stats:list[list[list]]):
@@ -59,6 +59,15 @@ def paladin(stats:list[list[list]]):
     tba_talent =        [c.tv.tba,      1,      25,25,  0,0,    0,0,    0,0,    c.tv.tba,       3,      -1,     1]
     bounty_talent =     [c.tv.bounty,   1,      0,0,    0,0,    0,0,    0,0,    c.tv.bounty,    3,      -1,     1]
 
+    """ temp """
+    for x in range(11,69):
+        this_t = copy.deepcopy(slow_talent)
+        this_t[0] = x
+        if x > 30:
+            this_t[-1] = 1
+        this_talents.append(this_t)
+
+    """
     #now ad them all
     this_talents.append(slow_talent)
     this_talents.append(freeze_talent)
@@ -68,7 +77,7 @@ def paladin(stats:list[list[list]]):
     this_talents.append(dodge_talent)
     this_talents.append(tba_talent)
     this_talents.append(bounty_talent)
-
+    """
 
 
     gf.write_talents(talents)

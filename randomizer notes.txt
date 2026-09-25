@@ -342,11 +342,11 @@ talents:
 
 
 unit changes
-    #contentious
+    #random ones
     658 courier - remove targetting 
+    716 cop - lit just target red/black/alien instead of white
 
-
-    #normal units
+    #crit units
     46 jurassic - savage 200 (5% and 12% in tf), cost 500? (450 in v3 but 500 in v4), health (570,900,1400), attack (200,250,300), gets black target in true form post rando #this one needs major testing
     635 million dollar cat - literally sign stats, but with a weaken to 25% for 5 seconds wave of level 5-14 (determined randomly)
     78 space - decrease recharge from 600 to 500 (336 to 236), wave immune, 20% crit with no bbreak, gets stuff based on the attack anim
@@ -358,15 +358,8 @@ unit changes
     273 waitress - target trait (metal before rando) strong, 100% savage 400 (basically has bahamut dph)
     621 aku research - target trait, massive (metal if remove metals prolly aku otherwise)
     446 backhoe - 3 100 damage hits, 50% curse for 100f, 50% explode 1000-3000, 100% chance on both in tf, no crit/surge
-    184 mint - 140 attack, 350 cost, 400 cd, 500 hp, 4 kbs, alien first form, red/metal second based on if metal removed
-    26 punt - 1000 hp and attack, 100% weak 150f to 50%, metal/? trait, tf 1200 attack and weak to 10
-    121 merc - hp 800, 4 kb, 100 attack on 3 hits, first omni 155 width:-475, 2nd ld -320 w:550, 3rd ld -320 w:625, 2f delay between each, if slop savage 200 at 20% chance crit 20%, both 100% in tf, if no slop 150 damage and 600 in tf      all these numbers are subject to change
-    28 capsule - 500 attack, massive, metal/white
-    65 racism cow - hp from 500 to 1300, attack from 30 to 80
-    68 reaper - 60% slow for 120f, 750 cost, 470 attack, 700 hp, true form: attack (200,400,800) 1000hp, pre attack (16,57,83)
-    716 cop - lit just target red/black/alien instead of white
 
-    #ubers
+    #crit ubers
     57 paladin - supposed to be a cheap front line nuker with variations across forms, soul strike and zkill with a 200 savage and longer tba, weak imm
         first form: single target shorter tba (90 instead of 140), 100% barrier break (maybe low sp), 50% crit/savage 4000hp/1000atk
         second form: faster tankier, freeze/slow imm, 2kbs and lethal, 40% crit/savage, 5000hp/800atk
@@ -385,6 +378,15 @@ unit changes
     16 moneko - bounty miniwaver (make tf wave not mini) stat increases to make it usable
     418 cmoneko - sui after 3 attacks, first hit is actually last so interrupting wastes an attack, insane amount of kbs, gauranteed level 30 miniwave with 30 seconds of weak to 50, cooldown increased to 1 minute
 
+
+    #collab units
+    184 mint - 140 attack, 350 cost, 400 cd, 500 hp, 4 kbs, alien first form, red/metal second based on if metal removed
+    26 punt - 1000 hp and attack, 100% weak 150f to 50%, metal/? trait, tf 1200 attack and weak to 10
+    121 merc - hp 800, 4 kb, 100 attack on 3 hits, first omni 155 width:-475, 2nd ld -320 w:550, 3rd ld -320 w:625, 2f delay between each, if slop savage 200 at 20% chance crit 20%, both 100% in tf, if no slop 150 damage and 600 in tf      all these numbers are subject to change
+    28 capsule - 500 attack, massive, metal/white
+    65 racism cow - hp from 500 to 1300, attack from 30 to 80
+    68 reaper - 60% slow for 120f, 750 cost, 470 attack, 700 hp, true form: attack (200,400,800) 1000hp, pre attack (16,57,83)
+    
 
     apparently theres no ds on cats so all of these are wrong!
     #lugas (do I make them target all traits or just the ones in the second form?)
@@ -409,21 +411,31 @@ unit changes
     70 ritual       - remove stong? increase hp from (700,700,1200) to (1500,1500,2500)? attack from (160,160,320) to (350,350,450) (7650 at 50 for tf), increase berserk from 100% to 200%, maybe omni pierce by 20 or something? might be a bit much
     74 reindeer     - 0tba, zkill?, 1kb?
     79 prisoner     - pre tf: hp reduced from 550 to 50, range increased from 120 to 435, 0tba (61f cycle), speed increased to 12, cd increased to 864, attack increased from 350 to 700? (I would rather decrease its post attack than have dmage increased this way tho), okay I made an animation in bcu that works with 0tba 435 range and 16f pre attack
-    80 evil         - cost increase to 1000, 0 tba (46f cycle), freeze 30% 90f, tf: only decrease cooldown from 460 to 376 
-    81 doll         - cost decreased to 500, damage increased from 167 to 200 (3400 at 30), 100% level 1 wave (5 in tf)
+    80 evil         - still working on this one
+    81 doll         - bird dom fusion (not docu specifics rn)
     100 maiden      - hp increased from (994,994,1988) to (1800,1800,2800), atk from (277,277,277) to (500,500,600), tf gets slow and weaken imm
     104 koi         - 0tba (cycle decreased from 127 to 19), speed increased to 25 in all forms
     109 madam       - cd decreased from 540 (276) to 360 (96), hp from (1140,1140,1710) to (1200,1200,2000), speed in tf increased to 11
-    122 vacation    - 40% kb 1st 2nd, 100% tf
+    122 vacation    - 40% kb 1st 2nd, 100% tf, triple hit
     128 vengeful    - bounty, [0tba (233f to 89f) attack increased from 98 to 300]? or instead maybe [attack increased from 98 to 500], soulstrike?
-    132 kungfu x    - only editing tf, attacks increased from (370,184,1294) to (470,100,1500) with a level 1 wave on first hit to clear peons
-    176 marshmallow - freezing death surge on all traits?
+    132 kungfu x    - all forms get inconsistent stat increases
+        first form: powerful berserk at low hp, with no reliable way to obtain it
+        second form: curse red dark angel on third hit
+        third form: wave on first hit to clear peons
+    176 marshmallow - 1st: bounty ms with weird level scaling   2nd: idk (freezing death surge on all traits?) doesnt work
     183 kart        - mario:(damage from 60 to 300, hp from 390 to 760 (12920 level 30), kb reduced to 2) luigi:(range from 320 to 465, 12% savage 200, damage 60 to 180) peach:(0tba, 1 kb, hp from 390 to 580)
-    227 pumpcat     - 2nd:(40% freeze 120f) tf:(60% freeze 140f)
+    227 pumpcat     - 1st: frame 1 suicide meatshield with 18 speed, 2nd:(40% freeze 120f) tf:(60% freeze 140f)
     244 gift of cats- area 50% freeze 75f
     303 delivery    - damage 1st 2nd from 200 to 300
     329 eggy        - slow 50%
     17 tricycle     - 1st:(700cd 56tba (code time) for 132 attack cycle, 100% explode, 250 range, 360 damage, 580 hp) 2nd:(440cd 0tba(47f cycle), 3 180 damage hits, preatk (16,21,33), massive against metal/red, 440 hp, 1kb) tf:(400 damage 780 hp, 100% level 1 surge just past current target)
+
+    #other units
+    goemon          - triple hit with more damage, base berserk in tf (still shit lmao)
+    schoolgirl lion - whole map nuker 1 billion lions
+    tricycle        - still in progress
+
+
 
     extra note:
         I dont actually change anything about the power pro units but they are given somehow
@@ -542,6 +554,7 @@ things already added:
 
 
 things still needed to be added:
+    config info for version getter
     units:
         trait changer:
             trait rand 
@@ -549,9 +562,8 @@ things still needed to be added:
         talent changer:
             talent rand
         unit rebalances
-            million dollar needs level boosts zeroed
-            paladins talents also need to be changed since they dont mesh with my paladin rework
             jurassic target dark post trait changes
+        specifically a zombie talent fix (trait sum cannot give zombie/witch as it needs to be given as part of collosus slayer)
     enemies:
         something to do with what is and isnt alien/starred in itf/cotc
         burrow animation stuff
