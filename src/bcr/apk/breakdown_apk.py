@@ -35,7 +35,7 @@ def _decrypt_apk(apk_path):
     """decrypts the apk at specified path"""
     extract_apk(apk_path,internalPaths.DECOMPILED)
 
-def _decrypt_local_packs():
+def _decrypt_local_packs(henry_style=False,specifics:set=None):
     """ decrypts any packs found in specified directory to the specified directory
     \n if henry style, will instead output each of the packs into their own directory """
     #first get all the pack paths
@@ -44,37 +44,57 @@ def _decrypt_local_packs():
     for pack in all_packs:
         if "_" not in pack.stem:
             pack_paths.append(pack)
+    #get which directory to output to
+    output_dir = internalPaths.VANILLAFILES
+    if henry_style: output_dir = internalPaths.LOCALFILES
     #now decrypt them
-    if not os.path.exists(internalPaths.DECRYPTED):
-        os.makedirs(internalPaths.DECRYPTED)
     decrypt_packs(
         pack_paths=pack_paths,
         cc="en",
-        output_directory=internalPaths.LOCALFILES,
+        output_directory=output_dir,
+        use_pack_directory=henry_style,
+        wanted_files=specifics,
     )
     
-def _download_and_decrypt_server_files():
-    """ outputs each server file in the correct order to its respective game directory in serverfiles """
+def _download_and_decrypt_server_files(henry_style=False,specifics:set=None,separate_into_versions=False):
+    """ decrypts server files, if set is passed to specifics it will only decrpyt those
+    \n henry style means it gets put into server/ImageLocal instead of vanilla files
+    \n separate into versions leaves the server files in their respective version files, why would you use this? """
     tsv_paths = sorted(internalPaths.DECOMPILED.rglob("download_*.tsv")) #not a fuckin clue how this works
-    #start by downloading all the server files?
-    download_server_files(
-        lib_path=internalPaths.LIBPATH,
-        tsv_paths=tsv_paths,
-        country_code="en",
-        output_directory=internalPaths.SERVERDIRECTORY,
-    )
-    #now get all of them
-    server_pack_paths = list(
-        internalPaths.SERVERDIRECTORY.rglob("*.pack")
-    )
-    #now order them correctly
-    ordered_server_files = _correctly_order_server_files(server_pack_paths)
-    #now decrypt them
-    decrypt_packs(
-        pack_paths=ordered_server_files,
-        cc="en",
-        output_directory=internalPaths.SERVERFILES
-    )
+    if not separate_into_versions:
+        #get the output dir
+        output_dir = internalPaths.VANILLAFILES
+        if henry_style: output_dir = internalPaths.SERVERFILES
+        #now do process server files
+        process_server_files(
+            lib_path=internalPaths.LIBPATH,
+            tsv_paths=tsv_paths,
+            country_code="en",
+            server_directory=internalPaths.SERVERDIRECTORY,
+            wanted_files=specifics,
+            output_directory=output_dir,
+            use_pack_directory=henry_style,
+        )
+    else:
+        #start by downloading all the server files
+        download_server_files(
+            lib_path=internalPaths.LIBPATH,
+            tsv_paths=tsv_paths,
+            country_code="en",
+            output_directory=internalPaths.SERVERDIRECTORY,
+        )
+        #now get all of them
+        server_pack_paths = list(
+            internalPaths.SERVERDIRECTORY.rglob("*.pack")
+        )
+        #now order them correctly
+        ordered_server_files = _correctly_order_server_files(server_pack_paths)
+        #now decrypt them
+        decrypt_packs(
+            pack_paths=ordered_server_files,
+            cc="en",
+            output_directory=internalPaths.SERVERFILES
+        )
 
 def _move_all_local_and_server_files_to_vanilla_files(delete_them=True):
     """ copies all files from local and then server into vanilla, deletes them if specified """
@@ -98,17 +118,30 @@ def _move_all_local_and_server_files_to_vanilla_files(delete_them=True):
 
 
 #working on this still
-def breakdown_apk(apk_path,move_files_to_vanilla_files=False,keep_local_server=False):
+def breakdown_apk(
+        apk_path,
+        specifics:dict[set]=None,
+        get_server_files=False,
+        henry_style_output=False):
     """ breaks down the apk and decrypts all the pack files
     \n if move files it will move all the files into vanilla files
     \n if keep local server, when it moves them to vanilla files it wont delete them """
     #_decrypt_apk(apk_path=apk_path)
-    _decrypt_local_packs()
-    _download_and_decrypt_server_files()
-    if move_files_to_vanilla_files:
-        _move_all_local_and_server_files_to_vanilla_files((not keep_local_server))
+    local_specifics = None
+    server_specifics = None
+    if specifics != None:
+        if "local" in specifics:
+            local_specifics = specifics["local"]
+        if "server" in specifics:
+            server_specifics = specifics["server"]
+    _decrypt_local_packs(henry_style=henry_style_output,specifics=local_specifics)
+    if get_server_files:
+        _download_and_decrypt_server_files(henry_style=henry_style_output,specifics=server_specifics)
+    #if move_files_to_vanilla_files:
+    #    _move_all_local_and_server_files_to_vanilla_files((not keep_those_outside_vanilla_files)) #this is largely just a relic (omg thats a bc reference)
 
 
-breakdown_apk("en_merged.apk",move_files_to_vanilla_files=True,keep_local_server=False)
+
+
 
 

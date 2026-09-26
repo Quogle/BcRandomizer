@@ -617,7 +617,8 @@ things I dont feel like adding the the randomizer now because they would take to
         randomize restrictions
         randomize stages in sol/ul/zl chapters
         catasaurus black
-
+        add the seed unit that tells the user various information about their current seed and version config options
+        
     
 
 

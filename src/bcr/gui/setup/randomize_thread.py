@@ -14,17 +14,15 @@ from ...apk.packs.required_files import get_required_files
 from ...apk.edit_xml import edit_manifest
 from ...apk.replace_icon import replace_icon
 from ...config import paths as internalPaths
-from ...randomizer.gameplay.zombie_fix import fix_zombie
 import traceback
-from ...randomizer import file_local
-from ...randomizer.stages.restrictions import apply_stage_restrictions
+from ...randomizer import randomize as randomize_function
 
-#from ...randomizer import randomize as randomize_function
+
 
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
 DECRYPT_SPECIFICS = True
-SKIP_SERVER = True
+SKIP_SERVER = False
 
 class RandomizeThread(QObject):
 
@@ -154,10 +152,11 @@ class RandomizeThread(QObject):
             exist_ok=True,
         )
 
+        self.log.emit(
+            "Starting randomization process"
+        )
         # TODO RANDOMIZER CODE HEY DAB IM ADDING IT HERE
-        # randomize_function.randomize_according_to_config(config=config,log=self.log.emit)
-        apply_stage_restrictions(config)
-        fix_zombie()
+        randomize_function.randomize_according_to_config(config=config,log=self.log.emit)
 
 
         self.log.emit(
