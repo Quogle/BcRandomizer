@@ -3,7 +3,7 @@ DEFAULT_CONFIG = {
     "mod": {
         "seed": None,
         "id": "bcrando",
-        "config_version": 1,
+        "config_version": 1, #dab please annotate what these mean and are used for :sob:
         "unit_id": "15.5.0",
         "unit_trait": "15.5.0",
         "unit_ability": "15.5.0",
@@ -28,7 +28,7 @@ DEFAULT_CONFIG = {
         "unit": {
             "randomize": {
                 "randomization_mode": "Randomize", # none / swap / randomize        # WILL ONLY RANDOMIZE TO TRAITS ENEMIES CAN HAVE
-                "vary_form_traits": False, # Each form of a unit will randomize individually
+                "per_form": False, # Each form of a unit will randomize individually
                 "avoid_old_traits": True # If possible unit will not randomize to target the same trait
             },
             "ability": {

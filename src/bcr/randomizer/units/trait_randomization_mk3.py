@@ -119,6 +119,7 @@ def _multiform_white_exception(
     ):
     """ return (from_traits,to_traits,allowed_traits)
     \n adds white to from and an allowed non white trait to to if except white """
+    allowed_traits = copy.deepcopy(allowed_traits) #this is required to stop it from editing outside this function
     #this should do nothing if its not except white
     if except_white:
         for trait in look_order:
@@ -196,7 +197,7 @@ def _multiform_map_traits_to_unused_allowed(
     for trait in traits_to_map:
         found = False
         for new_trait in look_order:
-            if not found and new_trait != trait and trait in unused_allowed:
+            if not found and new_trait != trait and new_trait in unused_allowed:
                 found = True
                 from_traits.append(trait)
                 to_traits.append(new_trait)
@@ -231,6 +232,7 @@ def _map_all_unmapped_traits(
         found = False
         for new_trait in look_order:
             if not found and new_trait != trait and new_trait in missing_to:
+                found = True
                 from_traits.append(trait)
                 queue_to_remove.append(trait)
                 to_traits.append(new_trait)
@@ -337,6 +339,7 @@ def _form_independent_first_placement(
         all_traits:list,
         allowed_traits:list,
         avoid_old_traits:bool,
+        look_order:list,
     ):
     """ return (from_traits,to_traits)
     \n does either half map or early placement depending on whether or not its avoid old trait """
@@ -359,6 +362,8 @@ def _form_independent_first_placement(
             for trait in all_traits:
                 if trait not in ALLBASE: #is it true that talents should be in preferred?
                     prefered.append(trait)
+        else:
+            do_half_map = False
         #if any of those groups checked then do it
         if do_half_map:
             (from_traits,to_traits) = _multiform_av_half_map(from_traits,to_traits,half_mappers,allowed_traits,prefered,look_order)
@@ -403,7 +408,7 @@ def single_form_trait_randomization(
     #white (multiform works for this)
     (from_traits,to_traits,allowed_traits) = _multiform_white_exception(from_traits,to_traits,allowed_traits,look_order,except_white)
     #now do the function for the first initial large post white placement
-    (from_traits,to_traits) = _form_independent_first_placement(from_traits,to_traits,ALL,ALLBASE,[],all_traits,allowed_traits,avoid_old_traits)
+    (from_traits,to_traits) = _form_independent_first_placement(from_traits,to_traits,ALL,ALLBASE,[],all_traits,allowed_traits,avoid_old_traits,look_order)
     #now do all traits that have yet to be mapped, starting with placing them on unused allowed traits
     still_needs_mapping = []
     for trait in ALL:
@@ -433,7 +438,7 @@ def multiform_trait_randomization(
     \n input must be processed into a list of lists of traits a unit has on each form and a list of talent traits
     \n make new forms/talents not change map by just setting the arrays to not include those forms/talents """
     #this stupid exception
-    if len(allowed_traits):
+    if len(allowed_traits) == 1:
         return _handle_one_allowed_trait(allowed_traits,all_traits)
     #now get initial information
     (ALL,ALLBASE,PERSISTANT,except_white) = _multiform_initialize_information(form_traits,talent_traits,all_traits)
@@ -443,7 +448,7 @@ def multiform_trait_randomization(
     #white
     (from_traits,to_traits,allowed_traits) = _multiform_white_exception(from_traits,to_traits,allowed_traits,look_order,except_white)
     #now do the function for the initial post white large scale placement
-    (from_traits,to_traits) = _form_independent_first_placement(from_traits,to_traits,ALL,ALLBASE,PERSISTANT,all_traits,allowed_traits,avoid_old_traits)
+    (from_traits,to_traits) = _form_independent_first_placement(from_traits,to_traits,ALL,ALLBASE,PERSISTANT,all_traits,allowed_traits,avoid_old_traits,look_order)
     #now do all traits that have yet to be mapped, starting with placing them on unused allowed traits
     still_needs_mapping = []
     for trait in ALL:

@@ -3,7 +3,7 @@
 import bcr.randomizer.file_local as fl
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
-from ..config import paths
+from ...config import paths as internalPaths
 import tadbcmc.data.enums.cats as c
 import tadbcmc.core.file_handler as fh
 import tadbcmc.pieces.combos as combos
@@ -11,20 +11,7 @@ import bcr.apk.breakdown_apk as breakdown_apk
 import tadbcmc.core.simple_funcs as simp
 import os
 from pathlib import Path
-
-
-#I have no idea what the version config is going to look like
-
-#putting the file names here for now, they can be moved to paths if needed
-TALENT_CONFIG = "talent_ids.csv"
-UNIT_FORM_CONFIG = "unit_forms.csv"
-MISC_INFO_CONFIG = "misc_info.csv"
-
-NUMBER_OF_COMBOS = "number_of_combos"
-NUMBER_OF_COMBO_IDS = "number_of_combo_ids"
-NUMBER_OF_ZL_CHAPTERS = "number_of_zl_chapters"
-NUMBER_OF_CATS = "number_of_cats"
-NUMBER_OF_ENEMIES = "number_of_enemies"
+from ..version_config import internal_version_names as ivn
 
 
 #files sofar used in the process
@@ -63,10 +50,11 @@ def harvest_config_info_from_apk(config_version:str):
         #get the actual correct path for config
         if "src" in os.listdir(os.getcwd()): base = Path("src")
         else: base = Path("")
-        config_dir = base / paths.VERSIONCONFIGS / config_version
+        config_dir = base / internalPaths.VERSIONINFO / config_version
         config_dir.mkdir(parents=True,exist_ok=True)
         #now do it
         _make_config_for_version_from_game_files(config_dir)
+        print("\n\nconfig added for version " + config_version)
     else:
         print("couldnt find " + config_version + ".apk in " + __path__ + ", resolve and try again")
 
@@ -91,14 +79,14 @@ def _make_config_for_version_from_game_files(config_version_path:Path):
 def _write_misc_info_to_file(config_version_path:Path
     ) -> None:
     """ writes all the single bits of information to the same file """
-    filepath = config_version_path / MISC_INFO_CONFIG
+    filepath = config_version_path / ivn.MISC_INFO_CONFIG
     info = []
     #now add each bit of info to it
-    info.append([NUMBER_OF_COMBOS,_get_number_of_combos()])
-    info.append([NUMBER_OF_COMBO_IDS,_get_number_of_combo_ids()])
-    info.append([NUMBER_OF_ZL_CHAPTERS,_get_zl_subchapter_counts()])
-    info.append([NUMBER_OF_CATS,_get_unit_count()])
-    info.append([NUMBER_OF_ENEMIES,_get_enemy_count()])
+    info.append([ivn.NUMBER_OF_COMBOS,_get_number_of_combos()])
+    info.append([ivn.NUMBER_OF_COMBO_IDS,_get_number_of_combo_ids()])
+    info.append([ivn.NUMBER_OF_ZL_CHAPTERS,_get_zl_subchapter_counts()])
+    info.append([ivn.NUMBER_OF_CATS,_get_unit_count()])
+    info.append([ivn.NUMBER_OF_ENEMIES,_get_enemy_count()])
 
 
     #now write it
@@ -114,21 +102,19 @@ def _get_talent_ids(config_version_path:Path
     """ logs the talent ability ids for all units and writes them to the current versions config """
     #first step is get the correct filepath to store the information in
     #for now Im just open combining version as a string
-    filepath = config_version_path / TALENT_CONFIG
+    filepath = config_version_path / ivn.TALENT_CONFIG
     #ok now the real func can begin
     talents = gf.get_talents(vanilla=True)
-    #first get the highest unit id with talents
-    highest_unit_id = 0
-    for line in talents:
-        if line[c.tpos.unit_id] > highest_unit_id:
-            highest_unit_id = line[c.tpos.unit_id]
+    stats = gf.get_cat_stats(vanilla=True)
     #now make the talent array with that many entries
     versions_talents = []
-    for x in range(0,highest_unit_id+1):
-        versions_talents.append([])
+    for x in range(0,len(stats)):
+        versions_talents.append([-1])
     #now go through the talents adding the id of all abilities to the unit_ids index
     for line in talents:
         current_unit_id = line[c.tpos.unit_id]
+        #now set the trait sum as the first value
+        versions_talents[current_unit_id][0] = line[c.tpos.trait_sum]
         for block in range(2,len(line)):
             versions_talents[current_unit_id].append(line[block][c.tpos.ability_id])
     #now write them to file
@@ -140,7 +126,7 @@ def _get_unit_forms(config_version_path:Path
     """ logs the unit forms from nyankobook for all units and writes them to the current versions config """
     #first step is get the correct filepath to store the information in
     #for now Im just open combining version as a string
-    filepath = config_version_path / UNIT_FORM_CONFIG
+    filepath = config_version_path / ivn.UNIT_FORM_CONFIG
     #get the nyankobook file
     nyankobook = gf.file_reader(fn.CAT_GUIDE_DATA,vanilla=True)
     #forms is contained on the third column

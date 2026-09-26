@@ -65,7 +65,7 @@ ALIGNEDAPK = WORKSPACE / "aligned.apk"
 
 # Config Paths (is this correct dab)
 CONFIG = Path("bcr") / "config"
-VERSIONCONFIGS = CONFIG / "version_info"
-
+VERSIONCONFIGS = CONFIG / "version_config"
+VERSIONINFO = VERSIONCONFIGS / "version_info"
 
 

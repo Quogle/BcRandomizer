@@ -7,12 +7,17 @@ import tadbcmc.core.seeded_randomization as srand
 def change_traits_according_to_config(stats,config=DEFAULT_CONFIG,log=None):
     """ changes traits according to the method desired in config
     \n also gives starred alien """
-    change_means = config["enemy"]["trait"]["randomization_mode"]
+    change_means = config["enemy"]["trait"]["randomization_mode"].lower()
+    if change_means == "none":
+        return stats #simply no sense
     if change_means == "randomize":
         stats = _trait_randomization(stats=stats,config=config,log=log)
     elif change_means == "swap":
         stats = _trait_swap(stats,config=config,log=log)
     else:
+        print("failed to interpret enemy randomization mode: " + str(change_means))
+        if log:
+            log("failed to interpret enemy randomization mode: " + str(change_means))
         return stats
     #is there anything else to do here?
     return stats

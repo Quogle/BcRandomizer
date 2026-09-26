@@ -1,4 +1,4 @@
-import bcr.config.version_config_maker as vcm
+import bcr.config.version_config.version_config_updater as vcm
 
 
 

@@ -119,14 +119,16 @@ def _move_all_local_and_server_files_to_vanilla_files(delete_them=True):
 
 #working on this still
 def breakdown_apk(
-        apk_path,
+        apk_path:str|Path|None,
         specifics:dict[set]=None,
         get_server_files=False,
         henry_style_output=False):
     """ breaks down the apk and decrypts all the pack files
+    \n passing none to apk name will make it not decrypt an apk
     \n if move files it will move all the files into vanilla files
     \n if keep local server, when it moves them to vanilla files it wont delete them """
-    #_decrypt_apk(apk_path=apk_path)
+    if apk_path != None:
+        _decrypt_apk(apk_path=apk_path)
     local_specifics = None
     server_specifics = None
     if specifics != None:
