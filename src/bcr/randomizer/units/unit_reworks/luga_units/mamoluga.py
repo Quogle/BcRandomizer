@@ -35,7 +35,7 @@ def mamoluga(stats:list[list[list]]):
 
     #editing the post attack anim time
     mamoluga_anim_name = simp.uinfo_to_anim(unit_id,enemy=False,form=0,file_end="maanim",anim_num=2)
-    mamoluga_anim = gf.file_reader(mamoluga_anim_name,vanilla=True)#Im assuming its fine to pull the vanilla version of the animations since this is early on
+    mamoluga_anim = gf.file_reader(mamoluga_anim_name,vanilla=True,debug=False)#Im assuming its fine to pull the vanilla version of the animations since this is early on
     if mamoluga_anim != None:
         mamoluga_copy = copy.deepcopy(mamoluga_anim[6])
         mamoluga_copy[0] = mamoluga_attack_rate #give mamoluga an attack cycle of 400f

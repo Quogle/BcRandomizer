@@ -56,8 +56,7 @@ TALENT_SUMS = [
 
 
 def change_traits_according_to_config(stats,config=DEFAULT_CONFIG,version_config=DEFAULT_VC_CONFIG,log=None):
-    """ changes traits according to the method desired in config
-    \n also gives starred alien """
+    """ changes traits according to the method desired in config """
     change_means = config["trait"]["unit"]["randomize"]["randomization_mode"].lower()
     if change_means == "none":
         return stats #theres just no sense in it dab
@@ -313,10 +312,6 @@ def _apply_map_to_talents():
                 line[block][c.tpos.ability_id] = new_ability_id
     #all good?
     gf.write_talents(talents)
-
-
-
-
 
 def _get_traits_from_traitsum(traitsum:int) -> list[int]:
     """ returns the talents in a trait sum """
