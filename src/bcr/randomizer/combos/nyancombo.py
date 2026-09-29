@@ -4,11 +4,16 @@ import tadbcmc.data.enums.nyancombo as nc
 import tadbcmc.pieces.combos as combos
 from ...config.defaults import DEFAULT_CONFIG
 from tadbcmc.data.collated_info.unit_info import*
-set_UNIT_INFO_unlogged()
 import tadbcmc.data.enums.unit_info as ui
 import tadbcmc.data.filenames as fn
 import tadbcmc.data.enums.unitbuy as ub
 import copy
+
+def establish_working_information():
+    """ to be called once the game files actually exist """
+    UNIT_INFO_extend_w_defaults()
+
+
 
 ABNORMAL_EFFECTS = [nc.effect.worker_efficiency,nc.effect.immune_to_waves,nc.effect.deploy_cost_down]
 NO_DOWN_EFFECTS = [] #Ill have to document this
@@ -67,8 +72,8 @@ def _randomize_combos(config=DEFAULT_CONFIG):
         #only do it if the effect really exists
         if x < total_number_of_effects and x not in disallowed_effects:
             allowed_effects.append(x)
-    #now open vanilla cat stats THIS SHOULD NOT BE
-    vstat = gf.get_cat_stats(vanilla=True)
+    #now open nyanko book for form info
+    nyankobookdata = gf.file_reader(fn.CAT_GUIDE_DATA)
     #now for each combo in vcombos run on self
     for combo_id in range(0,len(vcombo_data)):
         this_combo_data = vcombo_data[combo_id]
@@ -88,7 +93,7 @@ def _randomize_combos(config=DEFAULT_CONFIG):
             allowed_no_uberlr=allowed_non_uber_lr,
             ubers=allowed_uber,
             max_uber_count=max_ubler_count,
-            vanilla_cat_stats=vstat
+            nyankobook=nyankobookdata,
         )
 
 def _all_down_central(config=DEFAULT_CONFIG):
@@ -221,8 +226,7 @@ def _get_combo_unit_info(include_collabs=False,include_limited_events=False) -> 
         unit_info[u_id][1] = is_uber_lr
     return unit_info
 
-#THIS FUNCTION HAS AN INCORRECT METHOD FOR DETERMINING NUMBER OF FORMS A UNIT HAS
-def _randomize_this_combo(combo_data:list,combo_name:str,r_offset:int,change_effects:bool,allowed_effects:list,change_counts,count_weights:list,change_level:bool,level_weights:list,change_units:bool,ubers:list,allowed_all:list,allowed_no_uberlr:list,max_uber_count:int,vanilla_cat_stats:list):
+def _randomize_this_combo(combo_data:list,combo_name:str,r_offset:int,change_effects:bool,allowed_effects:list,change_counts,count_weights:list,change_level:bool,level_weights:list,change_units:bool,ubers:list,allowed_all:list,allowed_no_uberlr:list,max_uber_count:int,nyankobook:list):
     """ randomizes the data of this combo according to the inputs and saves it with specified name """
     #first step is get this intended effect
     if change_effects:
@@ -287,8 +291,7 @@ def _randomize_this_combo(combo_data:list,combo_name:str,r_offset:int,change_eff
             r = srand.randinst(r_offset+12+14*current_position)
             new_unit = available_units[r.randrange(0,len(available_units))]
             #now we get the form to use
-            #THIS IS BAD I SHOULD HAVE A DIFFERENT METHOD FOR DOING THIS
-            new_form = r.randrange(0,len(vanilla_cat_stats[new_unit]))
+            new_form = r.randrange(0,nyankobook[new_unit][2])
             combo_units[current_position] = [new_unit,new_form]
     #now we are good to set the combo as such
     #now just loop through setting the units and forms

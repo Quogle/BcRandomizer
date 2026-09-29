@@ -1,4 +1,4 @@
-
+""" defunct module, too complex to bother """
 import tadbcmc.data.enums.cats as c
 import copy
 """ simpler algo:
@@ -11,6 +11,11 @@ map traits specific to one form to those of others if possible
 
 
 """
+
+
+
+
+
 
 
 def _one_allowed_trait(allowed_traits:list[int],look_order:list[int]):
