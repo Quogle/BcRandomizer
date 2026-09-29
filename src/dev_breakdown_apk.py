@@ -6,7 +6,7 @@ import bcr.apk.breakdown_apk as breakdown_apk
 
 breakdown_apk.breakdown_apk(
     apk_path=None,#"en_merged.apk",
-    get_server_files=False,
+    get_server_files=True,
     henry_style_output=False
 )
 

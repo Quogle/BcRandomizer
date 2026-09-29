@@ -16,7 +16,7 @@ def stage_total(config=DEFAULT_CONFIG,log=None):
     _fruit_stage_buffs(config=config)
     _orb_stage_buffs(config=config,log=log)
     _matt_stage_buffs(config=config)
-
+    _advent_stage_drop_rate_buff(config=config)
 
     """stages still missing that are part of config:
     enigma buff
@@ -130,8 +130,10 @@ def _matt_stage_buffs(config=DEFAULT_CONFIG):
     if do_something:
         qol.material_stages_buff(3,5,9)
 
-
-
+def _advent_stage_drop_rate_buff(config=DEFAULT_CONFIG):
+    """ makes the advents have a gauranteed drop rate instead of 30% """
+    if config["qol"]["drop_buffs"]["advent_drop_guarantee"]:
+        qol.set_advent_drop_rates(100)
 
 
 

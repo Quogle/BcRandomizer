@@ -5,8 +5,15 @@ import copy
 from ...config.defaults import DEFAULT_CONFIG
 import tadbcmc.core.seeded_randomization as srand
 from tadbcmc.data.collated_info.enemy_info import*
-ENEMY_INFO_extend_w_defaults()
 import tadbcmc.data.enums.unit_info as ui
+
+
+
+
+def establish_working_information():
+    """ to be called once the game files actually exist """
+    ENEMY_INFO_extend_w_defaults()
+
 
 
 #idk what else to do here but Im gonna put all the making of base arrays in here

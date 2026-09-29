@@ -2,7 +2,6 @@
 it is probably best to fall after most 'general' changes to enemy stats happen\n
 but must necessarily be before any stages that should not be changed are added to dl """
 from tadbcmc.data.collated_info.enemy_info import *
-ENEMY_INFO_extend_w_defaults()
 import tadbcmc.core.simple_funcs as simp
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
@@ -14,6 +13,12 @@ import math
 import tadbcmc.core.stnmp as stnmp
 from typing import Dict,List
 from ...config.defaults import DEFAULT_CONFIG
+
+
+
+def establish_working_information():
+    """ to be called once the game files actually exist """
+    ENEMY_INFO_extend_w_defaults()
 
 
 

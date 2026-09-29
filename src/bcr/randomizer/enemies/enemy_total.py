@@ -10,6 +10,18 @@ import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
 
 
+
+def establish_working_information():
+    """ to be called once the game files actually exist """
+    #there are none in this file
+    enemy_id_swap.establish_working_information()
+    balancing.establish_working_information()
+
+
+
+
+
+
 #THIS IS HIGHEST LINK IN THE POST ATTACK ANIM CHAIN CURRENTLY
 def enemy_rand(config=DEFAULT_CONFIG,log=None):
     """ does all things requested in config under enemy

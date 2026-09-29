@@ -13,6 +13,11 @@ import os
 from pathlib import Path
 from ..version_config import internal_version_names as ivn
 
+fh.wipe_dl()
+#I need something that kills cache, dont want that lingering around
+
+
+
 
 #files sofar used in the process
 specifics = {

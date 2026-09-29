@@ -522,7 +522,17 @@ do I want first form luga for all these?
 
 
 things already added:
+    config info for version getter and version config
     units:
+        trait changer
+            trait rand 
+            talent trait rand 
+        unit changes
+            lugas (partial)
+            collabs
+            seasonal
+            crit units
+            monenekos
     enemies:
         trait rand
         trait swap (aside from specified swaps)
@@ -539,6 +549,11 @@ things already added:
         fruit stage buffs
         orb stage buffs (not the enigma ones)
         shop buffs
+        gold cpu buff
+        unit sell increase
+        advent drop guarantee
+        early catamin unlocks
+        lils/brain as catamins
     gameplay:
         behemoth/metal removal
         itf/cotc crystal removal
@@ -547,6 +562,8 @@ things already added:
     combo:
         all unit down combos (for config note: this needs Unit_Explanation)
         combo randomization
+    stages:
+        restrictions
     funnies:
     anims/sprites:
         sprite getter
@@ -554,33 +571,33 @@ things already added:
 
 
 things still needed to be added:
-    config info for version getter
     units:
         trait changer:
-            trait rand 
-            talent trait rand 
+            talent trait abilities
+            trait swap
         talent changer:
             talent rand
         unit rebalances
             jurassic target dark post trait changes
+            finish lugas (is this really needed rn)
+            separate out from seasonals those that dont belong
         specifically a zombie talent fix (trait sum cannot give zombie/witch as it needs to be given as part of collosus slayer)
     enemies:
         something to do with what is and isnt alien/starred in itf/cotc
         burrow animation stuff
         sage rework
     qol:
-        seasonals/collabs
-        seasonal/collab tf
-        gold cpu buff?
-        early catamin unlocks (this must be done early I think)
-        unit sell increase
+        seasonal/collab tf as missions
+        something about one clear per day changes
+        advents and revenges on the catamins
     gameplay:
-        old zombies
+        old zombies (this might be done now idk dab did it)
     combos:
         actual testing on how to do down combos in param
         also param editing
+    stages:
     funnies:
-        unbeatable end of sol stage for future proofing
+        unbeatable end of sol stage for future proofing (this is not needed)
 
 
 
@@ -592,6 +609,7 @@ things I dont feel like adding the the randomizer now because they would take to
             maybe a weighted system for how many abilities on top of weight for what abilities
         unit id swap? (do I feel like figuring that out rn?)
         maybe add a minimum number of traits units have/ maybe it could also be +2 traits instead of 2 minimum (this does have problems of wtf do units with no trait abilities get)
+        critter reworks for when metal exists in the future
     enemies:
         per stage enemy swap
         enemy swap eoc fixes
@@ -608,9 +626,14 @@ things I dont feel like adding the the randomizer now because they would take to
         advent revenges on catamins
         seasonal tf like delivery somewhere
         #make it so when you add/change treasures it changes the text and icon displayed for them
+        gacha units added through stage drops removed from gacha  (do we include bcats?)
+        removal of useless shit from lucky ticket gacha
+    stages:
+        sol/ul/zl stage/chapter randomization
+        something to do with the fact that catamins end up with different enemy swap and restrictions than the stages they are based on
     funnies:
         boss swap
-            p sure I already have youcan warning mostly done but we dont have an enemy for it yet and I dont feel like figuring out how to do that rn
+        p sure I already have youcan warning mostly done but we dont have an enemy for it yet and I dont feel like figuring out how to do that rn
         clionel sprite fix 
         dragon sprite rand
         bluck anim

@@ -501,6 +501,9 @@ DEFAULT_CONFIG = {
             "relic_aku_in_island": True,
             "orb_stage_has_strong_massive_resist": True,
             "orb_stage_has_ability_orb": True,
+            "nonview_catamin_unlocks":True, #option for making it so catamins are unlocked from clearing story and not from playing the stages
+            "lil_brainwashed_catamins":True,
+            "extend_advent_catamins":True, #makes them include the revenge stages and second tier advents
         },
         "drop_buffs": {
             "gstrange_buff": True,
@@ -518,6 +521,7 @@ DEFAULT_CONFIG = {
             "siege_buff": True,
             "facing_danger_buff": True,
             "orb_stage_buff": True,
+            "advent_drop_guarantee":True,
         },
     },
     "funny": {
