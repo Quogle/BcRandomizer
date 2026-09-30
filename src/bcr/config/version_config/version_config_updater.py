@@ -141,6 +141,36 @@ def _get_unit_forms(config_version_path:Path
     #now write that one 1d array to file
     fh.array_to_array_type_file_writer(str(filepath),[cat_forms])
 
+#NONE
+def _get_orb_counts(config_version_path:Path
+    ) -> None:
+    """ logs the units current normal orb and ultra talent orb counts and writes them to the current versions config """
+    filepath = config_version_path / ivn.TALENT_ORB_CONFIG
+    #now get the orb file
+    orb_file = gf.file_reader(fn.TALENT_ORB_FILE,vanilla=True)
+    stats = gf.get_cat_stats(vanilla=True)
+    orb_slots = []
+    for u_id in range(0,len(stats)):
+        orb_slots.append([0,0])
+    #now fill out the orb slots
+    for line in orb_file:
+        u_id = line[0]
+        if len(line) > 2:
+            for x in range(2,len(line)):
+                if line[x] == 0:
+                    orb_slots[u_id][0] += 1
+                elif line[x] == 1:
+                    orb_slots[u_id][1] += 1
+        else:
+            #assuming them to be non ultratalent
+            orb_slots[u_id][0] += 1
+    #now write that to file
+    fh.array_to_array_type_file_writer(str(filepath),orb_slots)
+
+
+
+
+
 #INT
 def _get_unit_count(
     ) -> int:

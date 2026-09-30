@@ -1,3 +1,5 @@
+""" module for all cat combo randomizations
+\n needs establish_working_information to be called after game files exist """
 import tadbcmc.core.game_files as gf
 import tadbcmc.core.seeded_randomization as srand
 import tadbcmc.data.enums.nyancombo as nc

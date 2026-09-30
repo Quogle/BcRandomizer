@@ -33,6 +33,7 @@ def get_version_config_information(config_version:str):
     output = _read_misc_information(this_config_version)
     output[ivn.NUMBER_OF_CAT_FORMS] = _read_unit_form_information(this_config_version)
     output[ivn.TALENT_INFORMATION] = _read_unit_talent_information(this_config_version)
+    output[ivn.ORB_INFORMATION] = _read_unit_orb_information(this_config_version)
     return output
 
 
@@ -102,9 +103,14 @@ def _read_unit_talent_information(config_version_path:Path
     talent_info = fh.array_type_file_reader(str(filepath),first_line_check=False)
     return talent_info
 
-
-
-
+def _read_unit_orb_information(config_version_path:Path
+    ) -> list[list[int]]:
+    """ reads orb information from the orb file
+    \n index in array corresponds to unit id
+    \n first value is normal orb count, second is ultratalent orb count """
+    filepath = config_version_path / ivn.TALENT_ORB_CONFIG
+    orb_info = fh.array_type_file_reader(str(filepath),first_line_check=False)
+    return orb_info
 
 
 

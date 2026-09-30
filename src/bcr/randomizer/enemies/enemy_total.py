@@ -1,4 +1,5 @@
-""" has func that does all the enemy things """
+""" has func that does all the enemy things 
+\n needs establish_working_information to be called after game files exist """
 from ...config.defaults import DEFAULT_CONFIG
 from ..enemies import ability_randomization
 from ..enemies import balancing

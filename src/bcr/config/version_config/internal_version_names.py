@@ -8,6 +8,7 @@
 TALENT_CONFIG = "talent_ids.csv"
 UNIT_FORM_CONFIG = "unit_forms.csv"
 MISC_INFO_CONFIG = "misc_info.csv"
+TALENT_ORB_CONFIG = "orb_counts.csv"
 
 
 #misc information
@@ -19,7 +20,7 @@ NUMBER_OF_ENEMIES = "number_of_enemies"
 #dict keys for remaining info
 NUMBER_OF_CAT_FORMS = "number_of_cat_forms"
 TALENT_INFORMATION = "talent_information"
-
+ORB_INFORMATION = "orb_information"
 
 
 

@@ -641,7 +641,7 @@ things I dont feel like adding the the randomizer now because they would take to
         randomize stages in sol/ul/zl chapters
         catasaurus black
         add the seed unit that tells the user various information about their current seed and version config options
-        
+        sentry lion (idk what ryelo means by this I think this is the unit that stands still attacks one thing and dies)
     
 
 
