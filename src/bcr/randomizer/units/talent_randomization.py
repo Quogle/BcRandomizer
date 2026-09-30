@@ -6,9 +6,9 @@ import tadbcmc.data.filenames as fn
 import tadbcmc.core.file_handler as fh
 from ...config.defaults import DEFAULT_CONFIG
 import copy
-from ..units import trait_randomization_mk3
+from . import trait_randomization_mk3
 from ...config.version_config import version_config_keys as vck
-from ..units import balancing
+from . import balancing
 from ...config.version_config.get_version_config import DEFAULT_VC_CONFIG
 import tadbcmc.core.simple_funcs as simp
 
@@ -237,7 +237,8 @@ def randomize_talents(config=DEFAULT_CONFIG,version_config=DEFAULT_VC_CONFIG,log
     max_talent_id_number = 0
     #traits enabled
     (allowed_stat_traits,allowed_talent_traits) = _get_allowed_traits(config=config)
-
+    non_unit_specific_pool = _get_allowed_talent_pools()
+    
 
 
 
@@ -354,8 +355,35 @@ def _do_single_units_talents(
         r_offset=r_offset+967,#really going big on this one
         unit_pool=postversion_pool
     )
-    #dunno what to do after that, but ill do it later
-    
+    #now we need to get the actual talent blocks for all those
+    prev_new_talent_blocks = _create_talent_blocks_from_ids(prev_new_talent_ids,units_stats)
+    postv_new_talent_blocks = _create_talent_blocks_from_ids(postv_new_talent_ids,units_stats)
+    (non_ultra_talents,ultra_talents) = _get_old_talents(existing_talents,do_rand)
+    #now we need order them
+    (ordered_talents,orb_ultra_after) = _order_talents(
+        old_talents=non_ultra_talents,
+        ultra_old_talents=ultra_talents,
+        prev_new_talents=prev_new_talent_blocks,
+        postv_new_talents=postv_new_talent_blocks,
+        is_uber=is_uber,
+    )
+    #now get the first two integers
+    output_talents = [unit_id]
+    if len(existing_talents) > 1:
+        output_talents.append(existing_talents[1]) #is this right? do I want that to not be changed by anything in here
+    else:
+        output_talents.append(0)
+    output_talents.extend(ordered_talents)
+    #now do orbs
+    new_orb_file = _edit_orbs(
+        orb_file=orb_file,
+        total_orb_count=prev_orbs+postv_orbs,
+        ultra_after=orb_ultra_after,
+        unit_id=unit_id
+    )
+    return (output_talents,new_orb_file)
+
+
 
 
 
@@ -444,9 +472,6 @@ def _get_unit_blocked_talents(form_stats:list):
     for x in range(0,len(blocked_talents)):
         blocked_talents[x] = int(blocked_talents[x])
     return blocked_talents
-
-
-
 
 
 
@@ -609,26 +634,119 @@ def _resolve_orb_and_new_talent_counts(preversion_orbs:int,postversion_orbs:int,
     postv_new_talents = postversion_new_talent_count
     return (prev_new_talents,postv_new_talents,prev_orbs,postv_orbs)
 
+def _order_talents(
+        old_talents:list,
+        ultra_old_talents:list,
+        prev_new_talents:list, #fully used
+        postv_new_talents:list, #fully used
+        preversion_old_ids:list,
+        is_uber:list,
+        include_orbs:bool, #this is here because if orbs arent included the minimum non ultra orb should be 1, while if they are on it should be 0 I feel
+    ):
+    """ (sorted_talents,ultra_orb_after)
+    \n orders and assigns ultra status to talents and returns the array of blocks """
+    #I hate this
+    #split the old ultra and not into 4
+    preversion_old_talents = [] #fully used
+    postversion_old_talents = [] #fully used
+    preversion_ultra_old_talents = [] #fully used
+    postversion_ultra_old_talents = [] #fully used
+    for each in old_talents:
+        if each[c.tpos.ability_id] in preversion_old_ids:
+            preversion_old_talents.append(each)
+        else:
+            postversion_old_talents.append(each)
+    for each in ultra_old_talents:
+        if each[c.tpos.ability_id] in preversion_old_ids:
+            preversion_ultra_old_talents.append(each)
+        else:
+            postversion_ultra_old_talents.append(each)
+    #separate into ultra and not, keeping prev and postv separate for now
+    new_ultra = []
+    new_nonultra = []
+    postv_new_ultra = []
+    postv_new_nonultra = []
+    #fill out the arrays with the old preversions first
+    new_nonultra.extend(preversion_old_talents)
+    new_ultra.extend(preversion_ultra_old_talents)
+    #now fill out them with the new talents adding half to ultra talents after 5
+    for each in prev_new_talents:
+        if len(new_nonultra) - len(new_ultra) >= 5:
+            new_ultra.append(each) #add once theres 5 non ultra talents
+        else:
+            new_nonultra.append(each)
+    #now do the same process but for postv talents
+    postv_new_nonultra.extend(postversion_old_talents)
+    postv_new_ultra.extend(postversion_ultra_old_talents)
+    for each in postv_new_talents:
+        if len(postv_new_nonultra) - len(postv_new_ultra) >= 5:
+            postv_new_ultra.append(each)
+        else:
+            postv_new_nonultra.append(each)
+    #now we actually handle the ultra status of each talent
+    non_ultra_value = 0
+    ultra_value = 0
+    if is_uber:
+        ultra_value = 1
+
+    for each in new_nonultra:       each[c.tpos.limit] = non_ultra_value
+    for each in new_ultra:          each[c.tpos.limit] = ultra_value
+    for each in postv_new_nonultra: each[c.tpos.limit] = non_ultra_value
+    for each in postv_new_ultra:    each[c.tpos.limit] = ultra_value
+    #now get the orb count
+    min_orb_count = 1
+    if include_orbs: min_orb_count = 0
+    ultra_orb_after = max(6-len(prev_new_talents),min_orb_count) #so basically if theres 5 talents the first orb is fine, second is not, but for each less talent there is the more orbs are free
+    if not is_uber:
+        ultra_orb_after = -1 #just mog it
+    #now the positions have to be set, they cant be changed by version updates (however they are changed wildly by changes to talent configs, that seems problematic)
+    sorted_talents = new_nonultra + new_ultra + postv_new_nonultra + postv_new_ultra
+    return (sorted_talents,ultra_orb_after)
+
+def _edit_orbs(orb_file:list,total_orb_count:int,ultra_after:int,unit_id:int):
+    """ edits the line for this unit to have the correct information and returns it """
+    #dont feel like fucking with python
+    orb_file = copy.deepcopy(orb_file)
+    #start by finding the correct line to work with it one already exist
+    relevant_line = -1
+    for line in range(0,len(orb_file)):
+        if orb_file[line][0] == unit_id:
+            relevant_line = line
+    #add it if it doesnt exist
+    if relevant_line == -1:
+        orb_file.append([unit_id,0])
+    #now remove the line if orb count is 0
+    if total_orb_count == 0:
+        orb_file.pop(relevant_line)
+    else:
+        #now set the orb count
+        orb_file[relevant_line][1] = total_orb_count
+        #now for each orb set the status of it? is this how the file even works?
+        #start by removing any already existing information
+        while len(orb_file[relevant_line]) > 2:
+            orb_file[relevant_line].pop(-1)
+        #now we can just add each orb
+        for x in range(0,total_orb_count):
+            if ultra_after == -1 or x < ultra_after:
+                orb_file[relevant_line].append(0)
+            else:
+                orb_file[relevant_line].append(1)
+    #das all
+    return orb_file
+
+def _create_talent_blocks_from_ids(talent_ids:list,unit_stats:list):
+    """ creates a block for each talent in talent_ids and returns an array of those blocks """
+    #it prefers the third form but if no third form it just uses the last form
+    if len(unit_stats) > 2:
+        form_stats = unit_stats[2]
+    else:
+        form_stats = unit_stats[-1]
+    #something here
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    output_array = []
+    return output_array
 
 
 
