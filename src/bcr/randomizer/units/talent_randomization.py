@@ -235,10 +235,17 @@ def randomize_talents(config=DEFAULT_CONFIG,version_config=DEFAULT_VC_CONFIG,log
     all_unit_talent_is_minimum = True
     #version config
     max_talent_id_number = 0
+    cat_forms = [] #this is 1
     #traits enabled
     (allowed_stat_traits,allowed_talent_traits) = _get_allowed_traits(config=config)
-    non_unit_specific_pool = _get_allowed_talent_pools()
-    
+    non_unit_specific_pool = _get_allowed_talent_pools(hp_attack_talents_included,trait_talents_included,ability_talents_included,allowed_talent_traits)
+    #now get the unit stats according to version config
+    cat_stats = gf.get_cat_stats()
+    for u_id in range(0,len(cat_stats)):
+        if u_id < len(cat_forms):
+            while len(cat_stats[u_id]) > cat_forms[u_id]:
+                cat_stats[u_id].pop()
+    #
 
 
 
@@ -303,7 +310,7 @@ def _do_single_units_talents(
         allow_dupes:bool,
         is_uber:bool, #only ubers specifically can have ultra talents after all
     ) -> list[int|list[int]]:
-    """  """
+    """ return (output_talents,new_orb_file) """
     #first get the info specific to this unit
     (preversion_pool,postversion_pool) = _get_this_units_pool(
         full_pool=full_pool,

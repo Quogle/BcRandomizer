@@ -176,19 +176,64 @@ def wave_surge_explosion_type_ability(ability_id:int,r_offset:int,rarity:int,uni
         strength += 2
     strength *= (50+r1)/100
     #now get the level
+    chance_boost = 0
     param2 = 0
     if ability_id == int(c.tv.wave):
         param2 = simp.clamp(int((strength/6)**1.7),1,30) #nothings gonna reach a level 30 wave anyways
+        chance_boost = 2
     if ability_id == int(c.tv.miniwave):
         param2 = simp.clamp(int((strength/5)**1.7),1,30) #nothings gonna reach a level 30 wave anyways
+        chance_boost = 5
     if ability_id == int(c.tv.surge):
         param2 = simp.clamp(int(0.6+(strength/10)**1.7),1,30) #nothings gonna reach a level 30 surge anyways
     if ability_id == int(c.tv.minisurge):
         param2 = simp.clamp(int(1+(strength/8)**1.7),1,30) #nothings gonna reach a level 30 surge anyways
+        chance_boost = 3
     #now get the chance
     attack_cycle = _attack_cycle_getter(unit_id,form_id)
-
-
+    chance = simp.clamp(int(10+((attack_cycle/60)**(1.5+chance_boost/10-param2/10)*(5+r2/33))),1,100) #I have zero clue what this is lmao
+    param1 = chance #this is always the case
+    #now get the range for surge and explosion
+    param3 = 0
+    param4 = 0
+    if ability_id == int(c.tv.surge) or ability_id == int(c.tv.minisurge):
+        #just divide into two groups for each
+        if r3 < 50:
+            param3 = int(form_stats[c.s.range]*0.7-50)*4
+        else:
+            param3 = int(form_stats[c.s.range]*0.9+50)*4
+        if r4 < 50:
+            param4 = 225*4
+        else:
+            param4 = 450*4
+    elif ability_id == int(c.tv.explosion):
+        #divide into two groups
+        if r3 < 50:
+            param2 = int(form_stats[c.s.range])*4
+        else:
+            param2 = int(form_stats[c.s.range]*0.5+100)
+            param3 = int(100)*4
+    #now just set allat
+    cost_type = 4
+    if rarity > 3:
+        cost_type = 8
+    block = [0]*14
+    block[c.tpos.ability_id] = ability_id
+    block[c.tpos.max_level] = 10
+    block[c.tpos.stat1_min] = int(param1/2)
+    block[c.tpos.stat1_min+1] = int(param1)
+    block[c.tpos.stat2_min] = int(param2) #I think I dont want the level to be lowered (also this is explosion start)
+    block[c.tpos.stat2_min+1] = int(param2)
+    block[c.tpos.stat3_min] = int(param3)
+    block[c.tpos.stat3_min+1] = int(param3)
+    block[c.tpos.stat4_min] = int(param4)
+    block[c.tpos.stat4_min+1] = int(param4)
+    block[c.tpos.text_id] = 0 #ILL DO THIS LATER
+    block[c.tpos.cost_scheme] = cost_type
+    block[c.tpos.name_id] = -1 #idk why this is sometimes not -1 but thats a later me problem
+    block[c.tpos.limit] = 0 #ultra talent status is handled elsewhere
+    #ok all good
+    return block
 
 
 

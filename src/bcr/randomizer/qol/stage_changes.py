@@ -90,6 +90,8 @@ def _seasonals_in_sol(config=DEFAULT_CONFIG):
     unit_drops.append([343,27,0]) #slug cat in at least Im a cat
     #million dollar 635
     unit_drops.append([635,41,2]) #million dollar in gouache ghouls
+    #schoolgirl lion 651
+    unit_drops.append([651,0,7]) #schoolgirl lion in sleeping lion
 
     #now Im doing the nenekos here
     #neneko 131
