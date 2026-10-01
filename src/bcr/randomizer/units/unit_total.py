@@ -28,11 +28,10 @@ def unit_rand(config=DEFAULT_CONFIG,version_config=DEFAULT_VC_CONFIG,log=None):
     #fix certain enemies traits and handle starred and disallowing aliens in itf and shit
     cstat = balancing.post_trait_change_rebalance(cstat,config)
     #now do ability rand
-    #estat = ability_randomization.randomize_abilities(estat,config=config,log=log,post_attack_anims=[])
-    
-
+    #later
+    #now save cat stats so we can do talent randomization
     gf.write_cat_stats(cstat,also_write_to_cache=True)
-
+    #not including talent rand for now
     
 
 

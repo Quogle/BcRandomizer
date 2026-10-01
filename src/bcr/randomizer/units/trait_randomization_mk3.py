@@ -329,7 +329,7 @@ def _single_form_initialize_information(
     #good to return
     return (ALL,ALLBASE,except_white)
 
-#NOTE doing it this way prevents me from makng it so that traits map to other forms in the future, I do not know if I intend to do that tho
+#NOTE doing it this way prevents me from making it so that traits map to other forms in the future, I do not know if I intend to do that tho
 def _form_independent_first_placement(
         from_traits:list,
         to_traits:list,

@@ -574,10 +574,10 @@ things already added:
 
 things still needed to be added:
     units:
-        talent changer:
+        talent changer: (might leave talent rand undone for now as I do not feel like finishing it)
             trait and ability post rand fixes (like making a traitsum if ability with no traits, and changing a trait to a traitless ability if no trait ability)
             cost/name/text ids for talents needs to be documented and determined
-            talent changing relies on unit post attack animation code
+            talent changing relies on unit post attack animation code (technically this can wait)
         unit rebalances
             jurassic target dark post trait changes
             finish lugas (is this really needed rn)
@@ -587,6 +587,7 @@ things still needed to be added:
         something to do with what is and isnt alien/starred in itf/cotc
         burrow animation stuff
         sage rework
+        post attack animation code (technically this can wait)
     qol:
         seasonal/collab tf as missions
         something about one clear per day changes
@@ -630,6 +631,7 @@ things I dont feel like adding the the randomizer now because they would take to
         #make it so when you add/change treasures it changes the text and icon displayed for them
         gacha units added through stage drops removed from gacha  (do we include bcats?)
         removal of useless shit from lucky ticket gacha
+        outbreak and aku stage play at a time increase
     stages:
         sol/ul/zl stage/chapter randomization
         something to do with the fact that catamins end up with different enemy swap and restrictions than the stages they are based on
