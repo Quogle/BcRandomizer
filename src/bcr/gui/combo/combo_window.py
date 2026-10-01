@@ -1,13 +1,8 @@
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
     QScrollArea,
     QGroupBox,
-    QLabel,
-    QComboBox,
-    QCheckBox,
-    QPushButton,
 )
 from PySide6.QtCore import Qt
 from bcr.gui.themes.dark import DARK_THEME
@@ -41,8 +36,7 @@ class ComboWindow(QWidget):
         scroll.setWidget(content)
         main_layout.addWidget(scroll)
 
-        ################ Combo Randomization ###########################################################################
-
+        # Combo Randomization
         combo_randomization = QGroupBox("Combo Randomization")
         combo_randomization_layout = QVBoxLayout(combo_randomization)
 
@@ -51,8 +45,7 @@ class ComboWindow(QWidget):
 
         content_layout.addWidget(combo_randomization)
 
-        ################ Unit Blacklist ###########################################################################
-
+        # Unit Blacklist
         unit_blacklist = QGroupBox("Unit Blacklist")
         unit_blacklist_layout = QVBoxLayout(unit_blacklist)
 
@@ -61,8 +54,7 @@ class ComboWindow(QWidget):
 
         content_layout.addWidget(unit_blacklist)
 
-        ################ Combo Size Settings ###########################################################################
-
+        # Combo Size Settings
         combo_size = QGroupBox("Combo Size Settings")
         combo_size_layout = QVBoxLayout(combo_size)
 
@@ -71,8 +63,7 @@ class ComboWindow(QWidget):
 
         content_layout.addWidget(combo_size)
 
-        ################ All Unit DOWN ###########################################################################
-
+        # All Unit DOWN
         all_down = QGroupBox("All Unit DOWN Combos")
         all_down_layout = QVBoxLayout(all_down)
 

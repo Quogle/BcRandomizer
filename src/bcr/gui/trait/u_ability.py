@@ -2,10 +2,8 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QGroupBox,
     QLabel,
     QCheckBox,
-    QPushButton,
 )
 
 from PySide6.QtCore import Qt
@@ -17,7 +15,6 @@ from ..helpers.config_helpers import *
 class AbilityTraitRandomization(QWidget):
     def refresh_from_config(self):
         ability_config = self.config["trait"]["unit"]["ability"]
-        self.randomize_abilities.setChecked(ability_config["randomize"])
         self.grant_trait_abilities.setChecked(ability_config["grant_trait_abilities"])
         self.remove_trait_abilities.setChecked(ability_config["remove_trait_abilities"])
         self.zkill_frequency.setValue(ability_config["zkill_frequency"])
@@ -55,9 +52,9 @@ class AbilityTraitRandomization(QWidget):
             "remove_trait_abilities"
         )
 
-        # Z Kill Frequency
         checkbox_layout.addWidget(self.remove_trait_abilities)
 
+        # Z Kill Frequency
         zkill_frequency_layout = QHBoxLayout()
         zkill_frequency_label = QLabel("Z Kill Frequency")
         zkill_frequency_label.setFixedWidth(180)
@@ -119,19 +116,17 @@ class AbilityTraitRandomization(QWidget):
         spinbox_layout.addLayout(curse_immune_frequency_layout)
 
 
-        self.grant_trait_abilities.toggled.connect(
-            lambda checked: [
-                self.zkill_frequency.setEnabled(checked),
-                zkill_frequency_label.setEnabled(checked),
-                self.shield_pierce_frequency.setEnabled(checked),
-                shield_pierce_frequency_label.setEnabled(checked),
-                self.curse_immune_frequency.setEnabled(checked),
-                curse_immune_frequency_label.setEnabled(checked)
-            ]
-        )
-        self.grant_trait_abilities.toggled.emit(
-            self.grant_trait_abilities.isChecked()
-        )
+        def update_frequency_enabled(checked):
+            self.zkill_frequency.setEnabled(checked)
+            zkill_frequency_label.setEnabled(checked)
+            self.shield_pierce_frequency.setEnabled(checked)
+            shield_pierce_frequency_label.setEnabled(checked)
+            self.curse_immune_frequency.setEnabled(checked)
+            curse_immune_frequency_label.setEnabled(checked)
+
+        self.grant_trait_abilities.toggled.connect(update_frequency_enabled)
+        update_frequency_enabled(self.grant_trait_abilities.isChecked())
+
 
 
         main_layout.addLayout(checkbox_layout, 1)

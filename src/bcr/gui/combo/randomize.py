@@ -20,11 +20,10 @@ class ComboRandomization(QWidget):
         randomize_config = self.config["catcombo"]["randomize"]
         self.enabled.setChecked(randomize_config["enabled"])
         self.units.setChecked(randomize_config["units"])
-        self.level.setChecked(randomize_config["level"])
+        self.mult.setChecked(randomize_config["mult"])
         self.effects.setChecked(randomize_config["effects"])
         self.allowed_abnormal_effects.setChecked(randomize_config["allowed_abnormal_effects"])
         self.max_uber_count.setValue(randomize_config["max_uber_count"])
-        self.max_effect_id.setValue(combo_config["number_of_effects"])
         self.strength_of_downs.setValue(combo_config["strength_of_downs"])
 
 
@@ -59,15 +58,15 @@ class ComboRandomization(QWidget):
 
         self.layout.addWidget(self.units)
 
-        # Randomize Combo level
-        self.level = QCheckBox("Randomize Level")
+        # Randomize Combo Mult
+        self.mult = QCheckBox("Randomize Multiplier")
         connect_checkbox(
-            self.level,
+            self.mult,
             randomize_config,
-            "level"
+            "mult"
         )
 
-        self.layout.addWidget(self.level)
+        self.layout.addWidget(self.mult)
 
         # Randomize Combo Effects
         self.effects = QCheckBox("Randomize Effects")
@@ -107,25 +106,6 @@ class ComboRandomization(QWidget):
         max_uber_count_layout.addWidget(max_uber_count_label)
         max_uber_count_layout.addWidget(self.max_uber_count)
         self.layout.addLayout(max_uber_count_layout)
-
-       # Max Effect ID
-        max_effect_id_label = QLabel("Max Effect ID")
-        max_effect_id_label.setFixedWidth(200)
-
-        self.max_effect_id = NoWheelSpinBox()
-        self.max_effect_id.setRange(-1, 27)
-
-        connect_value(
-            self.max_effect_id,
-            combo_config,
-            "number_of_effects"
-        )
-
-        max_effect_id_layout = QHBoxLayout()
-        max_effect_id_layout.addWidget(max_effect_id_label)
-        max_effect_id_layout.addWidget(self.max_effect_id)
-
-        self.layout.addLayout(max_effect_id_layout)
 
        # Strength of Down Combos
         strength_of_downs_label = QLabel("DOWN Combo Strength")

@@ -29,16 +29,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Battle Cats Randomizer")
         self.resize(1000, 550)
 
-       
+        # create the layout for the main window
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
 
         main_layout = QHBoxLayout(central_widget)
-
-        # Page area
         self.pages = QStackedWidget()
-
-        # Right-side menu
         menu_layout = QVBoxLayout()
 
         buttons = [
@@ -78,15 +74,14 @@ class MainWindow(QMainWindow):
         self.setup_page = SetupWindow(self.config)
         self.setup_page.config_loaded.connect(self.refresh_from_config)
 
-        self.pages.addWidget(self.setup_page)           # Setup
-        self.pages.addWidget(TraitWindow(self.config))           # Trait
-        self.pages.addWidget(UnitWindow(self.config))   # Units
-        self.pages.addWidget(EnemyWindow(self.config))  # Enemies
-        self.pages.addWidget(ComboWindow(self.config))       # Cat Combos
+        self.pages.addWidget(self.setup_page)               
+        self.pages.addWidget(TraitWindow(self.config))
+        self.pages.addWidget(UnitWindow(self.config))
+        self.pages.addWidget(EnemyWindow(self.config))
+        self.pages.addWidget(ComboWindow(self.config))
         self.pages.addWidget(QWidget())       # Gameplay
         self.pages.addWidget(QWidget())       # QoL
 
-        # Start on the first page
         self.change_page(0)
 
     def change_page(self, index):

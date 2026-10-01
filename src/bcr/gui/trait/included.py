@@ -1,11 +1,6 @@
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
-    QGroupBox,
-    QLabel,
-    QCheckBox,
-    QPushButton,
 )
 
 from PySide6.QtCore import Qt
