@@ -1,13 +1,8 @@
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QHBoxLayout,
     QScrollArea,
     QGroupBox,
-    QLabel,
-    QComboBox,
-    QCheckBox,
-    QPushButton,
 )
 from PySide6.QtCore import Qt
 from ..trait.e_trait_gimmicks import TraitGimmicks
@@ -18,7 +13,9 @@ from ..trait.included import IncludedTraits
 class TraitWindow(QWidget):
     def refresh_from_config(self):
         self.u_trait_randomization.refresh_from_config()
+        self.u_ability_randomization.refresh_from_config()
         self.e_trait_gimmicks.refresh_from_config()
+        
 
     def __init__(self, config):
         super().__init__()
@@ -38,8 +35,7 @@ class TraitWindow(QWidget):
 
         main_layout.addWidget(scroll)
 
-        ################ Included Traits ###########################################################################
-
+        # Included Traits
         included = QGroupBox("Included Traits")
         included_layout = QVBoxLayout(included)
 
@@ -48,8 +44,7 @@ class TraitWindow(QWidget):
 
         content_layout.addWidget(included)
 
-        ################ Unit Trait Randomization ###########################################################################
-
+        # Unit Trait Randomization
         u_trait_randomization = QGroupBox("Unit Trait Randomization")
         u_trait_randomization_layout = QVBoxLayout(u_trait_randomization)
 
@@ -58,8 +53,7 @@ class TraitWindow(QWidget):
 
         content_layout.addWidget(u_trait_randomization)
 
-        ################ Unit Trait Based Ability Randomization ###########################################################################
-
+        # Unit Trait Based Ability Randomization
         u_ability_randomization = QGroupBox("Unit Trait Specific Abilities")
         u_ability_randomization_layout = QVBoxLayout(u_ability_randomization)
 
@@ -68,8 +62,7 @@ class TraitWindow(QWidget):
 
         content_layout.addWidget(u_ability_randomization)
 
-        ################ Enemy Trait Gimmicks  ###########################################################################
-
+        # Enemy Trait Gimmicks 
         e_trait_gimmicks = QGroupBox("Enemy Trait Gimmicks")
         e_trait_gimmicks_layout = QVBoxLayout(e_trait_gimmicks)
 

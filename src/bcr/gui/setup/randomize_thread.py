@@ -22,7 +22,7 @@ from ...randomizer import randomize as randomize_function
 # True = decrypt only the files in decrypt_specifics
 # False = decrypt every pack
 DECRYPT_SPECIFICS = True
-SKIP_SERVER = False
+SKIP_SERVER = True
 
 class RandomizeThread(QObject):
 
@@ -34,7 +34,7 @@ class RandomizeThread(QObject):
     def __init__(self, apk_path, config):
         super().__init__()
 
-        self.apk_path = apk_path #idk where to change this path if it should be changed at all
+        self.apk_path = apk_path
         self.config = config
 
     def run(self):
@@ -102,8 +102,7 @@ class RandomizeThread(QObject):
         for tsv in tsv_paths:
            print(f"  {tsv}")
 
-        ########## DECRYPT SERVER FILES ##########################################################################
-
+        # Decrypt Server Files
         if not SKIP_SERVER:
 
             if not DECRYPT_SPECIFICS:
@@ -155,7 +154,7 @@ class RandomizeThread(QObject):
         self.log.emit(
             "Starting randomization process"
         )
-        # TODO RANDOMIZER CODE HEY DAB IM ADDING IT HERE
+        # TODO RANDOMIZER CODE HEY DAB IM ADDING IT HERE | OK TADPOLE!!!!!!
         randomize_function.randomize_according_to_config(config=config,log=self.log.emit)
 
 
@@ -169,7 +168,6 @@ class RandomizeThread(QObject):
             output_directory=internalPaths.DOWNLOADLOCALPACK.parent,
             cc="en",
         )
-
 
         # APK ICON
         self.log.emit("Replacing app icon")

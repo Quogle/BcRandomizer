@@ -2,10 +2,8 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QGroupBox,
     QLabel,
     QCheckBox,
-    QPushButton,
 )
 
 from PySide6.QtCore import Qt
@@ -19,7 +17,6 @@ class TraitRandomization(QWidget):
         trait_config = self.config["trait"]["unit"]["randomize"]
 
         self.randomization_mode.setCurrentText(trait_config["randomization_mode"])
-        self.vary_form_traits.setChecked(trait_config["vary_form_traits"])
         self.avoid_old_traits.setChecked(trait_config["avoid_old_traits"])
 
     def __init__(self, config):
@@ -56,15 +53,15 @@ class TraitRandomization(QWidget):
 
         self.layout.addLayout(randomization_mode_layout)
 
-        # Vary Trait Target Per Form
-        self.vary_form_traits = QCheckBox("Different Traits Per Form")
-        connect_checkbox(
-            self.vary_form_traits,
-            trait_config,
-            "vary_form_traits"
-        )
+        # # Vary Trait Target Per Form
+        # self.vary_form_traits = QCheckBox("Different Traits Per Form")
+        # connect_checkbox(
+        #     self.vary_form_traits,
+        #     trait_config,
+        #     "vary_form_traits"
+        # )
 
-        self.layout.addWidget(self.vary_form_traits)
+        #self.layout.addWidget(self.vary_form_traits)
 
         # Avoid Old Traits
         self.avoid_old_traits = QCheckBox("Avoid Old Traits")
@@ -76,12 +73,10 @@ class TraitRandomization(QWidget):
 
         self.layout.addWidget(self.avoid_old_traits)
 
-        self.randomization_mode.currentTextChanged.connect(
-            lambda value: [
-                self.vary_form_traits.setEnabled(value != "None" and value != "Swap"),
-                self.avoid_old_traits.setEnabled(value != "None"),
-            ]
-        )
-        self.randomization_mode.currentTextChanged.emit(
-            self.randomization_mode.currentText()
-        )
+        def update_enabled_states(randomization_mode):
+            #self.vary_form_traits.setEnabled(randomization_mode not in ("None", "Swap"))
+            self.avoid_old_traits.setEnabled(randomization_mode != "None")
+
+        self.randomization_mode.currentTextChanged.connect(update_enabled_states)
+        update_enabled_states(self.randomization_mode.currentText())
+

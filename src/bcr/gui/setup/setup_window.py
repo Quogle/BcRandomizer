@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QPlainTextEdit,
     QProgressBar,
-    QSizePolicy,
 )
 
 from PySide6.QtCore import Signal, QThread
@@ -26,10 +25,11 @@ class SetupWindow(QWidget):
 
     config_loaded = Signal()
 
-    def __init__(self, config):
+    def __init__(self, config, menu_buttons):
         super().__init__()
 
         self.config = config
+        self.menu_buttons = menu_buttons
 
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(22, 18, 22, 22)
@@ -53,18 +53,18 @@ class SetupWindow(QWidget):
         # Input APK
         input_layout = QHBoxLayout()
 
-        input_label = QLabel("Input APK:")
+        self.input_label = QLabel("Input APK:")
         self.input_apk = QLineEdit()
         self.input_apk.setPlaceholderText("Select APK file...")
-        input_button = QPushButton("Browse")
+        self.input_button = QPushButton("Browse")
 
-        input_button.clicked.connect(
+        self.input_button.clicked.connect(
             self.select_input_apk
         )
 
-        input_layout.addWidget(input_label)
+        input_layout.addWidget(self.input_label)
         input_layout.addWidget(self.input_apk)
-        input_layout.addWidget(input_button)
+        input_layout.addWidget(self.input_button)
 
         layout.addLayout(input_layout)
 
@@ -72,25 +72,25 @@ class SetupWindow(QWidget):
         # Config Laytout
         config_layout = QHBoxLayout()
 
-        load_button = QPushButton("Load Config")
-        save_button = QPushButton("Save Config")
+        self.load_button = QPushButton("Load Config")
+        self.save_button = QPushButton("Save Config")
 
-        load_button.clicked.connect(
+        self.load_button.clicked.connect(
             self.load_configuration
         )
 
-        save_button.clicked.connect(
+        self.save_button.clicked.connect(
             self.save_configuration
         )
 
-        config_layout.addWidget(load_button)
-        config_layout.addWidget(save_button)
+        config_layout.addWidget(self.load_button)
+        config_layout.addWidget(self.save_button)
 
         layout.addLayout(config_layout)
 
-        ######## SEED INPUT FIELD ############################################################################
+        # SEED INPUT FIELD 
 
-        seed_label = QLabel("Seed:")
+        self.seed_label = QLabel("Seed:")
         self.seed = QLineEdit()
         self.seed.setValidator(QIntValidator(-2147483648, 2147483647))
 
@@ -102,7 +102,7 @@ class SetupWindow(QWidget):
 
         # ID INPUT ####
 
-        id_label = QLabel("Mod ID:")
+        self.id_label = QLabel("Mod ID:")
         self.id = QLineEdit()
 
         self.id.setValidator(QRegularExpressionValidator(QRegularExpression(r"\S*")))
@@ -113,23 +113,22 @@ class SetupWindow(QWidget):
             "id",
         )
 
-        # RANDOMIZE BUTTON ###
+        # Randomize Button
+        self.randomize_button = QPushButton("Randomize")
 
-        randomize_button = QPushButton("Randomize")
-
-        randomize_button.clicked.connect(
+        self.randomize_button.clicked.connect(
             self.randomize
         )
 
         randomizer_layout = QHBoxLayout()
-        randomizer_layout.addWidget(seed_label)
+        randomizer_layout.addWidget(self.seed_label)
         randomizer_layout.addWidget(self.seed)
-        randomizer_layout.addWidget(id_label)
+        randomizer_layout.addWidget(self.id_label)
         randomizer_layout.addWidget(self.id)
 
 
         layout.addLayout(randomizer_layout)
-        layout.addWidget(randomize_button)
+        layout.addWidget(self.randomize_button)
 
         # console
         self.console = QPlainTextEdit()
@@ -215,9 +214,13 @@ class SetupWindow(QWidget):
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(100)
 
+        self.set_ui_enabled(True)
+
     def randomize_error(self, message):
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
+
+        self.set_ui_enabled(True)
 
         message = message.replace("\n", "<br>")
 
@@ -253,6 +256,8 @@ class SetupWindow(QWidget):
             self.randomize_error("No APK selected.")
             return
 
+        self.set_ui_enabled(False)
+
         self.thread = QThread(self)
         self.worker = RandomizeThread(
             apk_path,
@@ -260,37 +265,29 @@ class SetupWindow(QWidget):
         )
 
         self.worker.moveToThread(self.thread)
-
-        self.thread.started.connect(
-            self.worker.run
-        )
-
-        self.worker.log.connect(
-            self.log
-        )
-
-        self.worker.html_log.connect(
-            self.console.appendHtml
-        )
-
-        self.worker.finished.connect(
-            self.randomize_finished
-        )
-
-        self.worker.finished.connect(
-            self.thread.quit
-        )
-
-        self.worker.finished.connect(
-            self.worker.deleteLater
-        )
-
-        self.worker.error.connect(
-            self.randomize_error
-        )
-
-        self.thread.finished.connect(
-            self.thread.deleteLater
-        )
+        self.thread.started.connect(self.worker.run)
+        self.worker.log.connect(self.log)
+        self.worker.html_log.connect(self.console.appendHtml)
+        self.worker.finished.connect(self.randomize_finished)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.worker.error.connect(self.randomize_error)
+        self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
+
+    def set_ui_enabled(self, enabled):
+        for button in self.menu_buttons:
+            button.setEnabled(enabled)
+
+        self.input_apk.setEnabled(enabled)
+        self.seed.setEnabled(enabled)
+        self.id.setEnabled(enabled)
+        self.randomize_button.setEnabled(enabled)
+        self.versions.setEnabled(enabled)
+        self.save_button.setEnabled(enabled)
+        self.load_button.setEnabled(enabled)
+        self.input_button.setEnabled(enabled)
+        self.input_label.setEnabled(enabled)
+        self.id_label.setEnabled(enabled)
+        self.seed_label.setEnabled(enabled)
