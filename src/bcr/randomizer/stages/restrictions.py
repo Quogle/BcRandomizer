@@ -11,10 +11,13 @@ def apply_stage_restrictions(config = DEFAULT_CONFIG):
     # TODO
     # make catamin stages have same restrictions as their normal ones
     # no restrictions on grind stages config
-
+    print("STARTING THE RESTRICTIONS!!!!!!!!!!")
     r = srand.randinst(1000)
-    map_categories = get_map_categories(config) 
+    print("1")
+    map_categories = get_map_categories(config)
+    print("2")
     stage_count = game_files.get_number_of_stages_in_groups(update_counts=True)
+    print("3")
 
     print("STAGE COUNT:")
     for category_id, maps in stage_count.items():

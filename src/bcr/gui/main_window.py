@@ -71,7 +71,7 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(self.pages)
 
         # Pages
-        self.setup_page = SetupWindow(self.config)
+        self.setup_page = SetupWindow(self.config,self.menu_buttons)
         self.setup_page.config_loaded.connect(self.refresh_from_config)
 
         self.pages.addWidget(self.setup_page)               
