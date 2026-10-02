@@ -6,6 +6,8 @@ import tadbcmc.core.game_files as gf
 import tadbcmc.data.enums.enemy as e
 import tadbcmc.data.filenames as fn
 
+
+
 def do_all_treasure_editing(config=DEFAULT_CONFIG):
     """ does all the things treasure related in config """
     _condense_god() #this just always runs idc

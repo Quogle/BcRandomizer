@@ -7,6 +7,16 @@ import tadbcmc.data.filenames as fn
 
 
 
+def misc_total(config=DEFAULT_CONFIG):
+    """ does everything """
+    #these are all conditional on their own
+    _gold_cpu_buff(config=config)
+    _unit_sell_increase(config=config)
+    _free_orb_removal(config=config)
+
+
+
+
 def _gold_cpu_buff(config=DEFAULT_CONFIG):
     """ buffs gold cpu """
     if config["qol"]["gold_cpu_buff"]:

@@ -1,0 +1,25 @@
+""" creates a burrow animation for every now burrowing unit that wasnt originally burrowing """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

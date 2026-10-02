@@ -489,9 +489,7 @@ DEFAULT_CONFIG = {
 
         "stage_changes": {
             "seasonals_in_sol": True,
-            "collabs_in_sol_advents": True,
-            "collab_tf_as_advents": True,
-            "mission_collab_special_tf_drop": True,
+            "add_collabs_to_sol_advents": True,
             "buff_normal_catfruit_catamins": True,
             "split_normal_catfruit_stages": True,
             "jubilee_always_epic": True,

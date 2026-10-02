@@ -27,6 +27,8 @@ def establish_working_information():
 def enemy_rand(config=DEFAULT_CONFIG,log=None):
     """ does all things requested in config under enemy
     \n also does things under gameplay/modifications that are relevant to enemies """
+    #since this is the master function establish working information here
+    establish_working_information()
     #start by getting the intended start of modding enemy array
     estat = balancing.early_rebalance(config=config)
     #why are these even separate? I guess its just incase other parts want to access the 'modded vanilla' of early rebalance
