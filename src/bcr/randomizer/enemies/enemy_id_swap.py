@@ -1,3 +1,5 @@
+""" defunct dont use, use enemy_swap.swap_total instead """
+
 """ because this module pulls from currently saved enemy stats and edits all stages in both vanilla and dl,\n
 it is probably best to fall after most 'general' changes to enemy stats happen\n
 but must necessarily be before any stages that should not be changed are added to dl """

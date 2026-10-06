@@ -7,9 +7,12 @@ from ..randomizer.gameplay.zombie_fix import fix_zombie
 from ..randomizer.stages.restrictions import apply_stage_restrictions
 from .enemies import enemy_total
 from .units import unit_total
+from .enemies.enemy_swap import swap_total
 
 
-def randomize_according_to_config(config=DEFAULT_CONFIG,log=None):
+
+
+def randomize_according_to_config(config=DEFAULT_CONFIG,log=None,debug=False):
     """ anything regarding what ends up in download local MUST passs through this function
     \n config and log should be passed here """
     #I will add stuff here as I go
@@ -22,6 +25,7 @@ def randomize_according_to_config(config=DEFAULT_CONFIG,log=None):
     apply_stage_restrictions(config)
     enemy_total.enemy_rand(config=config,log=log,version_config=version_config)
     unit_total.unit_rand(config=config,version_config=version_config,log=log)
+    swap_total.do_enemy_swap(config=config,version_config=version_config,log=log,debug=debug)
 
 
 

@@ -16,6 +16,7 @@ def establish_working_information():
     \n to be called once game files exist to prevent import failure """
     ENEMY_INFO_extend_w_defaults()
 
+#its called in create_swap.create_swap()
 def _set_ENEMY_INFO_values():
     """ sets ENEMY_INFO to have the correct values for variants and included """
     global ENEMY_INFO
@@ -72,8 +73,9 @@ def harvest_unit_info_from_ENEMY_INFO(prefered_ENEMY_INFO:list[list]=None) -> tu
     return (included_in_swap_list,swap_strength_list,variant_id_list)
 
 def variant_list_dict_maker(variant_id_list:list[int],included_bool_list:list[bool],split_id:int=0):
-    """ makes a dictionary with keys of variant ids, and values of a list of unit ids of that variant
-    \n returns (first_half, second_half) """
+    """ makes a dictionary with keys of variant ids, and values of a list of unit ids of that variant included in swap
+    \n returns (first_half, second_half) 
+    \n if theres no split point (id=-1) it shoves everything in second half """
     first_half = {}
     second_half = {}
     for u_id in range(0,len(variant_id_list)):
@@ -131,14 +133,21 @@ def _get_difference_scalor_array(consider_strength=True) -> list[float]:
     10:0x
     """
 
-def get_base_chance_mult_dict(swap_strength_list:list[int],maintain_class:bool,consider_strength:bool) -> dict[int,dict[int,float]]:
-    """ gets the chance mult dict for each swap strength """
+def get_base_chance_mult_dict(
+        incomplete_swap:list[int], #this is used to make it so only strengths that are actually available for using in this half are considered
+        swap_strength_list:list[int], #
+        maintain_class:bool, #locks chances to groups of 10
+        consider_strength:bool #makes it scale based on distance
+    ) -> dict[int,dict[int,float]]:
+    """ gets the chance mult dict for each swap strength actually used in this swap half """
     #first get the diff scalor
     difference_scalor = _get_difference_scalor_array(consider_strength=consider_strength)
     #now get which swap strengths even exist
     used_swap_strengths = []
-    for swap_strength in range(0,len(swap_strength_list)):
-        if swap_strength not in used_swap_strengths: used_swap_strengths.append(swap_strength)
+    for x in range(0,len(incomplete_swap)):
+        if incomplete_swap[x] == -1: #so if it actually matters
+            if swap_strength_list[x] not in used_swap_strengths:
+                used_swap_strengths.append(swap_strength_list[x])
     used_swap_strengths.sort()
     #now start the process of making the output dict
     base_chance_dict = {}
