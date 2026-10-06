@@ -236,7 +236,7 @@ def _literally_just_metal_croc(stats):
 #this may need changing?
 def _starred_aliens(stats,config=DEFAULT_CONFIG,log=None):
     """ removes all previous starred and applies starred to aliens at configs desired rate """
-    starred_freq = config["enemy"]["trait_gimmicks"]["alien"]["starred_frequency"]
+    starred_freq = config["trait"]["enemy"]["trait_gimmicks"]["alien"]["starred_frequency"]
     allowed_starred_in_cotc = config["gameplay"]["modifications"]["remove_cotc_crystals"]
     for u_id in range(0,len(stats)):
         r = srand.randinst(503+11*u_id)
@@ -302,13 +302,15 @@ def pre_trait_change_rebalance(stats,config=DEFAULT_CONFIG):
 def post_trait_rand_pre_gimmick_rebalance(stats,config=DEFAULT_CONFIG,log=None):
     """ any changes to things intended to take place after traits have been changed but before gimmicks are applied should go here """
     #for example fixing the traits of certain enemies would go here
-    mode_of_trait_change = config["enemy"]["trait"]["randomization_mode"]
+    mode_of_trait_change = config["trait"]["enemy"]["randomize"]["randomization_mode"].lower()
     #only change aliens in itf if its randomize
     if mode_of_trait_change == "randomize":
         stats = _block_certain_aliens(stats,config,log)
     #only edit starred if traits are being changed
     if mode_of_trait_change != "none":
         stats = _starred_aliens(stats,config,log)
+
+    return stats
 
 
 #should I make it so if cotc crystals are still on things in cotc lose starred here so starred aliens can actually be in cotc?

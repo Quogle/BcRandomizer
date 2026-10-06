@@ -17,4 +17,9 @@ combo_rand_unit_forms = "combo_rand_unit_forms"
 
 
 
+#enemies
+enemy_swap_max_enemy_id = "enemy_swap_max_enemy_id"
+
+
+
 

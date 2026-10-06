@@ -46,23 +46,25 @@ def white_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ gives all white units sage
     \n does nothing if white is off """
     #the only thing is sage right?
-    do_anything = config["enemy"]["trait_gimmicks"]["white"]["enabled"]
-    do_sage = config["enemy"]["trait_gimmicks"]["white"]["sage"]
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["white"]
+    do_anything = cinfo["enabled"]
+    do_sage = cinfo["sage"]
     if do_anything:
         for x in range(0,len(stats)):
             if stats[x][e.t.white] == 1:
                 if do_sage:
-                    stats[e.s.sage] = 1
+                    stats[x][e.s.sage] = 1
     return stats
 
 def red_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ changes kb and speed of red enemies and returns stats 
     \n does nothing if red is off """
-    if not config["enemy"]["trait_gimmicks"]["red"]["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["red"]
+    if not cinfo["enabled"]:
         return stats
-    speed_mult = config["enemy"]["trait_gimmicks"]["red"]["speed_mult"]
-    kb_mult = config["enemy"]["trait_gimmicks"]["red"]["kb_mult"]
-    rounding = config["enemy"]["trait_gimmicks"]["red"]["mult_rounding"]
+    speed_mult = cinfo["speed_mult"]
+    kb_mult = cinfo["kb_mult"]
+    rounding = cinfo["mult_rounding"]
     if rounding == "Up":
         is_up = True
     else:
@@ -93,15 +95,16 @@ def red_gimmick(stats:list,config=DEFAULT_CONFIG):
 def floating_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ gives floating enemies an immunity based on a weighted list and returns stats
     \n does nothing if floating is off """
-    if not config["enemy"]["trait_gimmicks"]["floating"]["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["floating"]
+    if not cinfo["enabled"]:
         return stats
     #first get all the info
-    waveimm = config["enemy"]["trait_gimmicks"]["floating"]["abilities"]["Wave Immunity"]
-    surgeimm = config["enemy"]["trait_gimmicks"]["floating"]["abilities"]["Surge Immunity"]
-    expimm = config["enemy"]["trait_gimmicks"]["floating"]["abilities"]["Explosion Immunity"]
-    cs = config["enemy"]["trait_gimmicks"]["floating"]["abilities"]["Counter-Surge"]
-    waveblock = config["enemy"]["trait_gimmicks"]["floating"]["abilities"]["Wave Block"]
-    dual_chance = config["enemy"]["trait_gimmicks"]["floating"]["dual_ability_chance"]
+    waveimm = cinfo["abilities"]["Wave Immunity"]
+    surgeimm = cinfo["abilities"]["Surge Immunity"]
+    expimm = cinfo["abilities"]["Explosion Immunity"]
+    cs = cinfo["abilities"]["Counter Surge"]
+    waveblock = cinfo["abilities"]["Wave Block"]
+    dual_chance = cinfo["dual_ability_chance"]
     #now get the weighted list and the indexes of those abilities
     wlist = [waveimm,surgeimm,expimm,cs,waveblock]
     index_list = [e.s.waveImmune,e.s.surgeImmune,e.s.explodeImmune,e.s.counterSurge,e.s.waveBlock]
@@ -139,11 +142,12 @@ def floating_gimmick(stats:list,config=DEFAULT_CONFIG):
 def dark_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ changes kb and speed of dark enemies in stats and returns it
     \n does nothing if dark is off """
-    if not config["enemy"]["trait_gimmicks"]["dark"]["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["dark"]
+    if not cinfo["enabled"]:
         return stats
-    speed_boost_list = config["enemy"]["trait_gimmicks"]["dark"]["speed_boosts"]
-    kb_mult = config["enemy"]["trait_gimmicks"]["dark"]["knockback_mult"]
-    rounding = config["enemy"]["trait_gimmicks"]["dark"]["mult_rounding"]
+    speed_boost_list = cinfo["speed_boosts"]
+    kb_mult = cinfo["knockback_mult"]
+    rounding = cinfo["mult_rounding"]
     #first take care of rounding
     if rounding == "Up":
         is_up = True
@@ -197,15 +201,15 @@ def angel_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     """ makes angels into faster beefier but lesser damage enemies
     \n also gives a portion of them delay, by default off
     \n does nothing if angel if off """
-    angel_config = config["enemy"]["trait_gimmicks"]["angel"]
-    if not angel_config["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["angel"]
+    if not cinfo["enabled"]:
         return stats
-    balanced = angel_config["balanced"]
-    speed_mult = angel_config["speed_mult"]
-    attack_mult = angel_config["attack_mult"]
-    health_mult = angel_config["health_mult"]
-    round_direction = angel_config["rounding"]
-    drain_freq = angel_config["drain_frequency"]
+    balanced = cinfo["balanced"]
+    speed_mult = cinfo["speed_mult"]
+    attack_mult = cinfo["attack_mult"]
+    health_mult = cinfo["health_mult"]
+    round_direction = cinfo["rounding"]
+    drain_freq = cinfo["drain_frequency"]
     #might aswell calculate it here
     above_hp_thresh_mult = health_mult
     if balanced: above_hp_thresh_mult = 1+(attack_mult-1)/2
@@ -245,10 +249,11 @@ def alien_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     \n starred alien abilities are also done here
     \n does nothing if alien is off
     \n can give: warp,barrier,freeze,slow,kb,weaken,wave,surge,explosion,crit,savage,lethal,base destroyer,multihit """
-    if not config["enemy"]["trait_gimmicks"]["alien"]["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["alien"]
+    if not cinfo["enabled"]:
         return stats
     #first process the config
-    ab_dict = config["enemy"]["trait_gimmicks"]["alien"]["abilities"]
+    ab_dict = cinfo["abilities"]
     wfreeze = ab_dict["Freeze"]
     wslow = ab_dict["Slow"]
     wkb = ab_dict["Knockback"]
@@ -262,8 +267,8 @@ def alien_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     wbasedestroyer = ab_dict["Base Destroyer"]
     wmultihit = ab_dict["Multihit"]
     wdrain = ab_dict["Drain"]
-    warp_freq = config["enemy"]["trait_gimmicks"]["alien"]["warp_frequency"]
-    barrier_freq = config["enemy"]["trait_gimmicks"]["alien"]["barrier_frequency"]
+    warp_freq = cinfo["warp_frequency"]
+    barrier_freq = cinfo["barrier_frequency"]
     #now get the necessary lists (these are in the order they are in config)
     ability_weight_list =   [wfreeze,                   wslow,                      wkb,                    wweaken,                    wwave,                  wsurge,                     wexp,                           wcrit,                      wsavage,                    wlethal,                    wbasedestroyer,     wmultihit,          wdrain]
     ability_check_list =    [e.s.freezeChance,          e.s.slowChance,             e.s.kbChance,           e.s.weakenChance,           e.s.waveChance,         e.s.surgeChance,            e.s.explodeChance,              e.s.critChance,             e.s.savageChance,           e.s.lethal,                 e.s.baseDestroyer,  e.s.multiDamage2,   e.s.drainChance]
@@ -326,7 +331,8 @@ def alien_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
 def zombie_gimmick(stats:list,config=DEFAULT_CONFIG):
     """ gives all zombies in stats burrow and revive at specified rates
     \n does nothing if zombie is off """
-    if not config["enemy"]["trait_gimmicks"]["zombie"]["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["zombie"]
+    if not cinfo["enabled"]:
         return stats
     #establish all the config info
     (balanced,grant_revive,grant_burrow,revive_freq,burrow_freq,revive_types,burrow_types,revive_weights,burrow_weights) = _process_zombie_config(config)
@@ -375,13 +381,14 @@ def relic_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     \n does nothing if relic is off
     \n\t wont give pierce if already ld/multi or has wave/surge/explosion/crit/savage"""
     #for reference the reason its if not 100% is because theres no difference if the damage is split between two wave/surge/explosion
-    if not config["enemy"]["trait_gimmicks"]["relic"]["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["relic"]
+    if not cinfo["enabled"]:
         return stats
     #first get config info
-    give_curse = config["enemy"]["trait_gimmicks"]["relic"]["curse"]
-    give_pierce = config["enemy"]["trait_gimmicks"]["relic"]["pierce"]
-    pierce_atk_rate = config["enemy"]["trait_gimmicks"]["relic"]["pierce_attack"]
-    pierce_range_rate = config["enemy"]["trait_gimmicks"]["relic"]["pierce_range"]
+    give_curse = cinfo["curse"]
+    give_pierce = cinfo["pierce"]
+    pierce_atk_rate = cinfo["pierce_attack"]
+    pierce_range_rate = cinfo["pierce_range"]
     #now apply it
     for e_id in range(0,len(stats)):
         if stats[e_id][e.t.relic] == 1:
@@ -393,7 +400,7 @@ def relic_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
             if len(post_attack_info) > e_id:
                 post_attack_time = post_attack_info[e_id]
             if give_curse and stats[e_id][e.s.curseChance] == 0: #no sense if giving it to something that already does
-                stats[e_id] = abal._give_ability_curse(stats,post_attack_time=post_attack_time,strength=7+int(rand1/15),time=8+int(rand2/15))
+                stats[e_id] = abal._give_ability_curse(stats[e_id],post_attack_time=post_attack_time,strength=7+int(rand1/15),time=8+int(rand2/15))
             if give_pierce:
                 do_pierce = True
                 if stats[e_id][e.s.ldWidth] != 0:
@@ -417,14 +424,14 @@ def relic_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
                     piercing_range = int(unit_range*pierce_range_rate/100)
                     piercing_attack = int(unit_attack*pierce_atk_rate/100)
                     #now set allat information
-                    stats[e.s.attack] = int(unit_attack-piercing_attack)
-                    stats[e.s.multiDamage2] = piercing_attack
-                    stats[e.s.multiPreAtk2] = stats[e.s.preatk]
-                    stats[e.s.multiHasLdRange2] = 1
-                    stats[e.s.multiLdStart2] = int(unit_range+piercing_range)
-                    stats[e.s.multiLdWidth2] = -int(320+unit_range+piercing_range)
-                    stats[e.s.multiHasAbility1] = 0
-                    stats[e.s.multiHasAbility2] = 1
+                    stats[e_id][e.s.attack] = int(unit_attack-piercing_attack)
+                    stats[e_id][e.s.multiDamage2] = piercing_attack
+                    stats[e_id][e.s.multiPreAtk2] = stats[e_id][e.s.preatk]
+                    stats[e_id][e.s.multiHasLdRange2] = 1
+                    stats[e_id][e.s.multiLdStart2] = int(unit_range+piercing_range)
+                    stats[e_id][e.s.multiLdWidth2] = -int(320+unit_range+piercing_range)
+                    stats[e_id][e.s.multiHasAbility1] = 0
+                    stats[e_id][e.s.multiHasAbility2] = 1
             #should be all?
     return stats
                     
@@ -432,13 +439,14 @@ def aku_gimmick(stats:list,config=DEFAULT_CONFIG,post_attack_info=[]):
     """ gives aku units in stats deathsurge/shield and returns stats 
     \n does nothing if aku is off
     \n frequency of ability ds is set in config """
-    if not config["enemy"]["trait_gimmicks"]["aku"]["enabled"]:
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["aku"]
+    if not cinfo["enabled"]:
         return stats
     #first process config
-    shield_freq = config["enemy"]["trait_gimmicks"]["aku"]["enabled"]
-    ds_freq = config["enemy"]["trait_gimmicks"]["aku"]["enabled"]
-    ds_ability_freq = config["enemy"]["trait_gimmicks"]["aku"]["enabled"]
-    ds_ability_is_mini = config["enemy"]["trait_gimmicks"]["aku"]["enabled"]
+    shield_freq = cinfo["shield_frequency"]
+    ds_freq = cinfo["ds_frequency"]
+    ds_ability_freq = cinfo["ds_ability_frequency"]
+    ds_ability_is_mini = cinfo["ds_ability_mini"]
     #if it has any of these abilities it cant get ab ds
     ability_check_list =    [e.s.freezeChance,e.s.slowChance,e.s.kbChance,e.s.weakenChance,e.s.waveChance,e.s.surgeChance,e.s.explodeChance,e.s.critChance,e.s.savageChance,e.s.multiDamage2,e.s.multiDamage3]
     #now do it
@@ -562,13 +570,14 @@ def _give_an_alien_ability(stat:list,r:srand.randinst=srand.randinst(300),abilit
 
 def _process_zombie_config(config=DEFAULT_CONFIG):
     """ processing for the zombie config done here """
-    balanced = config["enemy"]["trait_gimmicks"]["zombie"]["balanced"]
-    grant_revive = config["enemy"]["trait_gimmicks"]["zombie"]["grant_revive"]
-    revive_freq = config["enemy"]["trait_gimmicks"]["zombie"]["revive_frequency"]
-    grant_burrow = config["enemy"]["trait_gimmicks"]["zombie"]["grant_burrow"]
-    burrow_freq = config["enemy"]["trait_gimmicks"]["zombie"]["burrow_frequency"]
-    revive_types_raw = config["enemy"]["trait_gimmicks"]["zombie"]["revive_types"]
-    burrow_types_raw = config["enemy"]["trait_gimmicks"]["zombie"]["burrow_types"]
+    cinfo = config["trait"]["enemy"]["trait_gimmicks"]["zombie"]
+    balanced = cinfo["balanced"]
+    grant_revive = cinfo["grant_revive"]
+    revive_freq = cinfo["revive_frequency"]
+    grant_burrow = cinfo["grant_burrow"]
+    burrow_freq = cinfo["burrow_frequency"]
+    revive_types_raw = cinfo["revive_types"]
+    burrow_types_raw = cinfo["burrow_types"]
     #now process the types into an understandable array, each is an array of dicts
     revive_types = []
     burrow_types = []

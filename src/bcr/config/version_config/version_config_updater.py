@@ -25,9 +25,10 @@ specifics = {
         fn.TALENT_FILE, #used for getting all currently existing talents
         fn.CAT_GUIDE_DATA, #used for getting current cat forms
         fn.ENEMY_STATS, #used for counting the number of enemies
-        fn.COMBO_FILE, #used in getting the number of combos
-        fn.COMBO_NAME_DATA, #also used in ^
-        fn.COMBO_PARAM, #used in getting the number of combo ids
+        r"^Nyancombo.*", #this convers the three combo files below, there are only like 3 other combo files with this scheme anyways
+        #fn.COMBO_FILE, #used in getting the number of combos
+        #fn.COMBO_NAME_DATA, #also used in ^
+        #fn.COMBO_PARAM, #used in getting the number of combo ids
     ))
 }
 #now each units file
@@ -76,6 +77,7 @@ def _make_config_for_version_from_game_files(config_version_path:Path):
     _write_misc_info_to_file(config_version_path)
     _get_talent_ids(config_version_path)
     _get_unit_forms(config_version_path)
+    _get_orb_counts(config_version_path)
 
 
 

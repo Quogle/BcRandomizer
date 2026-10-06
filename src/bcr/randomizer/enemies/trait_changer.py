@@ -7,7 +7,7 @@ import tadbcmc.core.seeded_randomization as srand
 def change_traits_according_to_config(stats,config=DEFAULT_CONFIG,log=None):
     """ changes traits according to the method desired in config
     \n also gives starred alien """
-    change_means = config["enemy"]["trait"]["randomization_mode"].lower()
+    change_means = config["trait"]["enemy"]["randomize"]["randomization_mode"].lower()
     if change_means == "none":
         return stats #simply no sense
     if change_means == "randomize":
@@ -37,7 +37,7 @@ def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
         if a unit still has remaining traits to be added ignore it
     """
     #first get the config options needed
-    give_untraited_traits = config["enemy"]["trait"]["untraited_get_trait"]
+    give_untraited_traits = config["trait"]["enemy"]["randomize"]["untraited_get_trait"]
     remove_metal = config #idk where this is rn
     trait_bools = [] #this is how Im turning traits of but its just all gonna be true until I know what Im doing
     #now get all and allowed
@@ -98,7 +98,7 @@ def _trait_swap(stats,config=DEFAULT_CONFIG,log=None):
     \n does nothing except edit the traits """
     #first get the config options, its only metal right? (and untraited get trait)
     remove_metal = True
-    give_untraited_traits = config["enemy"]["trait"]["untraited_get_trait"]
+    give_untraited_traits = config["trait"]["enemy"]["randomize"]["untraited_get_trait"]
     #to finish the config information I need to determine the traits allowed and the order to look at them
     all_traits = []
     trait_bools = []

@@ -1,6 +1,7 @@
 """ has func that does all the enemy things 
 \n needs establish_working_information to be called after game files exist """
 from ...config.defaults import DEFAULT_CONFIG
+from ...config.version_config.get_version_config import DEFAULT_VC_CONFIG
 from ..enemies import ability_randomization
 from ..enemies import balancing
 from ..enemies import enemy_id_swap
@@ -22,9 +23,9 @@ def establish_working_information():
 
 
 
-
+#None of these functions properly consider version config, that needs to be changed before actual first release but its fine for now
 #THIS IS HIGHEST LINK IN THE POST ATTACK ANIM CHAIN CURRENTLY
-def enemy_rand(config=DEFAULT_CONFIG,log=None):
+def enemy_rand(config=DEFAULT_CONFIG,log=None,version_config=DEFAULT_VC_CONFIG):
     """ does all things requested in config under enemy
     \n also does things under gameplay/modifications that are relevant to enemies """
     #since this is the master function establish working information here
@@ -46,9 +47,9 @@ def enemy_rand(config=DEFAULT_CONFIG,log=None):
     #is there anything post this rn?
     gf.file_writer(fn.ENEMY_STATS,estat)
     #now we can do enemy swap
-    enemy_id_swap.do_enemy_swap(config=config,log=log,post_attack_anims=[])
+    enemy_id_swap.do_enemy_swap(config=config,log=log,post_attack_anims=[],version_config=version_config)
     #theres nothing else right?
-    #buffing the mags of things and whatnot is done in treasure not enemies so Im not including it here,
+    #buffing the mags of things and whatnot is done in treasure not enemies so Im not including it here, WAIT, that needs to run before enemy swap? otherwise the mags of things which swap to them arent gonna be buffed (Ill deal with that later)
     #however it does need to run after this function
 
 

@@ -19,9 +19,11 @@ def apply_stage_restrictions(config = DEFAULT_CONFIG):
     stage_count = game_files.get_number_of_stages_in_groups(update_counts=True)
     print("3")
 
+    #oi why you spammin terminal u can comment it back in later if u want
     print("STAGE COUNT:")
     for category_id, maps in stage_count.items():
-        print(f"Category {category_id}: {maps}")
+        pass
+        #print(f"Category {category_id}: {maps}")
 
 
     restrictions = game_files.file_reader("Stage_option.csv", vanilla=True)

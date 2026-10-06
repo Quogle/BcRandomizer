@@ -271,9 +271,14 @@ def _apply_map_to_stats(stats:list[list[list]]) -> list[list[list]]:
             map_form = form
             if map_form >= len(trait_map[u_id]):
                 map_form = len(trait_map[u_id]) - 1 #set it to the last used form if current form is out of index
-            for index in range(0,len(trait_map[map_form])):
-                if before[u_id][form][trait_map[u_id][map_form][0][index]] == 1:
-                    after[u_id][form][trait_map[u_id][map_form][1][index]] = 1
+            this_map = trait_map[u_id][map_form]
+            for index in range(0,len(this_map[0])):
+                before_trait = this_map[0][index]
+                after_trait = this_map[1][index]
+                if before[u_id][form][before_trait] == 1:
+                    #if u_id < 130:
+                        #print(f"unit {u_id}.{form} had trait number {before_trait} and is thus receiving {after_trait}")
+                    after[u_id][form][after_trait] = 1
     return after
 
 def _apply_map_to_talents():

@@ -1,0 +1,179 @@
+
+from ....config.defaults import DEFAULT_CONFIG
+from ....config.version_config.get_version_config import DEFAULT_VC_CONFIG
+from tadbcmc.data.collated_info.enemy_info import *
+import tadbcmc.core.game_files as gf
+import tadbcmc.data.filenames as fn
+import tadbcmc.data.enums.unit_info as ui
+import tadbcmc.data.enums.enemy as e
+import tadbcmc.core.simple_funcs as simp
+
+
+
+""" ENEMY_INFO functions """
+def establish_working_information():
+    """ makes ENEMY_INFO the length of vanilla enemy stats
+    \n to be called once game files exist to prevent import failure """
+    ENEMY_INFO_extend_w_defaults()
+
+def _set_ENEMY_INFO_values():
+    """ sets ENEMY_INFO to have the correct values for variants and included """
+    global ENEMY_INFO
+    vstat = gf.file_reader(fn.ENEMY_STATS,vanilla=True)
+    for u_id in range(0,len(ENEMY_INFO)):
+        included_in_swap = True
+        #things that should disallow it from being included,
+        #collab
+        #removed/unused
+        #non attacking enemy base, (determined by 0 speed and < 140 range if it isnt manually logged)
+        #first we need to determine the enemy base status of non manually logged things
+        if u_id < len(vstat) and ENEMY_INFO[u_id][ui.e.manually_input] == 0:
+            if vstat[u_id][e.s.speed] == 0:
+                if vstat[u_id][e.s.range] < 140:
+                    ENEMY_INFO[u_id][ui.e.variant_id] = ui.enemy_variant.attackless_base
+                else:
+                    ENEMY_INFO[u_id][ui.e.variant_id] = ui.enemy_variant.attacking_base
+        if ENEMY_INFO[u_id][ui.e.manually_input] == 0:
+            #all non manually input things get set to swap strength 50
+            ENEMY_INFO[u_id][ui.e.swap_strength] = 50
+        #now we can actually work with it
+        this_ei = ENEMY_INFO[u_id] #passing by reference :scream:
+        if this_ei[ui.e.collab] > 0:
+            included_in_swap = False
+        if this_ei[ui.e.unused] != 0:
+            included_in_swap = False
+        if this_ei[ui.e.variant_id] == int(ui.enemy_variant.attackless_base):
+            included_in_swap = False
+        #ok now set it
+        if included_in_swap:
+            ENEMY_INFO[u_id][ui.e.included_in_swap] = 1
+
+
+
+""" making the initial swap """
+
+def harvest_unit_info_from_ENEMY_INFO(prefered_ENEMY_INFO:list[list]=None) -> tuple[list[bool],list[int],list[int]]:
+    """ return (included_in_swap_list, swap_strength_list, variant_id_list)
+    \n gets the initial information from ENEMY_INFO, can be requested to use a specific version aside from global """
+    #get the correct enemy info 2d list to use
+    enemy_info = prefered_ENEMY_INFO
+    if enemy_info == None:
+        global ENEMY_INFO
+        enemy_info = ENEMY_INFO
+    #make the lists
+    included_in_swap_list = []
+    swap_strength_list = []
+    variant_id_list = []
+    for u_id in range(0,len(enemy_info)):
+        included_in_swap_list.append(enemy_info[u_id][ui.e.included_in_swap])
+        swap_strength_list.append(enemy_info[u_id][ui.e.swap_strength])
+        variant_id_list.append(enemy_info[u_id][ui.e.variant_id])
+    #return them
+    return (included_in_swap_list,swap_strength_list,variant_id_list)
+
+def variant_list_dict_maker(variant_id_list:list[int],included_bool_list:list[bool],split_id:int=0):
+    """ makes a dictionary with keys of variant ids, and values of a list of unit ids of that variant
+    \n returns (first_half, second_half) """
+    first_half = {}
+    second_half = {}
+    for u_id in range(0,len(variant_id_list)):
+        this_variant_id = str(variant_id_list[u_id])
+        if this_variant_id != "0" and included_bool_list[u_id]:
+            if u_id < split_id:
+                if this_variant_id not in first_half:
+                    first_half[this_variant_id] = []
+                first_half[this_variant_id].append(u_id)
+            else:
+                if this_variant_id not in second_half:
+                    second_half[this_variant_id] = []
+                second_half[this_variant_id].append(u_id)
+    #now remove all with only one unit in them
+    queue_to_remove = []
+    for each in first_half:
+        if len(first_half[each]) < 2: queue_to_remove.append(each)
+    for each in queue_to_remove:
+        first_half.pop(each)
+    queue_to_remove = []
+    for each in second_half:
+        if len(second_half[each]) < 2: queue_to_remove.append(each)
+    for each in queue_to_remove:
+        second_half.pop(each)
+    #ok good to return
+    return (first_half,second_half)
+
+
+""" selection arrays """
+
+def _get_difference_scalor_array(consider_strength=True) -> list[float]:
+    """ gets the strength difference array to scale the chance of groups by
+    \n index in array is the difference between the swap strengths
+    \n len(array) = 11 """
+    balance_scalor = []
+    for x in range(0,10):
+        scale = 1/((0.9 + 0.20*x)**2)-0.01*x
+        balance_scalor.append(scale)
+    balance_scalor.append(0) #this is so anything outside the range can just call to -1 and it nullifies the chance
+    if not consider_strength: #set all proportions to 1
+        for x in range(0,len(balance_scalor)):
+            balance_scalor[x] = 1
+    return balance_scalor
+    """ relative proportions when considering strength:
+    0:1.23x
+    1:0.82x
+    2:0.57x
+    3:0.41x
+    4:0.31x
+    5:0.23x
+    6:0.17x
+    7:0.12x
+    8:0.08x
+    9:0.047x
+    10:0x
+    """
+
+def get_base_chance_mult_dict(swap_strength_list:list[int],maintain_class:bool,consider_strength:bool) -> dict[int,dict[int,float]]:
+    """ gets the chance mult dict for each swap strength """
+    #first get the diff scalor
+    difference_scalor = _get_difference_scalor_array(consider_strength=consider_strength)
+    #now get which swap strengths even exist
+    used_swap_strengths = []
+    for swap_strength in range(0,len(swap_strength_list)):
+        if swap_strength not in used_swap_strengths: used_swap_strengths.append(swap_strength)
+    used_swap_strengths.sort()
+    #now start the process of making the output dict
+    base_chance_dict = {}
+    for swap_strength in used_swap_strengths:
+        if maintain_class:
+            lower_bound = 10*int(swap_strength/10)
+            upper_bound = lower_bound + 10
+        else:
+            lower_bound = simp.clamp(swap_strength - 9,used_swap_strengths[0],used_swap_strengths[-1])
+            upper_bound = lower_bound + 19
+            if not consider_strength: #chaos mode
+                lower_bound = used_swap_strengths[0]
+                upper_bound = used_swap_strengths[-1] + 1
+        #now add all in those bounds that actually exist (no sense having any that dont exist)
+        this_chance_dict = {}
+        for x in range(lower_bound,upper_bound):
+            if x in used_swap_strengths:
+                diff = abs(x-swap_strength)
+                if diff >= 10:
+                    diff = 10
+                this_chance_dict[str(x)] = difference_scalor[diff]
+        #now scale the total sum of this dict to 1 for some reason I cant remember
+        sum = 0
+        for each in this_chance_dict: sum += this_chance_dict[each]
+        if sum != 0:
+            for each in this_chance_dict: this_chance_dict[each] *= (1/sum)
+        #set it
+        base_chance_dict[str(swap_strength)] = this_chance_dict
+    #thats it
+    return base_chance_dict
+
+
+
+
+
+
+
+

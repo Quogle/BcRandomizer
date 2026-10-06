@@ -543,6 +543,7 @@ things already added:
         enemy id per game swap (almost, still missing the conditions for what is allowed to swap and missing swapping of stationary enemies)
         trait gimmick
         drain in alien and angel
+        burrow anims
     qol:
         behemoth stage buffs
         xp stages buffs
@@ -586,7 +587,6 @@ things still needed to be added:
     enemies:
         methods for determining what traits are enabled are all missing
         something to do with what is and isnt alien/starred in itf/cotc
-        burrow animation stuff
         sage rework
         post attack animation code (technically this can wait)
     qol:
