@@ -2,7 +2,7 @@
 from ....config.defaults import DEFAULT_CONFIG
 from ....config.version_config.get_version_config import DEFAULT_VC_CONFIG
 from ....config.version_config import version_config_keys as vck
-from ..enemy_swap import debug_output
+from ....randomizer import debug_output
 from ..enemy_swap import create_swap
 from ..enemy_swap import initialize_information
 from ..enemy_swap import stat_calcs

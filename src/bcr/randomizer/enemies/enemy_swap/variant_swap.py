@@ -1,7 +1,7 @@
 
 
 import copy
-from ..enemy_swap import debug_output
+from ....randomizer import debug_output
 import tadbcmc.core.seeded_randomization as srand
 from ..enemy_swap import initialize_information
 

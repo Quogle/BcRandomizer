@@ -6,11 +6,11 @@ import tadbcmc.data.enums.enemy as e
 import tadbcmc.core.seeded_randomization as srand
 import tadbcmc.core.game_files as gf
 import tadbcmc.data.filenames as fn
+from ...randomizer import debug_output
 
 
 
-
-def _dual_sprite_maker(unit_id,trait1,trait2):
+def _dual_sprite_maker(unit_id,trait1,trait2,debug=False):
     """
     makes sprite, will attempt to make them look like 1 trait if one of the two traits is missing a sprite
     """
@@ -18,8 +18,8 @@ def _dual_sprite_maker(unit_id,trait1,trait2):
     #if neither exist exit, but if one exist alert user only one exists
     file_name = ("000"+str(unit_id))[-3:] + "_e.png"
     internal = ""
-    part1_path = simp.path_join(simp.path_join(fh.SINGLE_SPRITE_FILES,trait1),file_name)
-    part2_path = simp.path_join(simp.path_join(fh.SINGLE_SPRITE_FILES,trait2),file_name)
+    part1_path = os.path.join(fh.DUAL_SPRITE_FILES,"part1",trait1,file_name)
+    part2_path = os.path.join(fh.DUAL_SPRITE_FILES,"part2",trait2,file_name)
     #get part 1
     if os.path.exists(part1_path):
         part_1 = Image.open(part1_path)
@@ -40,7 +40,8 @@ def _dual_sprite_maker(unit_id,trait1,trait2):
         return
     part_2 = part_2.convert("RGBA")
     if len(internal) > 0:
-        print(internal + " sprite is missing for unit " + str(unit_id))
+        debug_output.output_somewhere(internal + " sprite is missing for unit " + str(unit_id))
+
 
     #combine parts
     part_1.alpha_composite(part_2)
@@ -67,6 +68,12 @@ def _get_all_other_sprites(trait_array):
     for each in all_in_sprites:
         if ".png" in each:
             pngs.append(each)
+    #now just throw all of those pngs in dl
+    for each in pngs:
+        this_png_path = simp.path_join(fh.SPRITE_FILES,each)
+        fh.copy_file_to_dl(this_png_path,each)
+    return
+    #this used to be something but I decided against it so its no longer anything
     #now get the number of traits needed for those enemies
     counts = []
     unit_ids = []
@@ -127,7 +134,7 @@ def _get_new_enemy_traits(new_stats,old_stats):
     return new_traits
     
 
-def get_enemy_sprites(kill_previous=False,consider_zombie_as_witch=False):
+def get_enemy_sprites(kill_previous=False,consider_zombie_as_witch=False,debug=False):
     """
     gets the new sprites and if designated kills old sprites
     \n total
@@ -136,7 +143,7 @@ def get_enemy_sprites(kill_previous=False,consider_zombie_as_witch=False):
     new_stats = gf.file_reader(fn.ENEMY_STATS)
     if kill_previous:
         for x in range(0,len(new_stats)):
-            file_name = simp.uinfo_to_anim(x,enemy=True,file_end=".png")
+            file_name = simp.uinfo_to_anim(x,enemy=True,file_end="png")
             fh.remove_from_dl(file_name)
     
     current_traits = _get_enemy_traits(new_stats,consider_zombie_as_witch)
@@ -147,7 +154,7 @@ def get_enemy_sprites(kill_previous=False,consider_zombie_as_witch=False):
         if len(current_traits[unit_id]) == 1: #it can actually just try to find it if theres only 1 trait
             _single_sprite_getter(unit_id-2,current_traits[unit_id][0])
         elif len(current_traits[unit_id]) == 2: 
-            _dual_sprite_maker(unit_id-2,current_traits[unit_id][1-sprite_rando_dec],current_traits[unit_id][sprite_rando_dec])
+            _dual_sprite_maker(unit_id-2,current_traits[unit_id][1-sprite_rando_dec],current_traits[unit_id][sprite_rando_dec],debug=debug)
     _get_all_other_sprites(current_traits)
 
 

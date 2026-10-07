@@ -8,7 +8,7 @@ from ..randomizer.stages.restrictions import apply_stage_restrictions
 from .enemies import enemy_total
 from .units import unit_total
 from .enemies.enemy_swap import swap_total
-
+from .spranims import enemy_sprites
 
 
 
@@ -23,10 +23,11 @@ def randomize_according_to_config(config=DEFAULT_CONFIG,log=None,debug=False):
         log("are u fr?")
     #fix_zombie()
     apply_stage_restrictions(config)
-    enemy_total.enemy_rand(config=config,log=log,version_config=version_config)
+    enemy_total.enemy_rand(config=config,log=log,version_config=version_config,debug=debug)
     unit_total.unit_rand(config=config,version_config=version_config,log=log)
-    swap_total.do_enemy_swap(config=config,version_config=version_config,log=log,debug=debug)
-
+    #swap_total.do_enemy_swap(config=config,version_config=version_config,log=log,debug=debug)
+    #this actually prolly shouldnt be run if enemy trait rand is off
+    enemy_sprites.get_enemy_sprites(kill_previous=True,consider_zombie_as_witch=False,debug=debug) #this should prolly go in a spranim total eventually
 
 
 

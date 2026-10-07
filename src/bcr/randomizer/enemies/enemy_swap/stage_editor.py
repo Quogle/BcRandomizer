@@ -1,7 +1,7 @@
 
 import tadbcmc.core.stnmp as stnmp
 import tadbcmc.core.game_files as gf
-from ..enemy_swap import debug_output
+from ....randomizer import debug_output
 
 
 

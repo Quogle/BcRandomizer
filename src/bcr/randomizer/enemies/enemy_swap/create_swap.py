@@ -2,7 +2,7 @@
 import tadbcmc.data.enums.unit_info as ui
 from ..enemy_swap import variant_swap
 from ..enemy_swap import filling_swap
-from ..enemy_swap import debug_output
+from ....randomizer import debug_output
 from ..enemy_swap import initialize_information
 
 def create_swap(
