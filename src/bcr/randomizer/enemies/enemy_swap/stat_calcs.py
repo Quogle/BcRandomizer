@@ -21,7 +21,7 @@ def mag_ratio(unit1_stats,unit1_id,unit2_stats,unit2_id):
     unit2_stat = _determine_unit_product_stat(unit2_stats,unit2_post_atk)
     #now get the mag mult
     #my current idea is it should be the square root since that results in average stats
-    mult = math.sqrt(unit2_stat/unit1_stat)
+    mult = math.sqrt(unit1_stat/unit2_stat)
     return mult
 
 

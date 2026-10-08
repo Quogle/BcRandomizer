@@ -11,7 +11,7 @@ import tadbcmc.core.file_handler as fh
 
 
 APP_SWAP_CACHE_FILE_NAME = "enemy_app_swap.csv"
-
+DEBUG_APP_SWAP_CACHE_FILE_NAME = "debug_enemy_app_swap.csv"
 
 
 
@@ -76,7 +76,9 @@ def _per_game_swap(
     app_swap = stat_calcs.convert_swap_to_app_swap(swap,balance_mags=adjust_mags)
     #now we cache that for both debug purposes and potential later use
     fh.write_file_to_cache(APP_SWAP_CACHE_FILE_NAME,app_swap,type=list[list])
-    stage_editor.apply_app_swap_to_stages(app_swap,include_eoc,log=log,debug=debug)
+    if debug:
+        _debug_write_app_swap_to_cache(app_swap)
+    #stage_editor.apply_app_swap_to_stages(app_swap,include_eoc,log=log,debug=debug)
 
 
 
@@ -97,9 +99,16 @@ def _per_game_swap(
 
 
 
-
-
-
+def _debug_write_app_swap_to_cache(app_swap):
+    """ writes a modified version of app swap to file """
+    mod_app_swap = [] #its just slapping the unit id in front of it
+    for u_id in range(0,len(app_swap)):
+        this_entry = [u_id-2]
+        this_entry.extend(app_swap[u_id])
+        this_entry[1] -= 2
+        mod_app_swap.append(this_entry)
+    #now write to file
+    fh.write_file_to_cache(DEBUG_APP_SWAP_CACHE_FILE_NAME,mod_app_swap,type=list[list])
 
 
 

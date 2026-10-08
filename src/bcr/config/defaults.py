@@ -455,7 +455,7 @@ DEFAULT_CONFIG = {
             "metal_rework": True,
             "remove_behemoths": False,
             "behemoth_rebalance": False,
-            "old_zombies": True,
+            "old_zombies": True, #this is witch fix right?
             "buff_weak_aliens": True,
             "remove_itf_crystals": True,
             "remove_cotc_crystals": True,

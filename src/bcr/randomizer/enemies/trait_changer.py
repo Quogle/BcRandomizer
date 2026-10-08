@@ -27,7 +27,6 @@ def change_traits_according_to_config(stats,config=DEFAULT_CONFIG,log=None,debug
     return new_stats
 
 
-#THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
 def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None,debug=False):
     """ randomizes the traits of stats according to config and returns it
     \n does nothing except edit traits, starred must be done elsewhere """
@@ -42,20 +41,7 @@ def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None,debug=False):
     """
     #first get the config options needed
     give_untraited_traits = config["trait"]["enemy"]["randomize"]["untraited_get_trait"]
-    remove_metal = config #idk where this is rn
-    trait_bools = [] #this is how Im turning traits of but its just all gonna be true until I know what Im doing
-    #now get all and allowed
-    all_traits = []
-    for each in e.t:
-        all_traits.append(int(each))
-        trait_bools.append(True)
-    allowed = []
-    disallowed = []
-    for trait_id in range(0,len(all_traits)):
-        if trait_bools[trait_id]:
-            allowed.append(all_traits[trait_id])
-        else:
-            disallowed.append(all_traits[trait_id])
+    (all_traits,allowed,disallowed) = _get_all_and_allowed_traits(config=config)
     if len(allowed) == 0:
         debug_output.output_somewhere("trait randomization was attempted with 0 allowed traits")
     look_order_list = [] #for debugging purposes
@@ -100,27 +86,14 @@ def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None,debug=False):
 
 
 
-#THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
+
 def _trait_swap(stats,config=DEFAULT_CONFIG,log=None):
     """ swaps the traits of stats according to config 
     \n does nothing except edit the traits """
-    #first get the config options, its only metal right? (and untraited get trait)
-    remove_metal = True
+    #first get the config options (untraited get trait)
     give_untraited_traits = config["trait"]["enemy"]["randomize"]["untraited_get_trait"]
     #to finish the config information I need to determine the traits allowed and the order to look at them
-    all_traits = []
-    trait_bools = []
-    for each in e.t:
-        all_traits.append(int(each))
-        trait_bools.append(True)
-    #now get allowed and disallowed
-    allowed = []
-    disallowed = []
-    for trait_id in range(0,len(all_traits)):
-        if trait_bools[trait_id]:
-            allowed.append(all_traits[trait_id])
-        else:
-            disallowed.append(all_traits[trait_id])
+    (all_traits,allowed,disallowed) = _get_all_and_allowed_traits(config=config)
     if len(allowed) == 0:
         if log != None:
             log("trait swap was attempted with 0 allowed traits")
@@ -262,8 +235,43 @@ def _fill_swap_allowed_len_morethan_1(from_traits,to_traits,trait_look_order,all
     to_traits = to_traits + to_traits
     return (from_traits,to_traits)
 
-
-
+def _get_all_and_allowed_traits(config=DEFAULT_CONFIG,
+        ) -> tuple[list[int],list[int],list[int]]:
+    """ return (all_traits, allowed_traits, disallowed_traits) """
+    all_traits = [ #these are the order theyre listed in tadbcmc
+        int(e.t.red),
+        int(e.t.floating),
+        int(e.t.dark),
+        int(e.t.white),
+        int(e.t.angel),
+        int(e.t.alien),
+        int(e.t.zombie),
+        int(e.t.relic),
+        int(e.t.aku),
+        int(e.t.metal),
+    ]
+    cinfo = config["trait"]["included"]
+    trait_bools = [
+        cinfo["red"],
+        cinfo["floating"],
+        cinfo["dark"],
+        cinfo["white"],
+        cinfo["angel"],
+        cinfo["alien"],
+        cinfo["zombie"],
+        cinfo["relic"],
+        cinfo["aku"],
+        cinfo["metal"],
+    ]
+    allowed_traits = []
+    disallowed_traits = []
+    for x in range(0,len(all_traits)):
+        if trait_bools[x]:
+            allowed_traits.append(all_traits[x])
+        else:
+            disallowed_traits.append(all_traits[x])
+    return (all_traits,allowed_traits,disallowed_traits)
+    
 
 
 

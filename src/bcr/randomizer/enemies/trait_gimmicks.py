@@ -165,6 +165,7 @@ def dark_gimmick(stats:list,config=DEFAULT_CONFIG):
             this_boost.append(False)
         else:
             this_boost.append(True)
+        speed_boosts.append(this_boost)
     #ok now actually apply the speed boosts to dark enemies
     #start by creating the before array to make sure 0 speed enemies dont gain speed
     before_stats = copy.deepcopy(stats)
@@ -172,6 +173,7 @@ def dark_gimmick(stats:list,config=DEFAULT_CONFIG):
         if stats[e_id][e.t.dark] == 1:
             done = False
             unit_speed = stats[e_id][e.s.speed]
+            unit_original_speed = int(unit_speed)
             for x in range(0,len(speed_boosts)):
                 if not done and unit_speed <= speed_boosts[x][0]:
                     done = True
@@ -181,19 +183,22 @@ def dark_gimmick(stats:list,config=DEFAULT_CONFIG):
                         unit_speed *= speed_boosts[x][1]
                     break #isnt this a lil redundant
             #now do kb
-            unit_kb = stats[e_id][e.s.kbs]*kb_mult
+            unit_kb = stats[e_id][e.s.kbs]
+            unit_original_kb = int(unit_kb)
+            unit_kb *= kb_mult
             #now handle rounding
             unit_speed = _round_directionally(unit_speed,is_up)
             unit_kb = _round_directionally(unit_kb,is_up)
             #make sure kb isnt 0 somehow
             if unit_kb == 0:
                 unit_kb = 1
+            #dont make unmoving things move (why do some bases have 1 kb while others have 0)
+            if unit_original_speed == 0:
+                unit_speed = 0
+                unit_kb = unit_original_kb
             #apply and return
             stats[e_id][e.s.speed] = unit_speed
             stats[e_id][e.s.kbs] = unit_kb
-            #fix for 0 speed enemies
-            if before_stats[e_id][e.s.speed] == 0:
-                stats[e_id][e.s.speed] = 0
     #should be all good
     return stats
 

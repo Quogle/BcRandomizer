@@ -585,7 +585,7 @@ things still needed to be added:
             separate out from seasonals those that dont belong (do I really care?)
         specifically a zombie talent fix (trait sum cannot give zombie/witch as it needs to be given as part of collosus slayer)
     enemies:
-        methods for determining what traits are enabled are all missing
+    fix enemy swap not being suitably class based
         something to do with what is and isnt alien/starred in itf/cotc
         sage rework
         post attack animation code (technically this can wait)
