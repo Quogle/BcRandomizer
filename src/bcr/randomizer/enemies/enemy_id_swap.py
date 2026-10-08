@@ -1,3 +1,5 @@
+""" defunct dont use, use enemy_swap.swap_total instead """
+
 """ because this module pulls from currently saved enemy stats and edits all stages in both vanilla and dl,\n
 it is probably best to fall after most 'general' changes to enemy stats happen\n
 but must necessarily be before any stages that should not be changed are added to dl """
@@ -13,7 +15,8 @@ import math
 import tadbcmc.core.stnmp as stnmp
 from typing import Dict,List
 from ...config.defaults import DEFAULT_CONFIG
-
+from ...config.version_config.get_version_config import DEFAULT_VC_CONFIG
+from ...config.version_config import version_config_keys as vck
 
 
 def establish_working_information():
@@ -75,10 +78,70 @@ apply appswap to all files, currently eoc is not treated distinctly
 
 
 #total function, currently not hooked up in any way
-def do_enemy_swap(config=DEFAULT_CONFIG,log=None,post_attack_anims=[]):
+def do_enemy_swap(config=DEFAULT_CONFIG,log=None,post_attack_anims=[],version_config=DEFAULT_VC_CONFIG,debug=False):
     """ controlling function for all things enemy id swap related
     \n currently doesnt actually do anything """
-    
+    vc_max_unit_id = version_config[vck.enemy_swap_max_enemy_id] #this is the length of t unit so its already first not allowed unit
+    swap_type = config["enemy"]["randomization"]["type"].lower()
+    if swap_type == "none":
+        return
+    vswap = config["enemy"]["randomization"]["variant_swap"]
+    gswap = config["enemy"]["randomization"]["general_swap"]
+    consider_strength = config["enemy"]["randomization"]["consider_strength"]
+    keep_class = config["enemy"]["randomization"]["keep_class"]
+    adjust_magnifications = config["enemy"]["randomization"]["adjust_magnifications"]
+    include_eoc = config["enemy"]["randomization"]["include_eoc"]
+    #now we need to make sure enemy info has the right information
+    _set_ENEMY_INFO_values()
+    if swap_type == "per game": #are there spaces, I do not yet know
+        _swap_per_game(
+            first_enemy_not_considered=vc_max_unit_id,
+            variant_swap=vswap,
+            general_swap=gswap,
+            maintain_grouping=keep_class,
+            consider_strength=consider_strength,
+            adjust_mags=adjust_magnifications,
+            include_eoc=include_eoc,
+            log=log,
+            post_attack_anims=post_attack_anims,
+        )
+
+
+
+
+
+def _set_ENEMY_INFO_values():
+    """ makes it so the included in swap value in enemy info is set """
+    global ENEMY_INFO
+    vstat = gf.file_reader(fn.ENEMY_STATS,vanilla=True)
+    for u_id in range(0,len(ENEMY_INFO)):
+        included_in_swap = True
+        #things that should disallow it from being included,
+        #collab
+        #removed/unused
+        #non attacking enemy base, (determined by 0 speed and < 140 range if it isnt manually logged)
+        #first we need to determine the enemy base status of non manually logged things
+        if u_id < len(vstat) and ENEMY_INFO[u_id][ui.e.manually_input] == 0:
+            if vstat[u_id][e.s.speed] == 0:
+                if vstat[u_id][e.s.range] < 140:
+                    ENEMY_INFO[u_id][ui.e.variant_id] = ui.enemy_variant.attackless_base
+                else:
+                    ENEMY_INFO[u_id][ui.e.variant_id] = ui.enemy_variant.attacking_base
+        if ENEMY_INFO[u_id][ui.e.manually_input] == 0:
+            #all non manually input things get set to swap strength 50
+            ENEMY_INFO[u_id][ui.e.swap_strength] = 50
+        #now we can actually work with it
+        this_ei = ENEMY_INFO[u_id] #passing by reference :scream:
+        if this_ei[ui.e.collab] > 0:
+            included_in_swap = False
+        if this_ei[ui.e.unused] != 0:
+            included_in_swap = False
+        if this_ei[ui.e.variant_id] == int(ui.enemy_variant.attackless_base):
+            included_in_swap = False
+        #ok now set it
+        if included_in_swap:
+            ENEMY_INFO[u_id][ui.e.included_in_swap] = 1
+        
 
 
 
@@ -185,9 +248,12 @@ def _get_variant_dict(swap_info:list) -> Dict[str,List[int]]:
                 variant_dict[this_variant] = []
             variant_dict[this_variant].append(u_id)
     #now remove all with only one variant
+    queue_to_remove = []
     for each in variant_dict:
         if len(variant_dict[each]) < 2:
-            variant_dict.pop(each)
+            queue_to_remove.append(each)
+    for each in queue_to_remove:
+        variant_dict.pop(each)
     #that should be the full variant dict for this half
     return variant_dict
 
@@ -248,11 +314,12 @@ def _get_this_units_new_strength(unit_id:int,self_strength:int,absent_dict:Dict[
     chance_dict = copy.deepcopy(base_mult_dict[str(self_strength)])
     #now multiply each of those chances by the number of units at that strength, count the total number of units
     for strength in chance_dict:
-        count = len(absent_dict[strength])
-        if unit_id in absent_dict[strength]:
-            count -= 1
+        if strength in absent_dict:
+            count = len(absent_dict[strength])
+            if unit_id in absent_dict[strength]:
+                count -= 1
+        else: count = 0
         chance_dict[strength] *= count
-        total_unit_number += count
     #now get the sum of chances, and multiply each chance by 100/sum in order to scale it to 100
     sum = 0
     for each in chance_dict:
@@ -281,7 +348,7 @@ def _general_swap(swap:List[int],unit_info:List[List[int]],maintain_grouping=Tru
     #get the order of indexes to fill
     unit_order = _get_unit_look_order(swap)
     #get the absent dict and base mult dict
-    absent_dict = _get_inital_absent_dict(swap)
+    absent_dict = _get_inital_absent_dict(unit_info,swap)
     base_mult_dict = _get_strength_base_mult_dict(unit_info,maintain_grouping,consider_strength)
     #ok so from here on out I assume that all the units available for swapping to are also the units needing swapping from
     #I think this is a fine assumption because no matter how I do this it literally cant work if that isnt the case
@@ -341,6 +408,7 @@ def _create_swap_half(starting_id=0,ending_id=-1,maintain_grouping=True,consider
     unit_info = _get_unit_information(ENEMY_INFO,starting_id,ending_id)
     #now get all the initial information resulting from it
     swap = _get_initial_swap(unit_info)
+    simp.print_array_one_by_one(swap)
     variant_dict = _get_variant_dict(unit_info)
     #now first step in filling out the swap is enemy bases
     #manually inputting attacking bases for now
@@ -383,8 +451,8 @@ def _swap_per_game(first_enemy_not_considered=-1,variant_swap=False,general_swap
     app_swap = _turn_swap_into_applyable_swap(swap,balance_mag=adjust_mags,post_attack_anims=post_attack_anims)
     #now apply that swap to all the files
     #for now it is using the eoc bool, when I make eoc actually use different enemies I need to have it be entirely separate since they arent goint to swap to the right enemy otherwise
-    _apply_app_swap_to_stages(app_swap,include_eoc)
-    
+    #_apply_app_swap_to_stages(app_swap,include_eoc)
+
 
 """ full per stage function """
 #Ill do this later
@@ -395,7 +463,7 @@ def _swap_per_game(first_enemy_not_considered=-1,variant_swap=False,general_swap
 def _turn_swap_into_applyable_swap(swap,balance_mag=True,post_attack_anims=[]):
     """ takes a swap array and turns it into an equal length array
     \n each index contains [id to swap to,amount to multiply mag by] """
-    #first step is getting the correct stat array to use (Ive decided it should be the actually current version of enemy stats)
+    #first step is getting the correct stat array to use (Ive decided it should be the actually current version of enemy stats, its not like these are usedd in any sort of randomization so its fine to use latest, it needs to be at least post metal removal)
     estat = gf.file_reader(fn.ENEMY_STATS)
     #now get which of the two lists is shorter
     shorter = len(estat)
@@ -453,30 +521,39 @@ def _determine_unit_product_stat(stats,post_attack_anim=-1):
     attack = stats[e.s.attack] + stats[e.s.multiDamage2] + stats[e.s.multiDamage3]
     #now get dpf
     dpf = attack/attack_cycle
-    return dpf*stats[e.s.hp]
+    return max(0.01,dpf)*max(1,stats[e.s.hp])
 
 """ applying swap to the game files """
 
 def _apply_app_swap_to_stages(app_swap,include_eoc=False):
     """ applies the swap to all stages """
     #first step is getting all the stages
-    all_stages = gf.get_names_of_all_stages(include_dl=True,include_eoc=include_eoc)
+    all_stages = gf.get_names_of_all_stages(include_dl=True,include_eoc=include_eoc) #do I want it to apply to modded stages?
     #also get a dummy stage to pull stage variables from
     d = stnmp.stage()
     #now loop through all those stages
+    print("applying swap to " + str(len(all_stages)) + " stages:")
+    stages_done = 0
+    stages_actively_edited = 0
     for stage_name in all_stages:     #this does not use stnmp because its slower and this should be as fast as possible
         stage_sche = gf.file_reader(stage_name)
         edited = False
         #number of starting lines check
-        if stage_sche[1][0] > 2000: #this is checking stage length
+        if stage_sche[1][0] > 2000: #this is checking stage length (otherwise itd be base id and there arent 2000 of those)
             number_starting_lines = 2
         else:
             number_starting_lines = 1
         #enemy base swapping
-        if stage_sche[number_starting_lines-1][d.animated_base] != 0:
-            stage_sche[number_starting_lines-1][d.animated_base] = app_swap[stage_sche[number_starting_lines-1][d.animated_base]][0]
+        if stage_sche[number_starting_lines-1][d.pos_animated_base] != 0:
+            old_base = stage_sche[number_starting_lines-1][d.pos_animated_base]
+            new_base = app_swap[old_base][0]
+            #print(f"swapped enemy base {old_base} in {stage_name} to {new_base}")
+            stage_sche[number_starting_lines-1][d.pos_animated_base] = new_base
+            #no need to set it to edited here since it will also trip below
         #now loop through each line from there till the end attempting to edit it
-        for enemy_line in range(number_starting_lines,len(stage_sche)):
+        for enemy_line_id in range(number_starting_lines,len(stage_sche)):
+            #print(enemy_line_id)
+            enemy_line = stage_sche[enemy_line_id]
             enemy_id = enemy_line[d.enemy_id]
             #check if real then, if enemy doesnt route to self
             if enemy_id != 0 and enemy_id != app_swap[enemy_id][0]:
@@ -488,6 +565,11 @@ def _apply_app_swap_to_stages(app_swap,include_eoc=False):
                 enemy_line[d.magnification] = int(new_mag)
         if edited:
             gf.file_writer(stage_name,stage_sche)
+            stages_actively_edited += 1
+        stages_done += 1
+        if stages_done % 1000 == 0:
+            print(str(stages_done) + " done being swapped")
+    print(f"swap resulted in {stages_actively_edited} of {stages_done} being edited")
     
 
 

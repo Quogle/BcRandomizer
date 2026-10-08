@@ -41,6 +41,15 @@ def VC_from_config(config=DEFAULT_CONFIG):
     version_config[vck.combo_rand_combo_count] = vcfr.get_version_config_information(config["mod"]["combos"])[ivn.NUMBER_OF_COMBOS]
     version_config[vck.combo_rand_unit_forms] = vcfr.get_version_config_information(config["mod"]["combos"])[ivn.NUMBER_OF_CAT_FORMS]
 
+
+    #enemy
+    #enemy swap
+    version_config[vck.enemy_swap_max_enemy_id] = vcfr.get_version_config_information(config["mod"]["enemy_swap_id"])[ivn.NUMBER_OF_ENEMIES] #note this is the length of t unit so its number of enemies +2
+
+
+
+
+
     return version_config
 
 

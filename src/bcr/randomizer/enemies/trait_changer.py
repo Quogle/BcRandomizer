@@ -2,29 +2,32 @@ import tadbcmc.data.enums.enemy as e
 from ...config.defaults import DEFAULT_CONFIG
 import copy
 import tadbcmc.core.seeded_randomization as srand
+from ...randomizer import debug_output
+
 
 #do I handle starred in this function?
-def change_traits_according_to_config(stats,config=DEFAULT_CONFIG,log=None):
+def change_traits_according_to_config(stats,config=DEFAULT_CONFIG,log=None,debug=False):
     """ changes traits according to the method desired in config
     \n also gives starred alien """
-    change_means = config["enemy"]["trait"]["randomization_mode"].lower()
+    change_means = config["trait"]["enemy"]["randomize"]["randomization_mode"].lower()
     if change_means == "none":
         return stats #simply no sense
     if change_means == "randomize":
-        stats = _trait_randomization(stats=stats,config=config,log=log)
+        new_stats = _trait_randomization(stats=copy.deepcopy(stats),config=config,log=log,debug=debug)
     elif change_means == "swap":
-        stats = _trait_swap(stats,config=config,log=log)
+        new_stats = _trait_swap(copy.deepcopy(stats),config=config,log=log)
     else:
-        print("failed to interpret enemy randomization mode: " + str(change_means))
-        if log:
-            log("failed to interpret enemy randomization mode: " + str(change_means))
-        return stats
+        debug_output.output_somewhere("failed to interpret enemy randomization mode: " + str(change_means),log=log)
+        return
     #is there anything else to do here?
-    return stats
+    #debug
+    if debug:
+        _count_traits_of_array(stats,"before trait swap trait counts: ")
+        _count_traits_of_array(new_stats,"after  trait swap trait counts: ")
+    return new_stats
 
 
-#THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
-def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
+def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None,debug=False):
     """ randomizes the traits of stats according to config and returns it
     \n does nothing except edit traits, starred must be done elsewhere """
     """
@@ -37,29 +40,17 @@ def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
         if a unit still has remaining traits to be added ignore it
     """
     #first get the config options needed
-    give_untraited_traits = config["enemy"]["trait"]["untraited_get_trait"]
-    remove_metal = config #idk where this is rn
-    trait_bools = [] #this is how Im turning traits of but its just all gonna be true until I know what Im doing
-    #now get all and allowed
-    all_traits = []
-    for each in e.t:
-        all_traits.append(int(each))
-        trait_bools.append(True)
-    allowed = []
-    disallowed = []
-    for trait_id in range(0,len(all_traits)):
-        if trait_bools[trait_id]:
-            allowed.append(all_traits[trait_id])
-        else:
-            disallowed.append(all_traits[trait_id])
+    give_untraited_traits = config["trait"]["enemy"]["randomize"]["untraited_get_trait"]
+    (all_traits,allowed,disallowed) = _get_all_and_allowed_traits(config=config)
     if len(allowed) == 0:
-        if log != None:
-            log("trait randomization was attempted with 0 allowed traits")
+        debug_output.output_somewhere("trait randomization was attempted with 0 allowed traits")
+    look_order_list = [] #for debugging purposes
     #now create the before and after arrays
     for u_id in range(0,len(stats)):
         #start by getting this units trait look order
         r = srand.randinst(240+57*u_id)
         trait_look_order = _get_this_unit_look_order(allowed,disallowed,r)
+        look_order_list.append(trait_look_order) #debugging purposes
         #count and log traits as theyre being removed
         has_traits = []
         for trait in trait_look_order:
@@ -88,31 +79,21 @@ def _trait_randomization(stats,config=DEFAULT_CONFIG,log=None):
                 break
         #there shouldnt be anything to do if the number of traits is still greater than 0
         #so this should be all good
+    if debug:
+        #debug_output.output_somewhere(look_order_list,output_one_by_one=True,log=log)
+        _process_look_order_debug_list(look_order_list)
     return stats
 
 
 
-#THIS IS MISSING METHOD FOR DETERMINING WHAT TRAITS ARE ALLOWED
+
 def _trait_swap(stats,config=DEFAULT_CONFIG,log=None):
     """ swaps the traits of stats according to config 
     \n does nothing except edit the traits """
-    #first get the config options, its only metal right? (and untraited get trait)
-    remove_metal = True
-    give_untraited_traits = config["enemy"]["trait"]["untraited_get_trait"]
+    #first get the config options (untraited get trait)
+    give_untraited_traits = config["trait"]["enemy"]["randomize"]["untraited_get_trait"]
     #to finish the config information I need to determine the traits allowed and the order to look at them
-    all_traits = []
-    trait_bools = []
-    for each in e.t:
-        all_traits.append(int(each))
-        trait_bools.append(True)
-    #now get allowed and disallowed
-    allowed = []
-    disallowed = []
-    for trait_id in range(0,len(all_traits)):
-        if trait_bools[trait_id]:
-            allowed.append(all_traits[trait_id])
-        else:
-            disallowed.append(all_traits[trait_id])
+    (all_traits,allowed,disallowed) = _get_all_and_allowed_traits(config=config)
     if len(allowed) == 0:
         if log != None:
             log("trait swap was attempted with 0 allowed traits")
@@ -254,10 +235,83 @@ def _fill_swap_allowed_len_morethan_1(from_traits,to_traits,trait_look_order,all
     to_traits = to_traits + to_traits
     return (from_traits,to_traits)
 
+def _get_all_and_allowed_traits(config=DEFAULT_CONFIG,
+        ) -> tuple[list[int],list[int],list[int]]:
+    """ return (all_traits, allowed_traits, disallowed_traits) """
+    all_traits = [ #these are the order theyre listed in tadbcmc
+        int(e.t.red),
+        int(e.t.floating),
+        int(e.t.dark),
+        int(e.t.white),
+        int(e.t.angel),
+        int(e.t.alien),
+        int(e.t.zombie),
+        int(e.t.relic),
+        int(e.t.aku),
+        int(e.t.metal),
+    ]
+    cinfo = config["trait"]["included"]
+    trait_bools = [
+        cinfo["red"],
+        cinfo["floating"],
+        cinfo["dark"],
+        cinfo["white"],
+        cinfo["angel"],
+        cinfo["alien"],
+        cinfo["zombie"],
+        cinfo["relic"],
+        cinfo["aku"],
+        cinfo["metal"],
+    ]
+    allowed_traits = []
+    disallowed_traits = []
+    for x in range(0,len(all_traits)):
+        if trait_bools[x]:
+            allowed_traits.append(all_traits[x])
+        else:
+            disallowed_traits.append(all_traits[x])
+    return (all_traits,allowed_traits,disallowed_traits)
+    
 
 
 
 
+def _count_traits_of_array(stats:list,prepend_output_message:str):
+    """ counts the number of traits in the stats array and outputs the count """
+    trait_index = []
+    for trait in e.t:
+        trait_index.append(int(trait))
+    trait_counts = [0]*len(trait_index)
+    for u_id in range(0,len(stats)):
+        for trait_id in range(0,len(trait_index)):
+            if stats[u_id][trait_index[trait_id]] == 1:
+                trait_counts[trait_id] += 1
+    output_string = prepend_output_message
+    for x in range(0,len(trait_index)):
+        output_string += str(trait_index[x]) + ":" + ("   " + str(trait_counts[x]))[-3:] + ", "
+    debug_output.output_somewhere(output_string[0:-2])
+
+
+def _process_look_order_debug_list(look_order_list):
+    """ calculates the average position of traits """
+    trait_list = []
+    for each in e.t:
+        trait_list.append(int(each))
+    position_list = [0]*len(trait_list)
+    unit_count = 0
+    for x in range(0,len(look_order_list)):
+        unit_count += 1
+        for y in range(0,len(trait_list)):
+            this_trait = trait_list[y]
+            index = look_order_list[x].index(this_trait)
+            position_list[y] += index
+    #now divide them all by the number of units to get average
+    for x in range(0,len(position_list)):
+        position_list[x] /= unit_count
+    output_string = "average position of traits:  "
+    for x in range(0,len(position_list)):
+        output_string += f"{trait_list[x]}:{round(position_list[x],3)}, "
+    debug_output.output_somewhere(output_string[0:-2])
 
 
 

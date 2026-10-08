@@ -543,6 +543,7 @@ things already added:
         enemy id per game swap (almost, still missing the conditions for what is allowed to swap and missing swapping of stationary enemies)
         trait gimmick
         drain in alien and angel
+        burrow anims
     qol:
         behemoth stage buffs
         xp stages buffs
@@ -584,8 +585,8 @@ things still needed to be added:
             separate out from seasonals those that dont belong (do I really care?)
         specifically a zombie talent fix (trait sum cannot give zombie/witch as it needs to be given as part of collosus slayer)
     enemies:
+    fix enemy swap not being suitably class based
         something to do with what is and isnt alien/starred in itf/cotc
-        burrow animation stuff
         sage rework
         post attack animation code (technically this can wait)
     qol:
@@ -598,6 +599,8 @@ things still needed to be added:
     combos:
         actual testing on how to do down combos in param
         also param editing
+        requires tadbcmc UNIT_INFO to be finished
+        method for obtaining number of effect ids 
     stages:
     funnies:
         
@@ -669,6 +672,8 @@ notes on what needs to be maintained each update:
         new ids need to be logged, added to various arrays, and functions for their application added
             generally their id and type are to be logged in talent_randomization.py
             application of them is largely in talent_altering.py
+    enemies:
+        variant needs to be added to tadbcmc enemy info
 
 
 

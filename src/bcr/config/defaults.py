@@ -8,8 +8,9 @@ DEFAULT_CONFIG = {
         "unit_trait": "15.5.0",
         "unit_ability": "15.5.0",
         "talents": "15.5.0",
-        "enemy_id": "15.5.0",
-        "combos": "15.5.0",
+        "enemy_swap_id": "15.5.0", #this is used to determine before what version enemy swap part 1 considers
+        "enemy_ability_id": "15.5.0", #this is used to determine what enemy after to apply new abilities to
+        "combos": "15.5.0", #currently fixes unit ids and forms, all aspects of vanilla combo rand, and all aspects of all unit down
         "stages": "15.5.0",
     },
     "trait": {
@@ -256,7 +257,6 @@ DEFAULT_CONFIG = {
             "keep_class": True,             # general swap: peons stay as peons, basically enemies will randomize into similar types ish kinda?????
             "adjust_magnifications": True,  # Adjusts the new enemy's magnification to better match the original enemy's stats
             "include_eoc": False,           # eoc cant have mags adjusted so I wouldnt recommend this one (in the future we will be able to use this properly, will probably need to make barrier not exist tho)
-            "max_enemy_id": -1,
         },
         "ability": {
             "randomize_abilities": False, # Randomizes enemy abilities, keeps the original amount
@@ -455,7 +455,7 @@ DEFAULT_CONFIG = {
             "metal_rework": True,
             "remove_behemoths": False,
             "behemoth_rebalance": False,
-            "old_zombies": True,
+            "old_zombies": True, #this is witch fix right?
             "buff_weak_aliens": True,
             "remove_itf_crystals": True,
             "remove_cotc_crystals": True,
@@ -489,9 +489,7 @@ DEFAULT_CONFIG = {
 
         "stage_changes": {
             "seasonals_in_sol": True,
-            "collabs_in_sol_advents": True,
-            "collab_tf_as_advents": True,
-            "mission_collab_special_tf_drop": True,
+            "add_collabs_to_sol_advents": True,
             "buff_normal_catfruit_catamins": True,
             "split_normal_catfruit_stages": True,
             "jubilee_always_epic": True,

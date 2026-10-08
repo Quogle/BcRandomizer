@@ -13,7 +13,7 @@ import copy
 from ...config.version_config.get_version_config import DEFAULT_VC_CONFIG
 from ...config.version_config import version_config_keys as vck
 
-""" tadbcmc unit_info still needs to be done,
+"""
 a means of determining how many combo ids are in the current version also needs to be figured out 
 also param editing still isnt a thing """
 
@@ -22,6 +22,7 @@ also param editing still isnt a thing """
 def establish_working_information():
     """ to be called once the game files actually exist """
     UNIT_INFO_extend_w_defaults()
+    UNIT_INFO_determine_unobtainable()
 
 
 
@@ -46,6 +47,8 @@ MULTS = [
 
 def do_combos(config=DEFAULT_CONFIG,version_config=DEFAULT_VC_CONFIG,log=None):
     """ does all the combo randomization stuff from config """
+    #since this is the master function make sure the working information is correct
+    establish_working_information()
     #first, if either combo rand is on we should wipe invisible vanilla combos
     if config["catcombo"]["randomize"]["enabled"] or config["catcombo"]["all_unit_down_combos"]["enabled"]:
         combos.readd_all_visible_vanilla_combos()
@@ -420,14 +423,17 @@ def _get_unit_info_for_combo_rand(
         #now determine whether or not units are included
         include_this_unit = True
         #these should always be excluded
-        if UNIT_INFO[u_id][ui.c.unobtainable] > 0:
+        if UNIT_INFO[u_id][ui.c.unobtainable] > 0 and UNIT_INFO[u_id][ui.c.readded_by_me] == 0:
             include_this_unit = False
+        if UNIT_INFO[u_id][ui.c.limited_event] > 0 and UNIT_INFO[u_id][ui.c.readded_by_me] == 0:
+            include_this_unit = False #so what tadbcmc calls limited event is not what I meant to be controlled by this config option, its seasonal events
         if unitbuy[ub.ub.available_in_game] < 0:
             include_this_unit = False
         #now the customizable ones
         if not include_collabs and UNIT_INFO[u_id][ui.c.collab] > 0:
-            include_this_unit = False
-        if not include_limited_event and UNIT_INFO[u_id][ui.c.limited_event] > 0:
+            include_this_unit = False #if I wanted the collabs I readded I would prolly need to pass the config option for whether those units are included
+        disallowed_seasonal_events = [1,4] #1 is seasonal gacha, 4 is seasonal mini gacha
+        if not include_limited_event and UNIT_INFO[u_id][ui.c.seasonal_event] in disallowed_seasonal_events:
             include_this_unit = False
         #set it
         included_unit_bools[u_id] = include_this_unit

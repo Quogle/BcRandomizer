@@ -10,12 +10,32 @@ import tadbcmc.core.simple_funcs as simp
 import os
 from pathlib import Path
 from ..version_config import internal_version_names as ivn
+import copy
 
 
+""" config validation, these should all be information that results in the vc being ignored """
 
+default_vc_file_outputs = {
+    ivn.NUMBER_OF_CAT_FORMS:[],
+    ivn.TALENT_INFORMATION:[],
+    ivn.ORB_INFORMATION:[],
+}
+#-1 works for all current misc informations
+default_vc_misc_info = {
+    ivn.NUMBER_OF_CATS:-1,
+    ivn.NUMBER_OF_COMBO_IDS:-1,
+    ivn.NUMBER_OF_COMBOS:-1,
+    ivn.NUMBER_OF_ENEMIES:-1,
+    ivn.NUMBER_OF_ZL_CHAPTERS:-1,
+}
 
-
-
+def _validate_this_config(config):
+    """  """
+    global default_vc_file_outputs
+    for each in default_vc_file_outputs:
+        if config[each] == None:
+            config[each] = default_vc_file_outputs[each]
+    return config
 
 
 
@@ -31,9 +51,13 @@ def get_version_config_information(config_version:str):
     this_config_version = config_dir / correct_version
     #read it and add it to the version config to output
     output = _read_misc_information(this_config_version)
+    if output == None:
+        global default_vc_misc_info
+        output = copy.deepcopy(default_vc_misc_info)
     output[ivn.NUMBER_OF_CAT_FORMS] = _read_unit_form_information(this_config_version)
     output[ivn.TALENT_INFORMATION] = _read_unit_talent_information(this_config_version)
     output[ivn.ORB_INFORMATION] = _read_unit_orb_information(this_config_version)
+    output = _validate_this_config(output)
     return output
 
 
@@ -73,12 +97,14 @@ def _get_last_existing_config_version(config_version:str,version_info_path:Path)
 
 
 
-
+""" these all return none if the config file they are supposed to use doesnt exist """
 def _read_misc_information(config_version_path:Path
     ) -> dict[str,int|any]:
     """ reads information from the mics info file
     \n returns a dictionary with variables shared between this module and vc maker as the keys """
     filepath = config_version_path / ivn.MISC_INFO_CONFIG
+    if not os.path.exists(filepath):
+        return
     misc_info = fh.array_type_file_reader(str(filepath),force_numerical=False,first_line_check=False)
     #now put it in the dict
     output = {}
@@ -91,6 +117,8 @@ def _read_unit_form_information(config_version_path:Path
     """ reads information from the unit forms file
     \n index in array corresponds to unit id """
     filepath = config_version_path / ivn.UNIT_FORM_CONFIG
+    if not os.path.exists(filepath):
+        return
     form_info = fh.array_type_file_reader(str(filepath),first_line_check=False)
     return form_info[0]
 
@@ -100,6 +128,8 @@ def _read_unit_talent_information(config_version_path:Path
     \n index in array corresponds to unit id 
     \n first value is the talent sum (is -1 if unit had no talents) """
     filepath = config_version_path / ivn.TALENT_CONFIG
+    if not os.path.exists(filepath):
+        return
     talent_info = fh.array_type_file_reader(str(filepath),first_line_check=False)
     return talent_info
 
@@ -109,8 +139,12 @@ def _read_unit_orb_information(config_version_path:Path
     \n index in array corresponds to unit id
     \n first value is normal orb count, second is ultratalent orb count """
     filepath = config_version_path / ivn.TALENT_ORB_CONFIG
+    if not os.path.exists(filepath):
+        return
     orb_info = fh.array_type_file_reader(str(filepath),first_line_check=False)
     return orb_info
+
+
 
 
 

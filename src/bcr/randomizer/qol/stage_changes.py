@@ -21,6 +21,13 @@ collabs in sol/advents
 
 """
 
+def stage_changes_total(config=DEFAULT_CONFIG):
+    """ does all the 'stage changes' in this module """
+    #these are all conditional on their own
+    _seasonals_in_sol(config=config)
+    _add_collabs_to_various_stages(config=config)
+    _nonview_catamin_unlocks(config=config)
+    _lil_brainwashed_catamins(config=config)
 
 
 
@@ -127,6 +134,9 @@ def _seasonals_in_sol(config=DEFAULT_CONFIG):
 #THIS CANNOT BE FINISHED UNTIL MISSION CODE EXISTS
 def _add_collabs_to_various_stages(config=DEFAULT_CONFIG):
     """ adds collab units to sol/events and their true forms as missions """
+    #dont do anything if its off
+    if not config["qol"]["stage_changes"]["add_collabs_to_sol_advents"]:
+        return
     #sol drop units
     merc = 121          #sol 3 7 salty is seawater      tf:clionel rev 1st stage
     healer = 120        #sol 17 0 sin and punishment    tf:hannya rev 1st stage
@@ -301,7 +311,7 @@ def _nonview_catamin_unlocks(config=DEFAULT_CONFIG):
             this_map.submit()
 
 
-#this function requires serve files for moving maps
+#this function requires server files for moving maps
 def _lil_brainwashed_catamins(config=DEFAULT_CONFIG):
     """ moves the manics to crazed maps and uses their maps for lils and brainwasheds """
     if not config["qol"]["stage_changes"]["lil_brainwashed_catamins"]:
