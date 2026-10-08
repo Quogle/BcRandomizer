@@ -4,10 +4,9 @@ import zipfile
 import requests
 
 from bcr.apk.server.cloudfront import generate_signed_cookie
-
+from ..packs.decrypt import decrypt_packs
 
 SERVER_BASE_URL = "https://nyanko-assets.ponosgames.com/iphone"
-from ..packs.decrypt import decrypt_packs
 
 
 def get_server_url(
@@ -34,13 +33,13 @@ def get_server_url(
     )
 
 
-def find_server_versions(
+def find_game_versions(
     lib_path: str | Path,
     country_code: str,
     count: int,
 ) -> list[int]:
     """
-    Finds the server versions stored in libnative.so
+    Finds the game versions stored in libnative.so
     """
     lib_data = Path(lib_path).read_bytes()
 
@@ -63,7 +62,7 @@ def find_server_versions(
 
     if start_index == -1:
         raise ValueError(
-            "Could not find server game versions in libnative.so"
+            "Could not find game versions in libnative.so"
         )
 
     end1 = lib_data.find(
@@ -78,7 +77,7 @@ def find_server_versions(
 
     if end1 == -1 and end2 == -1:
         raise ValueError(
-            "Could not find end of server versions in libnative.so"
+            "Could not find the end of the game versions list in libnative.so"
         )
 
     if end1 == -1:
@@ -119,13 +118,13 @@ def download_server_files(
     output_directory = Path(output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
 
-    versions = find_server_versions(
+    versions = find_game_versions(
         lib_path=lib_path,
         country_code=country_code,
         count=len(tsv_paths),
     )
 
-    for index, _ in enumerate(tsv_paths):
+    for index, game_version in enumerate(versions):
         print(
             f"Downloading server files "
             f"{index + 1}/{len(tsv_paths)}"
@@ -133,7 +132,7 @@ def download_server_files(
 
         zip_path = download_server_zip(
             country_code=country_code,
-            game_version=versions[index],
+            game_version=game_version,
             index=index,
             output_directory=output_directory,
         )
@@ -205,14 +204,13 @@ def process_server_files(
     server_directory.mkdir(parents=True, exist_ok=True)
     output_directory.mkdir(parents=True, exist_ok=True)
 
-    # Find the server versions stored in libnative.so
-    versions = find_server_versions(
+    versions = find_game_versions(
         lib_path=lib_path,
         country_code=country_code,
         count=len(tsv_paths),
     )
 
-    for index, _ in enumerate(tsv_paths):
+    for index, game_version in enumerate(versions):
         message = (
             f"Decrypting server pack "
             f"{index + 1}/{len(tsv_paths)}"
@@ -226,7 +224,7 @@ def process_server_files(
         # Download the server zip for this version
         zip_path = download_server_zip(
             country_code=country_code,
-            game_version=versions[index],
+            game_version=game_version,
             index=index,
             output_directory=server_directory,
         )
